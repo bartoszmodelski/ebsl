@@ -7,6 +7,9 @@ let yield () = perform Yield
 type _ eff += Schedule : (unit -> unit) -> unit eff
 let schedule f = perform (Schedule f)
 
+type _ eff += Dump_stats : unit eff
+let dump_stats () = perform Dump_stats
+
 module Scheduled = struct 
   type t = 
     | Task of (unit -> unit)
@@ -32,6 +35,11 @@ let with_effects_handler f =
         continue k ())
     | Yield -> Some (fun k -> 
       with_mutex (fun () -> Queue.add (Scheduled.Preempted_task k) task_queue))
+    | Dump_stats -> Some (fun k -> 
+      let size = with_mutex (fun () -> (Queue.length task_queue)) in
+      Printf.printf "  queue size: %d\n" size;
+      Stdlib.flush Stdlib.stdout;
+      continue k ())
     | _ -> None }
 
 let rec run_domain () =
