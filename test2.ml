@@ -1,4 +1,4 @@
-open! Concurrent_scheduler_with_effects
+open! Conc_effects_mtx
 
 let log s =
   Printf.printf s;
