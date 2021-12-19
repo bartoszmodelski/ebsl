@@ -1,5 +1,5 @@
 open Core
-open! Conc_effects_mtx_mult_steal
+open! Conc_effects_mtx_mult_stl
 
 let start = ref (Core.Time.now ())
 

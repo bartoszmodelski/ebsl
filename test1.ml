@@ -1,4 +1,4 @@
-open! Conc_effects_mtx_mult_steal
+open! Conc_effects_mtx_mult_stl
 
 let log s =
   Printf.printf s;
