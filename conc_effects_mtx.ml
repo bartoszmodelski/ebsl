@@ -61,5 +61,5 @@ let rec run_domain () =
     run_domain ())
 
 let init ~(f : unit -> unit) n = 
-  let _ = List.init n (fun _ -> Domain.spawn run_domain) in
+  let _a = List.init n (fun _ -> Domain.spawn run_domain) in
   with_effects_handler f

@@ -7,9 +7,6 @@ let yield () = perform Yield
 type _ eff += Schedule : (unit -> unit) -> unit eff
 let schedule f = perform (Schedule f)
 
-type _ eff += Dump_stats : unit eff
-let dump_stats () = perform Dump_stats
-
 module Scheduled = struct 
   type t = 
     | Task of (unit -> unit)
@@ -45,11 +42,6 @@ let with_effects_handler f =
         continue k ())
     | Yield -> Some (fun k -> 
       with_task_queue (fun task_queue -> Queue.add (Scheduled.Preempted_task k) task_queue))
-    | Dump_stats -> Some (fun k -> 
-      let size = with_task_queue (fun task_queue -> (Queue.length task_queue)) in
-      Printf.printf " local queue size: %d\n" size;
-      Stdlib.flush Stdlib.stdout;
-      continue k ())
     | _ -> None }
 
 
@@ -89,11 +81,11 @@ let rec run_domain () =
 
 let setup_domain ~id () = 
   Domain.DLS.set domain_id_key id;
-  run_domain ();;    
+  run_domain ();;
 
 let init ~(f : unit -> unit) n =
   queues := List.init n (fun _ -> Mutex.create (), 
     (Queue.create () : Scheduled.t Queue.t)) |> Array.of_list;
   (* we technically should have a barrier here *)
-  let _ = List.init n (fun id -> Domain.spawn (setup_domain ~id)) in
+  let _a = List.init n (fun id -> Domain.spawn (setup_domain ~id)) in
   with_effects_handler f

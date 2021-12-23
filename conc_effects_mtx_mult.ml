@@ -76,5 +76,5 @@ let setup_domain ~id () =
 let init ~(f : unit -> unit) n =
   queues := List.init n (fun _ -> Mutex.create (), 
     (Queue.create () : Scheduled.t Queue.t)) |> Array.of_list;
-  let _ = List.init n (fun id -> Domain.spawn (setup_domain ~id)) in
+  let _a = List.init n (fun id -> Domain.spawn (setup_domain ~id)) in
   with_effects_handler f
