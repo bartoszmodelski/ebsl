@@ -3,6 +3,8 @@ open! Conc_effects_mtx_mult_stl
 
 let start = ref (Core.Time.now ())
 
+let counter = Atomic.make 0;;
+
 let log s =
   Printf.printf s;
   Stdlib.flush Stdlib.stdout;;
@@ -14,6 +16,8 @@ let rec monitor () =
     Printf.printf "  time diff: %s\n" (Core.Time.Span.to_string_hum diff);
     let ({live_words; _} : Gc.stat)= Gc.stat () in 
     Printf.printf "  live_words: %d\n" live_words;
+    Printf.printf "  counter: %d\n" (Atomic.get counter);
+    Stdlib.flush Stdlib.stdout;
     Unix.sleep 2;
     monitor ())
 
@@ -24,6 +28,7 @@ let rec f ~n () =
       schedule (fun () -> f ~n:(n-1) ());
       schedule (fun () -> f ~n:(n-1) ()))
     else (
+      Atomic.incr counter;
       Sys.opaque_identity ()));;
 
 let () = init 10 ~f:(fun () -> 

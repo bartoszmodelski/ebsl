@@ -53,7 +53,13 @@ type 'a t = {
   buffer : 'a Cell.t Atomic.t Array.t
 } 
 
-let init ?(size_pow=6) () =
+let local_is_empty {quasi_head; tail; mask = _; buffer = _} =
+  let tail_val = Atomic.get tail in 
+  let quasi_head_val = Atomic.get quasi_head in 
+  tail_val = quasi_head_val + 1
+
+
+let init ?(size_pow=21) () =
   let size = Int.shift_left 1 size_pow in
   { quasi_head = Atomic.make 0;
     tail = Atomic.make 1;
