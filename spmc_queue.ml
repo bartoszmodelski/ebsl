@@ -40,6 +40,10 @@ module Cell = struct
   let get_val = function 
     | Value v -> v 
     | Empty -> assert false
+
+  let get_val2 = function 
+  | Value v -> v 
+  | Empty -> assert false
 end
 
 type 'a t = {
@@ -65,10 +69,9 @@ let local_enqueue {quasi_head = _; tail; mask; buffer} element : Enqueue_result.
   if Cell.is_val (Atomic.get next_cell) then 
     Enqueue_result.Overloaded 
   else 
-    (Atomic.incr tail;
-    Atomic.set next_cell (Value element);
+    (Atomic.set next_cell (Value element);
+    Atomic.incr tail;
     Enqueue_result.Enqueued);;
-
 
 let local_dequeue {quasi_head; tail; mask; buffer} : 'a Dequeue_result.t =
   (* local deque is optimistic because it can fix its mistake if needed *)
@@ -78,7 +81,7 @@ let local_dequeue {quasi_head; tail; mask; buffer} : 'a Dequeue_result.t =
     (Atomic.decr quasi_head;
     Empty)
   else if my_index > tail_val then
-    assert false
+    assert false 
   else 
     (let cell = Array.get buffer (my_index land mask) in
     let value = Cell.get_val (Atomic.get cell) in
@@ -101,31 +104,40 @@ let local_is_half_empty {quasi_head = _; tail; mask; buffer} : bool =
   in
   check_spot (size / 2)
         
-let steal_half {quasi_head; tail; mask; buffer} local_queue =
+let steal_half {quasi_head; tail; mask; buffer} ~local_queue =
   if not (local_is_half_empty local_queue) then 
     ()
   else
   (let quasi_head_val = Atomic.get quasi_head in 
   let tail_val = Atomic.get tail in 
-  let size = tail_val - quasi_head_val in 
-  let stealable = 
-    (* We want to steal even if there's a single element, thus +1 *)
-    (size + 1)/2  
-  in
-  let new_quasi_head_val = quasi_head_val + stealable in
-  if Atomic.compare_and_set quasi_head quasi_head_val new_quasi_head_val 
-  then  
-    (for i = 0 to stealable do
-      let value = Array.get buffer ((new_quasi_head_val - i) land mask) in
-      local_enqueue local_queue (Cell.get_val (Atomic.get value)) |> (function
-      | Enqueue_result.Enqueued -> ()
-      | Overloaded -> 
-        (* we've ensured that half of the queue is empty. *)
-        assert false);
-      Atomic.set value Empty;
-    done)
+  let size = tail_val - quasi_head_val - 1 in 
+  if size < 1  
+  then ()
   else 
-    (* I'd expect we want to retry with probability log of queue occupation*)
-    ());;
+    (let stealable = 
+      (* We want to steal even if there's a single element, thus +1 *)
+      (size + 1)/2  
+    in
+    let new_quasi_head_val = quasi_head_val + stealable in
+    if new_quasi_head_val >= tail_val then
+      (
+        Printf.printf "new_hd %d, hd %d, tl %d, sz %d l\n" new_quasi_head_val 
+        quasi_head_val tail_val size;
+        assert false
+      );
+    if Atomic.compare_and_set quasi_head quasi_head_val new_quasi_head_val 
+    then  
+      (for i = 1 to stealable do
+        let value = Array.get buffer ((quasi_head_val + i) land mask) in
+        local_enqueue local_queue (Cell.get_val2 (Atomic.get value)) |> (function
+        | Enqueue_result.Enqueued -> ()
+        | Overloaded -> 
+          (* we've ensured that half of the queue is empty. *)
+          assert false);
+        Atomic.set value Empty;
+      done)
+    else 
+      (* I'd expect we want to retry with probability log of queue occupation*)
+      ()));;
         
     
