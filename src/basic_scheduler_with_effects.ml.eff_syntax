@@ -1,0 +1,75 @@
+effect Schedule  : (unit -> unit) -> unit
+let schedule f = perform (Schedule f)
+
+module Scheduled = struct 
+  type t = 
+    | Task of (unit -> unit)
+    | Terminate
+end
+
+let mutex = Mutex.create ()
+let domains_queue = (Queue.create () : unit Domain.t Queue.t)
+let task_queue = (Queue.create () : Scheduled.t Queue.t)
+
+let rec run_domain () =
+  Mutex.lock mutex;
+  let scheduled = 
+    if Queue.is_empty task_queue 
+    then (Scheduled.Task Domain.Sync.cpu_relax)
+    else (Queue.take task_queue);
+  in
+  Mutex.unlock mutex;
+  match scheduled with
+  | Terminate -> ()
+  | Task task -> ( 
+    task ();
+    run_domain ())
+
+let stop () =
+  Mutex.lock mutex;
+  let rec f = function
+    | 0 -> Mutex.unlock mutex
+    | n -> 
+      (Queue.add Scheduled.Terminate task_queue;
+      f (n-1))
+  in 
+  f (Queue.length domains_queue)
+
+let rec wait_for_all_domains () =
+  if Queue.is_empty domains_queue 
+  then ()
+  else 
+    (let domain = Queue.take domains_queue in
+    Domain.join domain;
+    wait_for_all_domains ())
+
+let rec init ~(f : unit -> unit) n = 
+  let domain = (Domain.spawn run_domain : unit Domain.t) in
+  Queue.add domain domains_queue;
+  if n != 0 
+  then init ~f (n-1) 
+  else 
+    (match f () with
+    | v -> v 
+    | effect (Schedule f) k ->
+      Mutex.lock mutex;
+      Queue.add (Scheduled.Task f) task_queue;
+      Mutex.unlock mutex;
+      continue k ())
+
+let log s =
+  Printf.printf s;
+  Stdlib.flush Stdlib.stdout
+
+let () =
+  init 5 ~f:(fun () -> 
+    log "starting\n";
+    schedule (fun () -> log "  start 2\n"; Unix.sleep 2; log "  done 2\n");
+    schedule (fun () -> log "  start 1\n"; Unix.sleep 1; log "  done 1\n");
+    schedule (fun () -> log "  start 3\n"; Unix.sleep 3; log "  done 3\n");
+    log "scheduled\n";
+    stop ();
+    log "stopping \n";
+    wait_for_all_domains ();
+    log "exit \n";
+    ())

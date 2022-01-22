@@ -1,0 +1,104 @@
+(* MPMC queue inspired by https://dl.acm.org/doi/pdf/10.1145/3437801.3441583
+  Modified to disallow overlaps.
+*)
+
+module Atomic = Dscheck.TracedAtomic
+
+type 'a t = {
+  array: 'a Atomic.t Array.t;
+  head: int Atomic.t;
+  realised_head: int Atomic.t; 
+  tail: int Atomic.t;
+  mask: int
+}
+(*  
+  head points one ahead of the first element 
+  tail points one ahead of the last element (if any)
+*)
+
+let empty_cell = Obj.magic 0
+
+let init ?(size_exponent=8) () : 'a t =
+  let size = 2 lsl size_exponent in
+  let array = Array.init size (fun _ -> Atomic.make (empty_cell)) in 
+  let mask = size - 1 in
+  let head = Atomic.make 0 in 
+  let tail = Atomic.make 0 in  
+  let realised_head = Atomic.make 0 in  
+  { array; head; tail; realised_head; mask };;
+
+let enqueue {array; tail; mask; _} element = 
+  let index = (Atomic.fetch_and_add tail 1) land mask in
+  Stdlib.flush_all ();
+  let cell = Array.get array index in 
+  while not (Atomic.compare_and_set cell empty_cell element) do
+    Domain.cpu_relax ()     
+  done;;
+
+let rec dequeue queue =
+  let ({array; head; realised_head; tail; mask; _} : 'a t) = queue in
+  let head_value = Atomic.get head in 
+  let tail_value = Atomic.get tail in
+  if head_value > tail_value then
+    assert false 
+  else if head_value = tail_value then 
+    None 
+  else 
+    (let new_head = head_value + 1 in
+    if not (Atomic.compare_and_set head head_value new_head) then 
+      dequeue queue 
+    else 
+      let index = head_value land mask in 
+      let cell = Array.get array index in 
+      let cell_value = Atomic.get cell in
+      Atomic.set cell empty_cell;
+      (while not (Atomic.compare_and_set realised_head head_value new_head) do 
+        ()
+      done);
+      Some cell_value);;
+  
+let log ~thr s = 
+  let s = 
+    match s with 
+    | None -> "Empty?" 
+    | Some s -> s    
+  in
+  Printf.printf "%s: %s\n" thr s;
+  Stdlib.flush Stdlib.stdout;;
+
+let _test_1 () =
+  let queue = init ~size_exponent:1 () in
+  let a = 
+    let log = log ~thr:"A" in 
+    Domain.spawn (fun () ->
+      enqueue queue "a";
+      enqueue queue "b";
+      enqueue queue "c";
+      dequeue queue |> log;
+      log (Some "done a")) 
+  in 
+  let b = 
+    let log = log ~thr:"B" in
+    Domain.spawn (fun () ->
+      dequeue queue |> log;
+      enqueue queue "d";
+      dequeue queue |> log;
+      dequeue queue |> log;
+      log (Some "done b"))
+  in 
+  Domain.join b |> ignore; 
+  Domain.join a |> ignore;
+  ();;
+
+let create_test upto () =
+  let queue = init ~size_exponent:1 () in
+  for _ = 1 to upto do
+    Atomic.spawn (fun () -> enqueue queue "");
+  done;
+  (*for _ = 1 to upto do
+    Atomic.spawn (fun () -> Sys.opaque_identity(dequeue queue) |> ignore);
+  done;*)
+  Atomic.final (fun () -> ())
+  
+let () =
+  Atomic.trace (create_test 2)
