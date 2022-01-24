@@ -37,15 +37,15 @@ let with_effects_handler f =
       with_task_queue (fun task_queue -> 
         Spmc_queue.local_enqueue task_queue (Scheduled.Task new_f) |>
         function 
-          | Enqueued -> () 
-          | Overloaded -> Stdlib.exit 255);
+          | true -> () 
+          | false -> Stdlib.exit 255);
         continue k ())
     | Yield -> Some (fun k -> 
       with_task_queue (fun task_queue -> 
         Spmc_queue.local_enqueue task_queue (Scheduled.Preempted_task k) |>
         function 
-          | Enqueued -> () 
-          | Overloaded -> Stdlib.exit 255))
+          | true -> () 
+          | false -> Stdlib.exit 255))
     | _ -> None }
 
 
@@ -63,12 +63,8 @@ let rec run_domain () =
   let scheduled = 
     with_task_queue (fun task_queue ->  
       if Spmc_queue.local_is_empty task_queue 
-      then steal ~my_task_queue:task_queue;  
-      let maybe_task = Spmc_queue.local_dequeue task_queue
-        |> function 
-          | Dequeued v ->  Some v 
-          | Empty -> None 
-      in
+      then steal ~my_task_queue:task_queue |> ignore;  
+      let maybe_task = Spmc_queue.local_dequeue task_queue in
       Option.value maybe_task ~default:(Scheduled.Task Domain.cpu_relax))
   in
   match scheduled with

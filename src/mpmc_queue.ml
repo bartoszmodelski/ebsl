@@ -19,7 +19,7 @@ type 'a t = {
 let empty_cell = Obj.magic 0
 
 let init ?(size_exponent=8) () : 'a t =
-  let size = 2 lsl size_exponent in
+  let size = 1 lsl size_exponent in
   let array = Array.init size (fun _ -> Atomic.make (empty_cell)) in 
   let mask = size - 1 in
   let head = Atomic.make 0 in 

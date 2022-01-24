@@ -1,3 +1,6 @@
+module Atomic = Dscheck.TracedAtomic
+
+
 (* Notes: 
   - Tail does not have to be atomic because there's just one writer.
   - Local deque does not have to synchronize with the writer, only other readers.
@@ -14,136 +17,121 @@
   allows 'a Atomic.t to be accessed. Probably doesn't matter much on x86. 
   *)
 
-module Enqueue_result = struct 
-  type t = 
-    | Enqueued 
-    | Overloaded  
-end 
-
-module Dequeue_result = struct 
-  type 'a t = 
-    | Dequeued of 'a 
-    | Empty 
-end 
-
-module Cell = struct 
-  (* make it a pointer *)
-  type 'a t =
-    | Value of 'a 
-    | Empty 
-
-  let is_val = function
-    | Empty -> false 
-    | Value _ -> true
-
-  let is_empty v = not (is_val v)
-  let get_val = function 
-    | Value v -> v 
-    | Empty -> assert false
-
-  let get_val2 = function 
-  | Value v -> v 
-  | Empty -> assert false
-end
-
 type 'a t = {
-  quasi_head : int Atomic.t; 
+  head : int Atomic.t; 
   tail : int Atomic.t;
   mask : int;
-  buffer : 'a Cell.t Atomic.t Array.t
+  array : 'a Atomic.t Array.t
 } 
 
-let local_is_empty {quasi_head; tail; mask = _; buffer = _} =
-  let tail_val = Atomic.get tail in 
-  let quasi_head_val = Atomic.get quasi_head in 
-  tail_val = quasi_head_val + 1
+let empty_cell = Obj.magic 0 
 
+let local_is_empty {head; tail; _} =
+  let tail_val = Atomic.get tail in 
+  let head_val = Atomic.get head in 
+  tail_val <= head_val 
 
 let init ?(size_pow=21) () =
   let size = Int.shift_left 1 size_pow in
-  { quasi_head = Atomic.make 0;
-    tail = Atomic.make 1;
+  { head = Atomic.make 0;
+    tail = Atomic.make 0;
     mask = size - 1;
-    buffer = Array.make size (Atomic.make Cell.Empty)
-      |> Array.map (fun _ -> Atomic.make Cell.Empty)}
+    array = Array.init size (fun _ -> Atomic.make empty_cell)}
 
-let local_enqueue {quasi_head = _; tail; mask; buffer} element : Enqueue_result.t =
-  let next_cell = 
-    let next_cell_index = (Atomic.get tail) land mask in 
-    Array.get buffer next_cell_index
-  in 
-  if Cell.is_val (Atomic.get next_cell) then 
-    Enqueue_result.Overloaded 
+let local_enqueue {tail; mask; array; _} element =
+  let index = (Atomic.get tail) land mask in 
+  let cell = Array.get array index in 
+  if Atomic.get cell != empty_cell then (
+    Printf.printf "empty?"; 
+    Stdlib.flush_all ();
+    false)
   else 
-    (Atomic.set next_cell (Value element);
+    (Atomic.set cell element;
     Atomic.incr tail;
-    Enqueue_result.Enqueued);;
+    true);;
 
-let local_dequeue {quasi_head; tail; mask; buffer} : 'a Dequeue_result.t =
+let local_dequeue {head; tail; mask; array} : 'a option =
   (* local deque is optimistic because it can fix its mistake if needed *)
-  let my_index = (Atomic.fetch_and_add quasi_head 1) + 1 in
+  let index = Atomic.fetch_and_add head 1 in
   let tail_val = Atomic.get tail in
-  if my_index = tail_val then
-    (Atomic.decr quasi_head;
-    Empty)
-  else if my_index > tail_val then
+  if index = tail_val then
+    (Atomic.decr head;
+    None)
+  else if index > tail_val then
     assert false 
   else 
-    (let cell = Array.get buffer (my_index land mask) in
-    let value = Cell.get_val (Atomic.get cell) in
-    Atomic.set cell Cell.Empty; 
-    Dequeued value);;
+    (let cell = Array.get array (index land mask) in
+    let element = Atomic.get cell in
+    Atomic.set cell empty_cell; 
+    Some element);;
 
-let local_is_half_empty {quasi_head = _; tail; mask; buffer} : bool =
-  let size = Array.length buffer in 
+    
+let local_is_half_empty {head = _; tail; mask; array} : bool =
+  let size = Array.length array in 
   let tail_value = Atomic.get tail in
-  let rec check_spot curr = 
-    if curr < 0 then 
-      true 
-    else if 
-      (let cell = Array.get buffer ((tail_value + curr) land mask) in
-      Cell.is_val (Atomic.get cell))
-    then 
-      false 
-    else 
-      check_spot (curr-1)
-  in
-  check_spot (size / 2)
-        
-let steal_half {quasi_head; tail; mask; buffer} ~local_queue =
-  if not (local_is_half_empty local_queue) then 
-    ()
-  else
-  (let quasi_head_val = Atomic.get quasi_head in 
+  let seen_not_free = ref false in 
+  let i = ref 0 in 
+  while not !seen_not_free && !i < (size + 1)/ 2 do 
+    let cell = Array.get array ((tail_value + !i) land mask) in 
+    seen_not_free := Atomic.get cell != empty_cell; 
+    i := !i + 1
+  done; 
+  not !seen_not_free
+
+let steal_half {head; tail; mask; array} ~local_queue =
+  (* if we only initiate stealing after running out of 
+    tasks then this check is not needed *)
+  (*if not (local_is_half_empty local_queue) then 
+    false 
+  else*)
+  (let head_val = Atomic.get head in 
   let tail_val = Atomic.get tail in 
-  let size = tail_val - quasi_head_val - 1 in 
+  let size = tail_val - head_val in 
   if size < 1  
-  then ()
+  then false 
   else 
     (let stealable = 
       (* We want to steal even if there's a single element, thus +1 *)
       (size + 1)/2  
     in
-    let new_quasi_head_val = quasi_head_val + stealable in
-    if new_quasi_head_val >= tail_val then
-      (
-        Printf.printf "new_hd %d, hd %d, tl %d, sz %d l\n" new_quasi_head_val 
-        quasi_head_val tail_val size;
+    let new_head_val = head_val + stealable in
+    if new_head_val > tail_val then (
+        (* Printf.printf "new_hd %d, hd %d, tl %d, sz %d l\n" new_head_val 
+        head_val tail_val size; *) 
         assert false
       );
-    if Atomic.compare_and_set quasi_head quasi_head_val new_quasi_head_val 
-    then  
-      (for i = 1 to stealable do
-        let value = Array.get buffer ((quasi_head_val + i) land mask) in
-        local_enqueue local_queue (Cell.get_val2 (Atomic.get value)) |> (function
-        | Enqueue_result.Enqueued -> ()
-        | Overloaded -> 
-          (* we've ensured that half of the queue is empty. *)
-          assert false);
-        Atomic.set value Empty;
-      done)
+    if not (Atomic.compare_and_set head head_val new_head_val)
+    then
+      false
     else 
-      (* I'd expect we want to retry with probability log of queue occupation*)
-      ()));;
-        
-    
+      (for i = 0 to stealable - 1 do
+        let cell = Array.get array ((head_val + i) land mask) in
+        assert (local_enqueue local_queue (Atomic.get cell));
+        Atomic.set cell empty_cell;
+      done;
+      true)));; 
+  
+let total_checked = ref 0
+
+let create_test () =
+  let queue = init ~size_pow:5 () in
+  let queue_2 = init ~size_pow:5 () in
+  Atomic.spawn (fun () -> 
+    assert (local_enqueue queue "");
+    assert (local_enqueue queue "");
+    assert (Option.is_some (local_dequeue queue)));
+  Atomic.spawn (fun () -> 
+    while not (steal_half queue ~local_queue:queue_2) do () done);
+  Atomic.final (fun () ->
+    total_checked := !total_checked + 1;
+    let ({head; tail; _} : string t) = queue in
+    let head_value = Atomic.get head in
+    let tail_value = Atomic.get tail in
+    (*Atomic.check (fun () -> 
+      Array.for_all (fun v -> Atomic.get v = empty_cell) array);*)
+    Atomic.check (fun () -> 
+      head_value = tail_value));;
+  
+let () =
+  Atomic.trace ~depth_limit:32 create_test;
+  Printf.printf "Total checked: %d\n" (!total_checked);;

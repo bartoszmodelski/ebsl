@@ -1,5 +1,20 @@
-(* MPMC quasi-queue https://dl.acm.org/doi/pdf/10.1145/3437801.3441583
+(* 
+    MPMC quasi-queue https://dl.acm.org/doi/pdf/10.1145/3437801.3441583
+
+    Enqueue blocks if the queue is full. Dequeue blocks if the queue 
+    is empty. In both cases the call returns only once the action can be
+    finished. That is another thread made space in the queue or inserted 
+    an element. 
+
+    Is there a way to stop blocking? 
+    Blocking is traded for handling main points of contention with FAD
+    rather than CAS. I *think* that enquing could be fixed by leaving 
+    some slots empty in the queue, and simply reporting full if FAD is 
+    going to breach it (number of slots should be bigger than number of
+    running threads). For the dequeue, dequeuer could give up and leave a 
+    hint in the slot for the enqueuer. 
 *)
+
 module Atomic = Dscheck.TracedAtomic
 
 type 'a t = {
@@ -74,15 +89,16 @@ let _test_1 () =
   ();;
 
 let total_checked = ref 0
-  
 
 let create_test upto () =
   let queue = init ~size_exponent:1 () in
   for _ = 1 to upto do
-    Atomic.spawn (fun () -> enqueue queue "");
+    Atomic.spawn (fun () -> 
+      enqueue queue "");
   done;
   for _ = 1 to upto do
-    Atomic.spawn (fun () -> Sys.opaque_identity(dequeue queue) |> ignore);
+    Atomic.spawn (fun () -> 
+      Sys.opaque_identity(dequeue queue) |> ignore);
   done;
   Atomic.final (fun () ->
     total_checked := !total_checked + 1;

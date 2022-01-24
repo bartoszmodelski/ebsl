@@ -1,6 +1,8 @@
+module Atomic = Dscheck.TracedAtomic
+(*
 
-let dump_spmc ({quasi_head; tail; mask = _; buffer} : int Spmc_queue.t) = 
-  let quasi_head = Atomic.get quasi_head in 
+let dump_spmc ({head; tail; mask = _; buffer} : int Spmc_queue.t) = 
+  let head = Atomic.get head in 
   let tail = Atomic.get tail in 
   let data = Array.to_list buffer 
     |> List.map Atomic.get
@@ -9,7 +11,7 @@ let dump_spmc ({quasi_head; tail; mask = _; buffer} : int Spmc_queue.t) =
       | Empty -> "empty") 
     |> String.concat ", "
   in
-  Printf.printf "head: %d, tail %d\n data: %s\n\n" quasi_head tail data;;
+  Printf.printf "head: %d, tail %d\n data: %s\n\n" head tail data;;
 
 
 let count ({buffer; _} : int Spmc_queue.t) = 
@@ -154,4 +156,6 @@ let _test_2_with_stealer () =
 
 (* 
 let () = time_f _test_2_with_stealer
+*)
+
 *)
