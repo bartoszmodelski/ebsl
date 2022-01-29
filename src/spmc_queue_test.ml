@@ -126,7 +126,7 @@ let _test_2_with_stealer () =
     let stolen_count = ref 0 in  
     for _ = 1 to 100000 do
       let q_tmp = (Spmc_queue.init () : int Spmc_queue.t) in  
-      Spmc_queue.steal_half q ~local_queue:q_tmp;
+      Spmc_queue.steal q ~local_queue:q_tmp;
       let ({tail; _ } : int Spmc_queue.t) = q_tmp in
       let tail = Atomic.get tail in 
       stolen_count := !stolen_count + tail - 1 

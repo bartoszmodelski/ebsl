@@ -1,4 +1,4 @@
 (executables
  (names test1 test2 spmc_queue mpmc_queue mpmc_queue_blocking 
-  stack stack_test stack_validation)
+  stack stack_test stack_validation spmc_queue_validate)
  (libraries unix core dscheck))

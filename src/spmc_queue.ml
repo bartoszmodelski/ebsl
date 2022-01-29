@@ -78,7 +78,7 @@ let local_is_half_empty {head = _; tail; mask; array} : bool =
   done; 
   not !seen_not_free
 
-let steal_half {head; tail; mask; array} ~local_queue =
+let steal {head; tail; mask; array} ~local_queue =
   (* if we only initiate stealing after running out of 
     tasks then this check is not needed *)
   (*if not (local_is_half_empty local_queue) then 
@@ -111,27 +111,3 @@ let steal_half {head; tail; mask; array} ~local_queue =
       done;
       true)));; 
   
-let total_checked = ref 0
-
-let create_test () =
-  let queue = init ~size_pow:5 () in
-  let queue_2 = init ~size_pow:5 () in
-  Atomic.spawn (fun () -> 
-    assert (local_enqueue queue "");
-    assert (local_enqueue queue "");
-    assert (Option.is_some (local_dequeue queue)));
-  Atomic.spawn (fun () -> 
-    while not (steal_half queue ~local_queue:queue_2) do () done);
-  Atomic.final (fun () ->
-    total_checked := !total_checked + 1;
-    let ({head; tail; _} : string t) = queue in
-    let head_value = Atomic.get head in
-    let tail_value = Atomic.get tail in
-    (*Atomic.check (fun () -> 
-      Array.for_all (fun v -> Atomic.get v = empty_cell) array);*)
-    Atomic.check (fun () -> 
-      head_value = tail_value));;
-  
-let () =
-  Atomic.trace ~depth_limit:32 create_test;
-  Printf.printf "Total checked: %d\n" (!total_checked);;
