@@ -1,0 +1,3 @@
+(executable
+ (libraries dscheck)
+ (name test_atomics))
