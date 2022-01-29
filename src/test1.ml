@@ -1,4 +1,4 @@
-open! Conc_effects_lf_mult_stl
+open! Scheduler
 
 let log s =
   Printf.printf s;

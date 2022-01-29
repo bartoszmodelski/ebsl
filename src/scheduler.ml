@@ -1,50 +1,61 @@
 open EffectHandlers
 open EffectHandlers.Deep 
 
+let with_mutex mtx f =
+  Mutex.lock mtx; 
+  let v = f () in
+  Mutex.unlock mtx; 
+  v;; 
+
+
 type _ eff += Yield : unit eff
 let yield () = perform Yield
 
 module Scheduled = struct 
   type t = 
     | Task of (unit -> unit)
-    | Terminate 
+    (* | Terminate *)
     | Preempted_task of (unit, unit) continuation
 end
 
 module Promise = struct 
   (* this should be a variant! *)
   type 'a t = {
-    returned : 'a option Atomic.t;
-    awaiting : ('a -> unit) List.t option Atomic.t 
+    returned : 'a option ref;
+    awaiting : ('a -> unit) List.t option ref;
+    mutex : Mutex.t
   }
 
   let empty () = 
-    ({ returned = Atomic.make None; 
-    awaiting = Atomic.make (Some []) } : 'a t)
+    ({ returned = ref None; 
+    awaiting = ref (Some []);
+    mutex = Mutex.create () } : 'a t)
 
-  let rec await promise f = 
-    let ({awaiting; _} : 'a t) = promise in  
-    let maybe_awaiting_val = Atomic.get awaiting in 
-    match maybe_awaiting_val with 
-    | None -> false 
-    | Some awaiting_val -> 
-      let new_awaiting_val = Some (f :: awaiting_val) in
-      if Atomic.compare_and_set awaiting maybe_awaiting_val new_awaiting_val 
-      then true 
-      else await promise f;;
 
-  let returned_exn {returned; _} = 
-    match Atomic.get returned with 
+  let await promise f = 
+    let ({awaiting; mutex; _} : 'a t) = promise in  
+    with_mutex mutex (fun () ->  
+      match !awaiting with 
+      | None -> false 
+      | Some awaiting_val -> 
+        awaiting := Some (f :: awaiting_val); 
+        true)
+
+  let returned_exn {returned; mutex; _} = 
+    with_mutex mutex (fun () -> 
+    match !returned with 
     | Some v -> v 
-    | None -> assert false ;;
+    | None -> assert false);;
 
-  let fill {returned; awaiting} value =
-    Atomic.set returned (Some value);
-    let to_run = Atomic.get awaiting in
-    Atomic.set awaiting (None); 
-    match to_run with 
-    | Some v -> v 
-    | None -> assert false;;
+  let fill {returned; awaiting; mutex} value =
+    with_mutex mutex (fun () -> 
+      assert (Option.is_none !returned);
+      returned := Some value;
+      let maybe_awaiting_val = !awaiting in 
+      awaiting := None;
+      match maybe_awaiting_val with 
+      | None -> assert false 
+      | Some awaiting_val -> awaiting_val);;
 end 
 
 type _ eff += Await : 'a Promise.t -> 'a eff
@@ -89,9 +100,8 @@ let with_effects_handler f =
         schedule task_queue (Scheduled.Preempted_task k)))
     | Await promise ->
       Some (fun k -> 
-        if Promise.await promise (continue k) 
-        then () 
-        else
+        if not (Promise.await promise (continue k)) 
+        then 
           with_task_queue (fun task_queue -> 
             let returned = Promise.returned_exn promise in 
             schedule task_queue (Scheduled.Task (fun () -> continue k returned))))
@@ -104,17 +114,19 @@ let steal ~my_task_queue =
   let other_task_queue = Array.get !queues other_queue_id in
   Spmc_queue.steal other_task_queue ~local_queue:my_task_queue 
   
-  
 let rec run_domain () =
   let scheduled = 
     with_task_queue (fun task_queue ->  
-      if Spmc_queue.local_is_empty task_queue 
-      then steal ~my_task_queue:task_queue |> ignore;  
-      let maybe_task = Spmc_queue.local_dequeue task_queue in
-      Option.value maybe_task ~default:(Scheduled.Task Domain.cpu_relax))
+      match Spmc_queue.local_dequeue task_queue with 
+      | Some task -> task 
+      | None -> 
+        if Spmc_queue.local_is_empty task_queue 
+        then steal ~my_task_queue:task_queue |> ignore;  
+        Option.value (Spmc_queue.local_dequeue task_queue)
+        ~default:(Scheduled.Task Domain.cpu_relax))
   in
   match scheduled with
-  | Terminate -> ()
+  (* | Terminate -> () *)
   | Task task -> 
     (with_effects_handler task;
     run_domain ())
@@ -129,6 +141,10 @@ let setup_domain ~id () =
 let init ~(f : unit -> unit) n =
   queues := List.init (n+1) (fun _ -> Spmc_queue.init ()) |> Array.of_list;
   (* since this thread can schedule as well *)
+  let _domains = List.init n (fun id ->
+    Domain.spawn (setup_domain ~id)) in
+  (* run f from within the pool *)
   Domain.DLS.set domain_id_key n;
-  let _a = List.init n (fun id -> Domain.spawn (setup_domain ~id)) in
-  with_effects_handler f
+  with_effects_handler f;
+  run_domain ();;
+  

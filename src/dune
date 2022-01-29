@@ -1,4 +1,5 @@
 (executables
  (names test1 test2 spmc_queue mpmc_queue mpmc_queue_blocking 
-  stack stack_test stack_validation spmc_queue_validate)
+  stack stack_test stack_validation spmc_queue_validate
+  scheduler_promises_test)
  (libraries unix core dscheck))
