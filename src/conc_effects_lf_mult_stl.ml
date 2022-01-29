@@ -4,7 +4,6 @@ open EffectHandlers.Deep
 type _ eff += Yield : unit eff
 let yield () = perform Yield
 
-
 module Scheduled = struct 
   type t = 
     | Task of (unit -> unit)
@@ -12,9 +11,47 @@ module Scheduled = struct
     | Preempted_task of (unit, unit) continuation
 end
 
-type 'a t = 'a option Atomic.t
+module Promise = struct 
+  (* this should be a variant! *)
+  type 'a t = {
+    returned : 'a option Atomic.t;
+    awaiting : ('a -> unit) List.t option Atomic.t 
+  }
 
-type _ eff += Schedule : (unit -> 'a) -> 'a t eff
+  let empty () = 
+    ({ returned = Atomic.make None; 
+    awaiting = Atomic.make (Some []) } : 'a t)
+
+  let rec await promise f = 
+    let ({awaiting; _} : 'a t) = promise in  
+    let maybe_awaiting_val = Atomic.get awaiting in 
+    match maybe_awaiting_val with 
+    | None -> false 
+    | Some awaiting_val -> 
+      let new_awaiting_val = Some (f :: awaiting_val) in
+      if Atomic.compare_and_set awaiting maybe_awaiting_val new_awaiting_val 
+      then true 
+      else await promise f;;
+
+  let returned_exn {returned; _} = 
+    match Atomic.get returned with 
+    | Some v -> v 
+    | None -> assert false ;;
+
+  let fill {returned; awaiting} value =
+    Atomic.set returned (Some value);
+    let to_run = Atomic.get awaiting in
+    Atomic.set awaiting (None); 
+    match to_run with 
+    | Some v -> v 
+    | None -> assert false;;
+end 
+
+type _ eff += Await : 'a Promise.t -> 'a eff
+let await promise = perform (Await promise)
+
+
+type _ eff += Schedule : (unit -> 'a) -> 'a Promise.t eff
 let schedule f = perform (Schedule f)
 
 let domain_id_key = Domain.DLS.new_key 
@@ -37,16 +74,27 @@ let with_effects_handler f =
     match e with
     | Schedule new_f -> 
       Some (fun (k : (a, unit) continuation) -> 
-        let promise = Atomic.make None in 
+        let promise = Promise.empty () in 
         with_task_queue (fun task_queue -> 
           schedule task_queue (Scheduled.Task (fun () -> 
             let result = new_f () in 
-            Atomic.set promise (Some result))));
+            let to_run = Promise.fill promise result in 
+            List.iter (fun awaiting -> 
+              schedule task_queue (Scheduled.Task (fun () -> awaiting result)))
+              to_run)));
         continue k promise)
     | Yield -> 
       Some (fun k -> 
         with_task_queue (fun task_queue -> 
         schedule task_queue (Scheduled.Preempted_task k)))
+    | Await promise ->
+      Some (fun k -> 
+        if Promise.await promise (continue k) 
+        then () 
+        else
+          with_task_queue (fun task_queue -> 
+            let returned = Promise.returned_exn promise in 
+            schedule task_queue (Scheduled.Task (fun () -> continue k returned))))
     | _ -> None}
 
 let steal ~my_task_queue = 
