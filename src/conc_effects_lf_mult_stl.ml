@@ -6,31 +6,27 @@ let yield () = perform Yield
 
 
 module Scheduled = struct 
-  type 'a t = 
-    | Task of (unit -> 'a)
-    | Terminate
+  type t = 
+    | Task of (unit -> unit)
+    | Terminate 
     | Preempted_task of (unit, unit) continuation
 end
 
-type 'a t = {
-  scheduled : 'a Scheduled.t; 
-  result : 'a Atomic.t 
-}
+type 'a t = 'a option Atomic.t
 
 type _ eff += Schedule : (unit -> 'a) -> 'a t eff
 let schedule f = perform (Schedule f)
 
-
 let domain_id_key = Domain.DLS.new_key 
   (fun () -> -1);;
 
-let queues = ref (Array.make 0 (Spmc_queue.init () : 'a Scheduled.t Spmc_queue.t));;
+let queues = ref (Array.make 0 (Spmc_queue.init () : Scheduled.t Spmc_queue.t));;
 
 let with_task_queue f = 
   let my_id = Domain.DLS.get domain_id_key in 
   assert (my_id != -1);
   let task_queue = Array.get !queues my_id in
-  f task_queue 
+  f task_queue;;
 
 let with_effects_handler f =
   let schedule task_queue s = 
@@ -39,16 +35,19 @@ let with_effects_handler f =
   try_with f () 
   { effc = fun (type a) (e : a eff) ->
     match e with
-    | Schedule new_f -> Some (fun (k : (a,_) continuation) -> 
-      with_task_queue (fun task_queue -> 
-          schedule task_queue (Scheduled.Task new_f));
-        continue k ())
-    | Yield -> Some (fun k -> 
-      with_task_queue (fun task_queue -> 
+    | Schedule new_f -> 
+      Some (fun (k : (a, unit) continuation) -> 
+        let promise = Atomic.make None in 
+        with_task_queue (fun task_queue -> 
+          schedule task_queue (Scheduled.Task (fun () -> 
+            let result = new_f () in 
+            Atomic.set promise (Some result))));
+        continue k promise)
+    | Yield -> 
+      Some (fun k -> 
+        with_task_queue (fun task_queue -> 
         schedule task_queue (Scheduled.Preempted_task k)))
-    | _ -> None }
-
-
+    | _ -> None}
 
 let steal ~my_task_queue = 
   if Domain.DLS.get domain_id_key == -1

@@ -19,14 +19,14 @@ let rec monitor () =
     Printf.printf "  counter: %d\n" (Atomic.get counter);
     Stdlib.flush Stdlib.stdout;
     Unix.sleep 2;
-    monitor ())
+    monitor ()) |> ignore
 
 let rec f ~n () =
   schedule (fun () -> 
     if n-1 > 0 
     then (
-      schedule (fun () -> f ~n:(n-1) ());
-      schedule (fun () -> f ~n:(n-1) ()))
+      schedule (fun () -> f ~n:(n-1) ()) |> ignore;
+      schedule (fun () -> f ~n:(n-1) ()) |> ignore)
     else (
       Atomic.incr counter;
       Sys.opaque_identity ()));;
@@ -36,7 +36,7 @@ let () = init 10 ~f:(fun () ->
   log "starting\n";
   start := Core.Time.now ();
   monitor ();
-  f ~n ();
+  f ~n () |> ignore;
   log "scheduled\n";
   let _a = Stdlib.read_line () in
   log "exit \n";
