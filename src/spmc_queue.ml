@@ -4,12 +4,6 @@ let value_exn = function
   | None -> assert false 
   | Some v -> v 
 
-
-let value_exn_2 = function 
-| None -> assert false 
-| Some v -> v 
-
-
 (* Notes: 
   - Tail does not have to be atomic because there's just one writer.
   - Local deque does not have to synchronize with the writer, only other readers.
@@ -149,7 +143,7 @@ let steal ~from ~to_local =
     else 
       (for i = 0 to stealable - 1 do
         let cell = Array.get array ((head_val + i) land mask) in
-        assert (local_enqueue to_local (value_exn_2 (Atomic.get cell)));
+        assert (local_enqueue to_local (value_exn (Atomic.get cell)));
         Atomic.set cell None;
       done;
       stealable)));; 

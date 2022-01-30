@@ -68,18 +68,12 @@ let domain_id_key = Domain.DLS.new_key
 
 let queues = ref (Array.make 0 (Spmc_queue.init ~id:(-2) () : Scheduled.t Spmc_queue.t));;
 
-let id_to_domain_id = Hashtbl.create 20 
-let id_from_map () = Hashtbl.find id_to_domain_id (Domain.self ())
-
-let with_task_queue ~id f =
-  assert (id = Domain.DLS.get domain_id_key);
-  assert (id = id_from_map ());
+let with_task_queue f =
+  let id = Domain.DLS.get domain_id_key in 
   let task_queue = Array.get !queues id in
   f task_queue;;
 
-let with_effects_handler ~id f =
-  assert (id = Domain.DLS.get domain_id_key);
-  assert (id = id_from_map ());
+let with_effects_handler f =
   let schedule task_queue s = 
     while not (Spmc_queue.local_enqueue task_queue s) do () done
   in
@@ -89,21 +83,20 @@ let with_effects_handler ~id f =
     | Schedule new_f -> 
       Some (fun (k : (a, unit) continuation) -> 
         let promise = Promise.empty () in 
-        with_task_queue ~id (fun task_queue -> 
-          assert (id = id_from_map ());
-          assert (id = Domain.DLS.get domain_id_key);
+        with_task_queue (fun task_queue -> 
           schedule task_queue (Scheduled.Task (fun () -> 
             let result = new_f () in 
             let to_run = Promise.fill promise result in 
-          with_task_queue ~id:(id_from_map ()) (fun task_queue ->
+          (* Note, this is inside a scheduled task, which can be 
+            stolen. Must look the queue up again. *)
+          with_task_queue (fun task_queue ->
             List.iter (fun awaiting -> 
               schedule task_queue (Scheduled.Task (fun () -> awaiting result)))
-              to_run)  )));
+              to_run))));
         continue k promise)
     | Yield -> 
       Some (fun k -> 
-        with_task_queue ~id (fun task_queue -> 
-          assert (id = Domain.DLS.get domain_id_key);
+        with_task_queue (fun task_queue -> 
           schedule task_queue (Scheduled.Preempted_task k)))
     | Await promise ->
       Some (fun k -> 
@@ -117,13 +110,11 @@ let with_effects_handler ~id f =
             continue k returned)
     | _ -> None}
 
-let steal ~id ~my_task_queue = 
-  assert (id = Domain.DLS.get domain_id_key);
-  assert (id = id_from_map ());
-  (* let my_id = Domain.DLS.get domain_id_key in
-  assert (my_id != -1); *)
+let steal ~my_task_queue = 
+  let my_id = Domain.DLS.get domain_id_key in
+  assert (my_id != -1);
   let other_queue_id = Random.int (Array.length !queues) in 
-  if other_queue_id = id then
+  if other_queue_id = my_id then
     ()
   else 
     (let other_task_queue = Array.get !queues other_queue_id in
@@ -132,35 +123,32 @@ let steal ~id ~my_task_queue =
       Printf.printf "!"; 
       Stdlib.flush_all ()))
   
-let rec run_domain ~id () =
-  assert (id = Domain.DLS.get domain_id_key);
-  assert (id = id_from_map ());
+let rec run_domain () =
   let scheduled = 
-    with_task_queue ~id (fun task_queue ->  
+    with_task_queue (fun task_queue ->  
       match Spmc_queue.local_dequeue task_queue with 
       | Some task -> task 
       | None -> 
         if Spmc_queue.local_is_empty task_queue 
-        then (steal ~id ~my_task_queue:task_queue);  
+        then (steal ~my_task_queue:task_queue);  
         Option.value (Spmc_queue.local_dequeue task_queue)
           ~default:(Scheduled.Task Domain.cpu_relax))
   in
   match scheduled with
   (* | Terminate -> () *)
   | Task task -> 
-    (with_effects_handler ~id task;
-    run_domain ~id ())
+    (with_effects_handler task;
+    run_domain ())
   | Preempted_task task -> 
     (continue task ();
-    run_domain ~id ())
+    run_domain ())
 
 let setup_domain ~id () = 
   Domain.at_exit (fun () -> assert false);
   Domain.DLS.set domain_id_key id;
-  Hashtbl.add id_to_domain_id (Domain.self ()) id;
   let queue = Array.get !queues id in 
   Spmc_queue.register_domain_id queue;
-  run_domain ~id ();;
+  run_domain ();;
 let notify_user f () =
   try f () with e ->
     let msg = Printexc.to_string e
@@ -179,6 +167,5 @@ let init ~(f : unit -> unit) n =
   (* run f from within the pool *)
   Domain.DLS.set domain_id_key n;
   Spmc_queue.register_domain_id (Array.get !queues n);
-  Hashtbl.add id_to_domain_id (Domain.self ()) n;
-  with_effects_handler ~id:n f;;
+  with_effects_handler f;;
   (* run_domain () *) 
