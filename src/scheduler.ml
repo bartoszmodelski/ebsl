@@ -149,15 +149,13 @@ let setup_domain ~id () =
   let queue = Array.get !queues id in 
   Spmc_queue.register_domain_id queue;
   run_domain ();;
+  
 let notify_user f () =
   try f () with e ->
     let msg = Printexc.to_string e
     and stack = Printexc.get_backtrace () in
       Printf.eprintf "There was an error: %s%s\n" msg stack;
-      Printf.eprintf "DLS queue id: %d, domain id: %d\n" 
-        (Domain.DLS.get domain_id_key) 
-        (Obj.magic (Domain.self ()));
-      raise e
+      assert false;;
   
 let init ~(f : unit -> unit) n =
   queues := List.init (n+1) (fun _ -> Spmc_queue.init ()) |> Array.of_list;
