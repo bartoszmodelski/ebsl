@@ -1,11 +1,12 @@
+open Scheduler
 let test_1 () = 
-  Scheduler.init 3 ~f:(fun () ->
-    let a = Scheduler.schedule (fun () -> 
+  FIFO.init 3 ~f:(fun () ->
+    let a = schedule (fun () -> 
       Unix.sleep 1; "a") in 
-    let b = Scheduler.schedule (fun () -> 
+    let b = schedule (fun () -> 
       Unix.sleep 1; "b") in
     Printf.printf "scheduled\n"; 
-    Printf.printf "- %s %s\n" (Scheduler.await a) (Scheduler.await b);
+    Printf.printf "- %s %s\n" (await a) (await b);
     Printf.printf "done\n";
     Stdlib.flush_all ();
     ());
@@ -14,15 +15,14 @@ let test_1 () =
   Stdlib.flush_all ();;
 
 let test_2 () = 
-  Scheduler.init 10 ~f:(fun () ->
+  FIFO.init 10 ~f:(fun () ->
     let rec fib n = 
       match n with  
-      | 0 | 1 -> 
-        n
+      | 0 | 1 -> n
       | _ -> 
-        let a = Scheduler.schedule (fun () -> fib (n - 1)) in 
-        let b = Scheduler.schedule (fun () -> fib (n - 2)) in 
-        Scheduler.(await a + await b) 
+        let a = schedule (fun () -> fib (n - 1)) in 
+        let b = schedule (fun () -> fib (n - 2)) in 
+        (await a + await b) 
     in
     Printf.printf "result: %d\n" (fib 13);
     Stdlib.flush_all ());

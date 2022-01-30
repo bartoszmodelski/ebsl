@@ -31,7 +31,7 @@ let rec f ~n () =
       Atomic.incr counter;
       Sys.opaque_identity ()));;
 
-let () = init 10 ~f:(fun () -> 
+let () = FIFO.init 10 ~f:(fun () -> 
   let n = 24 in
   log "starting\n";
   start := Core.Time.now ();

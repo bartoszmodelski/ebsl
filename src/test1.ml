@@ -5,7 +5,7 @@ let log s =
   Stdlib.flush Stdlib.stdout
 
 let () =
-  init 3 ~f:(fun () -> 
+  FIFO.init 3 ~f:(fun () -> 
     log "starting\n";
     schedule (fun () -> 
       log "  start 2\n"; 

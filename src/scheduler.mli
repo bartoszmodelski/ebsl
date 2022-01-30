@@ -1,9 +1,13 @@
 
 module Promise : sig 
-    type 'a t 
+  type 'a t 
+
 end
 
-val init : f:(unit -> unit) -> int -> unit
+val await : 'a Promise.t -> 'a
 val schedule : (unit -> 'a) -> 'a Promise.t
 val yield : unit -> unit
-val await : 'a Promise.t -> 'a
+
+module FIFO : sig
+  val init : f:(unit -> unit) -> int -> unit
+end
