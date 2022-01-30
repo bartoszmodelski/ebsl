@@ -23,6 +23,7 @@ let init ?(size_exponent=2) () : 'a t =
   let bottom = Atomic.make 0 in  
   { top; bottom; array; mask };;
 
+(* todo: don't incr/decr top atomically *)
 let local_push {top; array; mask; _} element =
   let top_val = Atomic.get top in 
   let cell = Array.get array (top_val land mask) in
@@ -113,58 +114,3 @@ let steal ~from:{top; bottom; array; mask} ~to_local =
 
 
 
-
-let steal_and_throw_away ~from:{top; bottom; array; mask} =
-  let bottom_val = Atomic.get bottom in
-  let top_val = Atomic.get top in 
-  let available_steal = (top_val - bottom_val + 1) / 2 in 
-  if available_steal <= 0 then 
-    0 
-  else 
-    (let stolen = 
-      Atomic.compare_and_set bottom bottom_val (bottom_val + available_steal) 
-    in 
-    if not stolen then
-      (* we could retry, but this inevitably means that someone else 
-        succeded, so probably shouldn't without knowing more *)
-      0 
-    else (
-      let old_bottom_val = bottom_val in
-      let _bottom_val = bottom_val + available_steal in
-      let finished = ref false in 
-      let stolen = ref 0 in
-      while !stolen < available_steal && not !finished do 
-        let index = (old_bottom_val + !stolen) land mask in
-        let cell = Array.get array index in 
-        let value = Atomic.get cell in 
-        if Option.is_some value then 
-          (if Atomic.compare_and_set cell value None then 
-            (let value = 
-              match value with 
-              | None -> assert false 
-              | Some v -> v 
-            in
-            let _ = Sys.opaque_identity value in 
-            (stolen := !stolen + 1)))
-        else 
-          (* pop took our element, there's two ways out: 
-            1. Decrement the overshot bottom with CAS. 
-            2. Keep polling the cell until something appears.
-            
-            We need to try both. Doing just 2 blocks. Doing just 1 
-            may never finish if in the meantime more elements were 
-            pushed and another steal is in progress. 
-          *)
-          (let rec recover_from_overshooting () = 
-            if Atomic.compare_and_set bottom bottom_val (old_bottom_val + !stolen) then 
-              (* corrected the bottom index *)
-              finished := true
-            else if Option.is_some (Atomic.get cell) then 
-              (* something appeared, so just try to take it *)
-              () 
-            else
-              recover_from_overshooting ()
-          in 
-          recover_from_overshooting ()) 
-      done;
-      !stolen));;
