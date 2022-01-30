@@ -60,7 +60,6 @@ end
 type _ eff += Await : 'a Promise.t -> 'a eff
 let await promise = perform (Await promise)
 
-
 type _ eff += Schedule : (unit -> 'a) -> 'a Promise.t eff
 let schedule f = perform (Schedule f)
 
@@ -69,11 +68,18 @@ let domain_id_key = Domain.DLS.new_key
 
 let queues = ref (Array.make 0 (Spmc_queue.init ~id:(-2) () : Scheduled.t Spmc_queue.t));;
 
+let id_to_domain_id = Hashtbl.create 20 
+let id_from_map () = Hashtbl.find id_to_domain_id (Domain.self ())
+
 let with_task_queue ~id f =
+  assert (id = Domain.DLS.get domain_id_key);
+  assert (id = id_from_map ());
   let task_queue = Array.get !queues id in
   f task_queue;;
 
 let with_effects_handler ~id f =
+  assert (id = Domain.DLS.get domain_id_key);
+  assert (id = id_from_map ());
   let schedule task_queue s = 
     while not (Spmc_queue.local_enqueue task_queue s) do () done
   in
@@ -84,27 +90,36 @@ let with_effects_handler ~id f =
       Some (fun (k : (a, unit) continuation) -> 
         let promise = Promise.empty () in 
         with_task_queue ~id (fun task_queue -> 
+          assert (id = id_from_map ());
+          assert (id = Domain.DLS.get domain_id_key);
           schedule task_queue (Scheduled.Task (fun () -> 
             let result = new_f () in 
             let to_run = Promise.fill promise result in 
+          with_task_queue ~id:(id_from_map ()) (fun task_queue ->
             List.iter (fun awaiting -> 
               schedule task_queue (Scheduled.Task (fun () -> awaiting result)))
-              to_run)));
+              to_run)  )));
         continue k promise)
     | Yield -> 
       Some (fun k -> 
         with_task_queue ~id (fun task_queue -> 
-        schedule task_queue (Scheduled.Preempted_task k)))
+          assert (id = Domain.DLS.get domain_id_key);
+          schedule task_queue (Scheduled.Preempted_task k)))
     | Await promise ->
       Some (fun k -> 
         if not (Promise.await promise (continue k)) 
         then 
-          with_task_queue ~id (fun task_queue -> 
+          (* with_task_queue ~id (fun task_queue -> 
             let returned = Promise.returned_exn promise in 
-            schedule task_queue (Scheduled.Task (fun () -> continue k returned))))
+            schedule task_queue (Scheduled.Task (fun () -> continue k returned)))
+            *)
+            let returned = Promise.returned_exn promise in 
+            continue k returned)
     | _ -> None}
 
 let steal ~id ~my_task_queue = 
+  assert (id = Domain.DLS.get domain_id_key);
+  assert (id = id_from_map ());
   (* let my_id = Domain.DLS.get domain_id_key in
   assert (my_id != -1); *)
   let other_queue_id = Random.int (Array.length !queues) in 
@@ -118,6 +133,8 @@ let steal ~id ~my_task_queue =
       Stdlib.flush_all ()))
   
 let rec run_domain ~id () =
+  assert (id = Domain.DLS.get domain_id_key);
+  assert (id = id_from_map ());
   let scheduled = 
     with_task_queue ~id (fun task_queue ->  
       match Spmc_queue.local_dequeue task_queue with 
@@ -140,6 +157,7 @@ let rec run_domain ~id () =
 let setup_domain ~id () = 
   Domain.at_exit (fun () -> assert false);
   Domain.DLS.set domain_id_key id;
+  Hashtbl.add id_to_domain_id (Domain.self ()) id;
   let queue = Array.get !queues id in 
   Spmc_queue.register_domain_id queue;
   run_domain ~id ();;
@@ -161,5 +179,6 @@ let init ~(f : unit -> unit) n =
   (* run f from within the pool *)
   Domain.DLS.set domain_id_key n;
   Spmc_queue.register_domain_id (Array.get !queues n);
+  Hashtbl.add id_to_domain_id (Domain.self ()) n;
   with_effects_handler ~id:n f;;
   (* run_domain () *) 

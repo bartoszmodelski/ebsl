@@ -49,15 +49,15 @@ let init ?(size_pow=22) ~id () =
 let register_domain_id {owned_by_id; _} =
   owned_by_id := Some (Domain.self ());;
    
-let assert_domain_id q_id owned_by_id = 
+let assert_domain_id scenario q_id owned_by_id = 
   let this_thr = Domain.self () in 
   match !owned_by_id with 
   | None -> 
     assert false
   | Some _id -> 
     if _id != this_thr then (
-    Printf.printf "mismatched ids (queue %d)! owned by %d and accessed by %d\n" 
-      q_id (Obj.magic _id) (Obj.magic this_thr); 
+    Printf.printf "%s: mismatched ids (queue %d)! owned by %d and accessed by %d\n" 
+      scenario q_id (Obj.magic _id) (Obj.magic this_thr); 
     Stdlib.flush_all ();
     assert false)
     
@@ -69,7 +69,7 @@ let with_mutex mtx f =
 
 let local_enqueue {tail; mask; array; owned_by_id; mutex; id; _} element =
 with_mutex mutex (fun () ->
-  assert_domain_id id owned_by_id;
+  assert_domain_id "enq" id owned_by_id;
   let index = (Atomic.get tail) land mask in 
   let cell = Array.get array index in 
   if Option.is_some (Atomic.get cell)
@@ -81,7 +81,7 @@ with_mutex mutex (fun () ->
 
 let local_dequeue {head; tail; mask; array; owned_by_id; mutex; id} : 'a option =
   with_mutex  mutex (fun () ->
-  assert_domain_id id owned_by_id;
+  assert_domain_id "deq" id owned_by_id;
   (* local deque is optimistic because it can fix its mistake if needed *)
   let index = Atomic.fetch_and_add head 1 in
   let take_val () = 
@@ -127,6 +127,8 @@ let local_is_empty queue =
   else local_is_empty_thorough queue
   
 let steal ~from ~to_local =
+  let {id; owned_by_id; _} = to_local in 
+  assert_domain_id "stl" id owned_by_id;
   let ({head; tail; mask; array; _} : 'a t) = from in
   (* assumes there's space in the queue *)
   (let tail_val = Atomic.get tail in 
