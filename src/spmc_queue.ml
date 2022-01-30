@@ -41,8 +41,7 @@ let assert_domain_id scenario owned_by_id =
     assert false
   | Some _id -> 
     if _id != this_thr then (
-    Printf.printf "%s: mismatched ids! owned by %d and accessed by %d\n" 
-      scenario (Obj.magic _id) (Obj.magic this_thr); 
+    Printf.printf "%s: local method accessed by a foreign thread!\n" scenario; 
     Stdlib.flush_all ();
     assert false)
     
