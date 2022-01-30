@@ -24,7 +24,7 @@ let test_2 () =
         let b = Scheduler.schedule (fun () -> fib (n - 2)) in 
         Scheduler.(await a + await b) 
     in
-    Printf.printf "result: %d\n" (fib 24);
+    Printf.printf "result: %d\n" (fib 13);
     Stdlib.flush_all ());
   let _a = Stdlib.read_line () in
   Printf.printf "exiting\n";

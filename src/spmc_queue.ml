@@ -5,15 +5,8 @@ let value_exn = function
   | Some v -> v 
 
 (* Notes: 
-  - Tail does not have to be atomic because there's just one writer.
   - Local deque does not have to synchronize with the writer, only other readers.
-  - quasi_tail is quasi because the real tail is the cell with oldest Value.
-  - Overloaded doesn't necessarily mean the queue is full, but there's no way to 
-  enqueue. 
-
-  We could just skip over the allocated entries in hope some other dequeuers were
-  faster but keeping track of the size of the queue becomes troublesome. 
-
+  - Tail marks the "logical tail", physical one is the cell with oldest Value.
   - Local dequeue and enqueue are wait-free. Normal dequeue (steal) may spin, but 
   it only has to do it once for any number of elements. 
   - Some accesses do not have to be atomic but that's the only way current lib
@@ -28,7 +21,7 @@ type 'a t = {
   owned_by_id: Domain.id option ref;
 } 
 
-let init ?(size_pow=22) () =
+let init ?(size_pow=10) () =
   let size = Int.shift_left 1 size_pow in
   { head = Atomic.make 0;
     tail = Atomic.make 0;
@@ -36,6 +29,8 @@ let init ?(size_pow=22) () =
     array = Array.init size (fun _ -> Atomic.make None);
     owned_by_id = ref None}
 
+(* Cautionary check because debugging broken 'local' invariant 
+  is hard. *)
 let register_domain_id {owned_by_id; _} =
   owned_by_id := Some (Domain.self ());;
    
@@ -54,13 +49,14 @@ let assert_domain_id scenario owned_by_id =
 
 let local_enqueue {tail; mask; array; owned_by_id; _} element =
   assert_domain_id "enq" owned_by_id;
-  let index = (Atomic.get tail) land mask in 
+  let tail_val = Atomic.get tail in 
+  let index = tail_val land mask in 
   let cell = Array.get array index in 
   if Option.is_some (Atomic.get cell)
   then false
   else 
     (Atomic.set cell (Some element);
-    Atomic.incr tail;
+    Atomic.set tail (tail_val + 1);
     true);;
 
 let local_dequeue {head; tail; mask; array; owned_by_id} : 'a option =
@@ -82,8 +78,10 @@ let local_dequeue {head; tail; mask; array; owned_by_id} : 'a option =
       (* failed to rollback, since no one else can speculate, 
         there must be a value to take *)  
       take_val ())
-  else if index > tail_val then
-    assert false 
+  else if index > tail_val then (
+    Printf.printf "%d - %d \n" index tail_val;
+    Stdlib.flush_all ();
+    assert false )
   else 
     take_val ();;
 

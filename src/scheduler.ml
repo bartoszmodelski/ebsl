@@ -30,7 +30,6 @@ module Promise = struct
     awaiting = ref (Some []);
     mutex = Mutex.create () } : 'a t)
 
-
   let await promise f = 
     let ({awaiting; mutex; _} : 'a t) = promise in  
     with_mutex mutex (fun () ->  
@@ -102,12 +101,8 @@ let with_effects_handler f =
       Some (fun k -> 
         if not (Promise.await promise (continue k)) 
         then 
-          (* with_task_queue ~id (fun task_queue -> 
-            let returned = Promise.returned_exn promise in 
-            schedule task_queue (Scheduled.Task (fun () -> continue k returned)))
-            *)
-            let returned = Promise.returned_exn promise in 
-            continue k returned)
+          let returned = Promise.returned_exn promise in 
+          continue k returned)
     | _ -> None}
 
 let steal ~my_task_queue = 
