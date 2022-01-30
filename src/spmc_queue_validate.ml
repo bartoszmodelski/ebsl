@@ -3,14 +3,14 @@ open! Spmc_queue
 let total_checked = ref 0
 
 let create_test () =
-  let queue = Spmc_queue.init ~size_pow:5 () in
-  let queue_2 = Spmc_queue.init ~size_pow:5 () in
+  let queue = Spmc_queue.init ~id:0 ~size_pow:5 () in
+  let queue_2 = Spmc_queue.init ~id:1 ~size_pow:5 () in
   Atomic.spawn (fun () -> 
     assert (Spmc_queue.local_enqueue queue "");
     assert (Spmc_queue.local_enqueue queue "");
     assert (Option.is_some (Spmc_queue.local_dequeue queue)));
   Atomic.spawn (fun () -> 
-    while not (Spmc_queue.steal queue ~local_queue:queue_2) do () done);
+    while not (Spmc_queue.steal ~from:queue ~to_local:queue_2 > 0) do () done);
   Atomic.final (fun () ->
     total_checked := !total_checked + 1;
     let ({head; tail; _} : string t) = queue in

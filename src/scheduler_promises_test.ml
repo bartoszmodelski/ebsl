@@ -14,16 +14,17 @@ let test_1 () =
   Stdlib.flush_all ();;
 
 let test_2 () = 
-  Scheduler.init 5 ~f:(fun () ->
+  Scheduler.init 10 ~f:(fun () ->
     let rec fib n = 
       match n with  
-      | 0 | 1 -> n
+      | 0 | 1 -> 
+        n
       | _ -> 
         let a = Scheduler.schedule (fun () -> fib (n - 1)) in 
         let b = Scheduler.schedule (fun () -> fib (n - 2)) in 
         Scheduler.(await a + await b) 
     in
-    Printf.printf "result: %d\n" (fib 16);
+    Printf.printf "result: %d\n" (fib 24);
     Stdlib.flush_all ());
   let _a = Stdlib.read_line () in
   Printf.printf "exiting\n";
