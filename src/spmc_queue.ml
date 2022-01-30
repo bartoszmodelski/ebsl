@@ -26,44 +26,34 @@ type 'a t = {
   mask : int;
   array : 'a option Atomic.t Array.t;
   owned_by_id: Domain.id option ref;
-  mutex : Mutex.t;
-  id: int;
 } 
 
-let init ?(size_pow=22) ~id () =
+let init ?(size_pow=22) () =
   let size = Int.shift_left 1 size_pow in
   { head = Atomic.make 0;
     tail = Atomic.make 0;
     mask = size - 1;
     array = Array.init size (fun _ -> Atomic.make None);
-    owned_by_id = ref None;
-    mutex = Mutex.create ();
-    id}
+    owned_by_id = ref None}
 
 let register_domain_id {owned_by_id; _} =
   owned_by_id := Some (Domain.self ());;
    
-let assert_domain_id scenario q_id owned_by_id = 
+let assert_domain_id scenario owned_by_id = 
   let this_thr = Domain.self () in 
   match !owned_by_id with 
   | None -> 
     assert false
   | Some _id -> 
     if _id != this_thr then (
-    Printf.printf "%s: mismatched ids (queue %d)! owned by %d and accessed by %d\n" 
-      scenario q_id (Obj.magic _id) (Obj.magic this_thr); 
+    Printf.printf "%s: mismatched ids! owned by %d and accessed by %d\n" 
+      scenario (Obj.magic _id) (Obj.magic this_thr); 
     Stdlib.flush_all ();
     assert false)
     
-let with_mutex mtx f = 
-  Mutex.lock mtx; 
-  let v = f () in 
-  Mutex.unlock mtx; 
-  v
 
-let local_enqueue {tail; mask; array; owned_by_id; mutex; id; _} element =
-with_mutex mutex (fun () ->
-  assert_domain_id "enq" id owned_by_id;
+let local_enqueue {tail; mask; array; owned_by_id; _} element =
+  assert_domain_id "enq" owned_by_id;
   let index = (Atomic.get tail) land mask in 
   let cell = Array.get array index in 
   if Option.is_some (Atomic.get cell)
@@ -71,11 +61,10 @@ with_mutex mutex (fun () ->
   else 
     (Atomic.set cell (Some element);
     Atomic.incr tail;
-    true));;
+    true);;
 
-let local_dequeue {head; tail; mask; array; owned_by_id; mutex; id} : 'a option =
-  with_mutex  mutex (fun () ->
-  assert_domain_id "deq" id owned_by_id;
+let local_dequeue {head; tail; mask; array; owned_by_id} : 'a option =
+  assert_domain_id "deq" owned_by_id;
   (* local deque is optimistic because it can fix its mistake if needed *)
   let index = Atomic.fetch_and_add head 1 in
   let take_val () = 
@@ -96,7 +85,7 @@ let local_dequeue {head; tail; mask; array; owned_by_id; mutex; id} : 'a option 
   else if index > tail_val then
     assert false 
   else 
-    take_val ());;
+    take_val ();;
 
     
 let local_is_empty_thorough {head = _; tail; mask; array; _} : bool =
@@ -121,8 +110,8 @@ let local_is_empty queue =
   else local_is_empty_thorough queue
   
 let steal ~from ~to_local =
-  let {id; owned_by_id; _} = to_local in 
-  assert_domain_id "stl" id owned_by_id;
+  let {owned_by_id; _} = to_local in 
+  assert_domain_id "stl" owned_by_id;
   let ({head; tail; mask; array; _} : 'a t) = from in
   (* assumes there's space in the queue *)
   (let tail_val = Atomic.get tail in 

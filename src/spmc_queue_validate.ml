@@ -3,8 +3,8 @@ open! Spmc_queue
 let total_checked = ref 0
 
 let create_test () =
-  let queue = Spmc_queue.init ~id:0 ~size_pow:5 () in
-  let queue_2 = Spmc_queue.init ~id:1 ~size_pow:5 () in
+  let queue = Spmc_queue.init ~size_pow:5 () in
+  let queue_2 = Spmc_queue.init ~size_pow:5 () in
   Atomic.spawn (fun () -> 
     assert (Spmc_queue.local_enqueue queue "");
     assert (Spmc_queue.local_enqueue queue "");

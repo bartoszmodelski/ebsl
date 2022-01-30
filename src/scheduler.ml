@@ -66,7 +66,7 @@ let schedule f = perform (Schedule f)
 let domain_id_key = Domain.DLS.new_key 
   (fun () -> -1);;
 
-let queues = ref (Array.make 0 (Spmc_queue.init ~id:(-2) () : Scheduled.t Spmc_queue.t));;
+let queues = ref (Array.make 0 (Spmc_queue.init () : Scheduled.t Spmc_queue.t));;
 
 let with_task_queue f =
   let id = Domain.DLS.get domain_id_key in 
@@ -160,7 +160,7 @@ let notify_user f () =
       raise e
   
 let init ~(f : unit -> unit) n =
-  queues := List.init (n+1) (fun id -> Spmc_queue.init ~id ()) |> Array.of_list;
+  queues := List.init (n+1) (fun _ -> Spmc_queue.init ()) |> Array.of_list;
   (* since this thread can schedule as well *)
   let _domains = List.init n (fun id ->
     Domain.spawn (notify_user (setup_domain ~id))) in
