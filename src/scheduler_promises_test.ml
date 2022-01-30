@@ -15,7 +15,7 @@ let test_1 () =
   Stdlib.flush_all ();;
 
 let test_2 () = 
-  FIFO.init 10 ~f:(fun () ->
+  LIFO.init 10 ~f:(fun () ->
     let rec fib n = 
       match n with  
       | 0 | 1 -> n

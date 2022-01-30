@@ -8,15 +8,11 @@ type 'a t = private {
   owned_by_id: Domain.id option ref;
 } 
 
-val init : ?size_pow:int -> unit -> 'a t
+val init : ?size_exponent:int -> unit -> 'a t
 val local_enqueue : 'a t -> 'a -> bool
 val local_dequeue : 'a t -> 'a option
 val steal : from:'a t -> to_local:'a t -> int
 
-(** Debugging misuse of local_ methods is tricky. Scheduler calls 
-    [register_domain_id] to register the thread that is considered
-    local to this queue. Domain id can be then recheck in local_ 
-    functions. *)
 val register_domain_id : 'a t -> unit
 
 (** Scheduler calls [local_is_empty] before attempting stealing to ensure 

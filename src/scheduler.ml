@@ -59,7 +59,7 @@ end
 module type DataStructure = sig 
   type 'a t 
 
-  val init : ?size_pow:int -> unit -> 'a t
+  val init : ?size_exponent:int -> unit -> 'a t
   val local_enqueue : 'a t -> 'a -> bool
   val local_dequeue : 'a t -> 'a option
   val steal : from:'a t -> to_local:'a t -> int
@@ -183,3 +183,8 @@ module Scheduler (DS : DataStructure) = struct
 end
 
 module FIFO = Scheduler(Spmc_queue)
+module LIFO = Scheduler(struct 
+  include Stack 
+  let local_enqueue = local_push 
+  let local_dequeue = local_pop
+end)

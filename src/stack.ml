@@ -15,7 +15,7 @@ type 'a t = {
   bottom does not guarantee there is empty space under it 
 *)
 
-let init ?(size_exponent=2) () : 'a t =
+let init ?(size_exponent=10) () : 'a t =
   let size = 1 lsl size_exponent in
   let array = Array.init size (fun _ -> Atomic.make None) in 
   let mask = size - 1 in
@@ -57,6 +57,23 @@ let local_pop {top; bottom; array; mask} =
         None)
       else 
         value));;
+
+let local_is_empty {top; bottom; array; mask} = 
+  let top_val = Atomic.get top in
+  let bottom_val = Atomic.get bottom in 
+  if top_val != bottom_val then 
+    false 
+  else (
+    let size = Array.length array in 
+    let i = ref (size - 1) in 
+    let seen_not_free = ref false in 
+    while not !seen_not_free && !i >= 0 do 
+      let cell = Array.get array ((top_val + !i) land mask) in 
+      seen_not_free := Atomic.get cell != None; 
+      i := !i - 1
+    done; 
+    not !seen_not_free)
+
 
 let steal ~from:{top; bottom; array; mask} ~to_local =
   let bottom_val = Atomic.get bottom in
@@ -114,3 +131,6 @@ let steal ~from:{top; bottom; array; mask} ~to_local =
 
 
 
+let register_domain_id _ = 
+  (* TODO stop ignoring this *)
+  ()

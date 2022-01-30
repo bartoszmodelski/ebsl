@@ -21,8 +21,8 @@ type 'a t = {
   owned_by_id: Domain.id option ref;
 } 
 
-let init ?(size_pow=10) () =
-  let size = Int.shift_left 1 size_pow in
+let init ?(size_exponent=10) () =
+  let size = Int.shift_left 1 size_exponent in
   { head = Atomic.make 0;
     tail = Atomic.make 0;
     mask = size - 1;
