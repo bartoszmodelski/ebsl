@@ -1,4 +1,4 @@
-open Scheduler
+open Schedulr.Scheduler
 let test_1 () = 
   FIFO.init 3 ~f:(fun () ->
     let a = schedule (fun () -> 

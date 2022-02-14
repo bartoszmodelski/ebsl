@@ -1,3 +1,4 @@
+open! Schedulr
 module Atomic = Dscheck.TracedAtomic
 
 

@@ -1,5 +1,5 @@
 open Core
-open! Scheduler
+open! Schedulr.Scheduler
 
 let start = ref (Core.Time.now ())
 

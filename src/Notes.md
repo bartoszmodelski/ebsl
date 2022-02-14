@@ -1,0 +1,1 @@
+Comparing head, tail indices that may wrap around is pretty subtle. Check spmc and mpmc queues for that.

@@ -1,5 +1,5 @@
-open! Spmc_queue
-
+open! Schedulr
+module Atomic = Dscheck.TracedAtomic
 let total_checked = ref 0
 
 let create_test () =
@@ -13,7 +13,7 @@ let create_test () =
     while not (Spmc_queue.steal ~from:queue ~to_local:queue_2 > 0) do () done);
   Atomic.final (fun () ->
     total_checked := !total_checked + 1;
-    let ({head; tail; _} : string t) = queue in
+    let ({head; tail; _} : string Spmc_queue.t) = queue in
     let head_value = Atomic.get head in
     let tail_value = Atomic.get tail in
     (*Atomic.check (fun () -> 

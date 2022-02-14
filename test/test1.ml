@@ -1,4 +1,4 @@
-open! Scheduler
+open! Schedulr.Scheduler
 
 let log s =
   Printf.printf s;

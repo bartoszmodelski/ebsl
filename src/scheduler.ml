@@ -1,6 +1,8 @@
 open EffectHandlers
 open EffectHandlers.Deep 
 
+let _ = Printexc.record_backtrace true
+
 let with_mutex mtx f =
   Mutex.lock mtx; 
   let v = f () in
@@ -108,10 +110,10 @@ module Scheduler (DS : DataStructure) = struct
               let to_run = Promise.fill promise result in 
             (* Note, this is inside a scheduled task, which can be 
               stolen. Must look the queue up again. *)
-            with_task_queue (fun task_queue ->
-              List.iter (fun awaiting -> 
-                schedule task_queue (Scheduled.Task (fun () -> awaiting result)))
-                to_run))));
+              with_task_queue (fun task_queue ->
+                List.iter (fun awaiting -> 
+                  schedule task_queue (Scheduled.Task (fun () -> awaiting result)))
+                  to_run))));
           continue k promise)
       | Yield -> 
         Some (fun k -> 
@@ -169,17 +171,28 @@ module Scheduler (DS : DataStructure) = struct
       and stack = Printexc.get_backtrace () in
         Printf.eprintf "There was an error: %s%s\n" msg stack;
         assert false;;
-    
+  let domains = (ref [] : unit Domain.t list ref)
+
+  let await_completion () =
+    failwith "not implemented"
+    (* This doesn't work yet, domains should stop if they have no work
+    and everyone else is waiting too. 
+    List.iter (Domain.join) !domains;;*)
+
   let init ~(f : unit -> unit) n =
     queues := List.init (n+1) (fun _ -> DS.init ()) |> Array.of_list;
     (* since this thread can schedule as well *)
-    let _domains = List.init n (fun id ->
-      Domain.spawn (notify_user (setup_domain ~id))) in
+    domains := List.init n (fun id ->
+      Domain.spawn (notify_user (setup_domain ~id)));
     (* run f from within the pool *)
     Domain.DLS.set domain_id_key n;
     DS.register_domain_id (Array.get !queues n);
-    with_effects_handler f;;
-    (* run_domain () *) 
+    with_effects_handler f;
+    (* Need to make sure that this particular domain returns once all works 
+      is done (and probs have other domains shut too). It's probably best if 
+      this thread becomes a "supervisor", reporting starvation, deadlocks, etc.
+    *)
+    run_domain ();;
 end
 
 module FIFO = Scheduler(Spmc_queue)
