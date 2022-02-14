@@ -58,6 +58,28 @@ let local_pop {top; bottom; array; mask} =
       else 
         value));;
 
+
+let rec local_replace_with_a_random_item stack item =
+  let ({top; bottom; array; mask} : 'a t) = stack in  
+  let top_val = Atomic.get top in 
+  let bottom_val = Atomic.get bottom in 
+  if top_val = bottom_val 
+  then None 
+  else
+    (let diff = top_val - bottom_val in 
+    let offset = Random.int diff in 
+    let index = (bottom_val + offset) land mask in 
+    let cell = Array.get array index in 
+    let current_val = Atomic.get cell in 
+    if Option.is_none current_val || 
+      not (Atomic.compare_and_set cell current_val (Some item))
+    then 
+      local_replace_with_a_random_item stack item 
+    else 
+      match current_val with 
+      | None -> assert false 
+      | Some _ -> current_val)
+
 let local_is_empty {top; bottom; array; mask} = 
   let top_val = Atomic.get top in
   let bottom_val = Atomic.get bottom in 
