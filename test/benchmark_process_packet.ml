@@ -22,7 +22,7 @@ let rec find_spaces buffer index bound already_found =
       if Buffer.nth buffer index = '\n'        
       then ([index]) else []
     in 
-    find_spaces buffer index bound (current @ already_found)
+    find_spaces buffer index bound (current @ already_found);;
 
     
 let smoke_test = 
@@ -32,18 +32,14 @@ let smoke_test =
     List.length (find_spaces (List.nth buffers 5) 0 230 []) = 9);;
     
 
-let log s = 
+let _log s = 
   Printf.printf "%s\n" s;
   Stdlib.(flush stdout);;
-
-let total_executions = 10
 let finished = Atomic.make 0
 let rec run_processor ~copy_out ~n () = 
   if n < 0 
   then 
-    (let count = Atomic.fetch_and_add finished 1 in 
-    if count >= total_executions - 1 then
-    log "done!")
+    (Atomic.incr finished)
   else ( 
     let len = List.length buffers in
     let index = n mod len in 
@@ -66,20 +62,41 @@ let rec run_processor ~copy_out ~n () =
     f 0 (len/3);
     f (len/3) (2*len/3);
     f (2*len/3) (len - 1);
-    Stdlib.(flush stdout);
     Schedulr.Scheduler.schedule (run_processor ~copy_out ~n:(n-1)) 
-    |> ignore)
+    |> ignore);;
 
+let total_executions = 4
+
+module Sched = Schedulr.Scheduler.FIFO
 let benchmark () = 
-  Schedulr.Scheduler.FIFO.init 3 ~f:(fun () ->  
-    for _i = 1 to total_executions do 
-      Schedulr.Scheduler.schedule (run_processor ~copy_out:true ~n:200_000)
-      |> ignore
+  Sched.init 3 ~f:(fun () ->
+    for _j = 1 to 3 do  
+      for _i = 1 to 10 do 
+        Unix.sleepf 0.2;
+        Atomic.set finished 0;
+        let time_start = Core.Time_ns.now () in 
+        let _ = 
+          for _ = 1 to total_executions do 
+            Schedulr.Scheduler.schedule (run_processor ~copy_out:false ~n:100_000)
+            |> ignore
+          done;
+          while Atomic.get finished < total_executions  do 
+            Schedulr.Scheduler.yield ()
+          done; 
+        in
+        let time_end = Core.Time_ns.now () in 
+        let difference = Core.Time_ns.diff time_end time_start 
+          |> Core.Time_ns.Span.to_string in 
+        (* if j > 1 then *) 
+        Printf.printf "%s\n" difference;
+        Stdlib.flush_all ();
+        Unix.sleepf 0.2;
+        while Sched.pending_tasks () != 0 do
+          _log (Int.to_string (Sched.pending_tasks ()));
+        Schedulr.Scheduler.yield ();
+        done;
+      done; 
     done;
-    while Atomic.get finished < total_executions do 
-      Schedulr.Scheduler.yield ()
-    done;
-    log "exiting";
     Stdlib.exit 0);;
 
 benchmark ()

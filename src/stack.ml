@@ -3,6 +3,7 @@
 *)
 module Atomic = Dscheck.TracedAtomic
 
+let _ = Printexc.record_backtrace true
 
 type 'a t = {
   top : int Atomic.t;
@@ -63,7 +64,7 @@ let rec local_replace_with_a_random_item stack item =
   let ({top; bottom; array; mask} : 'a t) = stack in  
   let top_val = Atomic.get top in 
   let bottom_val = Atomic.get bottom in 
-  if top_val = bottom_val 
+  if top_val <= bottom_val 
   then None 
   else
     (let diff = top_val - bottom_val in 
@@ -151,7 +152,8 @@ let steal ~from:{top; bottom; array; mask} ~to_local =
       done;
       !stolen));;
 
-
+let indicative_size {top; bottom; _} =
+  max (Atomic.get top - Atomic.get bottom) 0
 
 let register_domain_id _ = 
   (* TODO stop ignoring this *)

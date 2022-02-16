@@ -2,4 +2,6 @@
  (names benchmark_process_packet benchmark_mixer test1 test2 
   stack_test stack_validation spmc_queue_validate
   scheduler_promises_test)
-  (libraries schedulr unix dscheck core))
+ (libraries schedulr unix dscheck core)
+ (ocamlopt_flags -O3)
+  )

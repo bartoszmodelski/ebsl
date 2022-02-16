@@ -63,6 +63,8 @@ module type DataStructure = sig
 
   val init : ?size_exponent:int -> unit -> 'a t
   val local_enqueue : 'a t -> 'a -> bool
+
+  val local_enqueue_after_preemption : 'a t -> 'a -> bool 
   val local_dequeue : 'a t -> 'a option
   val steal : from:'a t -> to_local:'a t -> int
 
@@ -75,6 +77,8 @@ module type DataStructure = sig
   (** Scheduler calls [local_is_empty] before attempting stealing to ensure 
       there's room for new elements in the target queue. *)
   val local_is_empty : 'a t -> bool
+
+  val indicative_size : 'a t -> int
 end;;
 
 type _ eff += Await : 'a Promise.t -> 'a eff
@@ -94,9 +98,14 @@ module Scheduler (DS : DataStructure) = struct
     let task_queue = Array.get !queues id in
     f task_queue;;
 
-  let with_effects_handler f =
-    let schedule task_queue s = 
-      while not (DS.local_enqueue task_queue s) do () done
+  let with_effects_handler  f =
+    let schedule ~preempted task_queue s = 
+      let insert_f = 
+        if preempted 
+        then DS.local_enqueue_after_preemption 
+        else DS.local_enqueue
+      in
+      while not (insert_f task_queue s) do () done
     in
     try_with f () 
     { effc = fun (type a) (e : a eff) ->
@@ -105,20 +114,22 @@ module Scheduler (DS : DataStructure) = struct
         Some (fun (k : (a, unit) continuation) -> 
           let promise = Promise.empty () in 
           with_task_queue (fun task_queue -> 
-            schedule task_queue (Scheduled.Task (fun () -> 
+            schedule ~preempted:false task_queue (Scheduled.Task (fun () -> 
               let result = new_f () in 
               let to_run = Promise.fill promise result in 
             (* Note, this is inside a scheduled task, which can be 
               stolen. Must look the queue up again. *)
               with_task_queue (fun task_queue ->
                 List.iter (fun awaiting -> 
-                  schedule task_queue (Scheduled.Task (fun () -> awaiting result)))
-                  to_run))));
+                  schedule 
+                    ~preempted:false 
+                    task_queue (Scheduled.Task (fun () -> awaiting result)))
+                    to_run))));
           continue k promise)
       | Yield -> 
         Some (fun k -> 
           with_task_queue (fun task_queue -> 
-            schedule task_queue (Scheduled.Preempted_task k)))
+            schedule ~preempted:true task_queue (Scheduled.Preempted_task k)))
       | Await promise ->
         Some (fun k -> 
           if not (Promise.await promise (continue k)) 
@@ -150,7 +161,6 @@ module Scheduler (DS : DataStructure) = struct
             ~default:(Scheduled.Task Domain.cpu_relax))
     in
     match scheduled with
-    (* | Terminate -> () *)
     | Task task -> 
       (with_effects_handler task;
       run_domain ())
@@ -173,12 +183,6 @@ module Scheduler (DS : DataStructure) = struct
         assert false;;
   let domains = (ref [] : unit Domain.t list ref)
 
-  let await_completion () =
-    failwith "not implemented"
-    (* This doesn't work yet, domains should stop if they have no work
-    and everyone else is waiting too. 
-    List.iter (Domain.join) !domains;;*)
-
   let init ~(f : unit -> unit) n =
     queues := List.init (n+1) (fun _ -> DS.init ()) |> Array.of_list;
     (* since this thread can schedule as well *)
@@ -186,18 +190,33 @@ module Scheduler (DS : DataStructure) = struct
       Domain.spawn (notify_user (setup_domain ~id)));
     (* run f from within the pool *)
     Domain.DLS.set domain_id_key n;
-    DS.register_domain_id (Array.get !queues n);
-    with_effects_handler f;
-    (* Need to make sure that this particular domain returns once all works 
-      is done (and probs have other domains shut too). It's probably best if 
-      this thread becomes a "supervisor", reporting starvation, deadlocks, etc.
-    *)
+    let queue = Array.get !queues n in 
+    DS.register_domain_id queue;
+    assert (DS.local_enqueue queue (Scheduled.Task f));
     run_domain ();;
+
+  let pending_tasks () = 
+    Array.fold_right 
+      (fun queue curr -> 
+        (DS.indicative_size queue) + curr) 
+    !queues 0
+
 end
 
-module FIFO = Scheduler(Spmc_queue)
+module FIFO = Scheduler(struct 
+  include Spmc_queue
+  
+  let local_enqueue_after_preemption = local_enqueue  
+end)
 module LIFO = Scheduler(struct 
   include Stack 
   let local_enqueue = local_push 
   let local_dequeue = local_pop
+
+  let local_enqueue_after_preemption stack item = 
+    (* actually, put the item in a random place in the stack 
+    and push the swapped element on top (to be run immediately) *)
+    match local_replace_with_a_random_item stack item with 
+    | None -> local_push stack item
+    | Some new_item -> local_push stack new_item 
 end)

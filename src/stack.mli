@@ -16,3 +16,5 @@ val steal : from:'a t -> to_local:'a t -> int
 val register_domain_id : 'a t -> unit
 val local_is_empty : 'a t -> bool
 val local_replace_with_a_random_item : 'a t -> 'a -> 'a option
+
+val indicative_size : 'a t -> int

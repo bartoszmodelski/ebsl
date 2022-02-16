@@ -134,3 +134,7 @@ let steal ~from ~to_local =
       done;
       stealable)));; 
   
+
+let indicative_size {head; tail; _} =
+  max (Atomic.get tail - Atomic.get head) 0
+      

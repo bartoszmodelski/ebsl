@@ -18,3 +18,4 @@ val register_domain_id : 'a t -> unit
 (** Scheduler calls [local_is_empty] before attempting stealing to ensure 
     there's room for new elements in the target queue. *)
 val local_is_empty : 'a t -> bool
+val indicative_size : 'a t -> int
