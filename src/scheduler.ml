@@ -98,8 +98,10 @@ module Scheduler (DS : DataStructure) = struct
 
     let ds {ds; _} = ds 
       
-    let _log_time {latency_histogram; _} span = 
+    let log_time {latency_histogram; _} span = 
       Histogram.log_val latency_histogram (Core.Time_ns.Span.to_int_ns span) 
+    
+    let _ = log_time ;;
   end 
   
   let domain_id_key = Domain.DLS.new_key 
@@ -132,14 +134,27 @@ module Scheduler (DS : DataStructure) = struct
           (Scheduled.Task (fun () -> awaiting result)))
           to_run;;
 
+  let realtime_clock = 
+    match Core.Unix.Clock.gettime with 
+    | Error _ -> assert false 
+    | Ok v -> v
+
+  let _ = realtime_clock
+
   let with_effects_handler  f =
     try_with f () 
     { effc = fun (type a) (e : a eff) ->
       match e with
-      | Schedule new_f -> 
+      | Schedule new_f ->  
+        let _time_start = 
+          Sys.opaque_identity (realtime_clock Core.Unix.Clock.Realtime) 
+        in 
         Some (fun (k : (a, unit) continuation) -> 
           let promise = Promise.empty () in     
           schedule_internal ~has_yielded:false (Scheduled.Task (fun () -> 
+            (* let time_end = Core.Time_ns.now () in
+            with_processor (fun processor -> 
+              Processor.log_time processor (Core.Time_ns.diff time_end time_start)); *)
             let result = new_f () in 
             let to_run = Promise.fill promise result in 
             (* it's tempting to re-use looked up queue here but this may 
