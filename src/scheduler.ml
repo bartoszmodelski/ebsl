@@ -32,19 +32,16 @@ module Promise = struct
     mutex = Mutex.create () } : 'a t)
 
   let await promise f = 
-    let ({awaiting; mutex; _} : 'a t) = promise in  
+    let ({awaiting; mutex; returned} : 'a t) = promise in  
     with_mutex mutex (fun () ->  
       match !awaiting with 
-      | None -> false 
       | Some awaiting_val -> 
         awaiting := Some (f :: awaiting_val); 
-        true)
-
-  let returned_exn {returned; mutex; _} = 
-    with_mutex mutex (fun () -> 
-    match !returned with 
-    | Some v -> v 
-    | None -> assert false);;
+        `Scheduled
+      | None -> 
+        match !returned with 
+        | None -> assert false 
+        | Some v -> `Already_done v)
 
   let fill {returned; awaiting; mutex} value =
     with_mutex mutex (fun () -> 
@@ -108,35 +105,32 @@ module Scheduler (DS : DataStructure) = struct
   let domain_id_key = Domain.DLS.new_key 
     (fun () -> -1);;
 
-
   let processors = ref (Array.make 0 (Processor.init () : Processor.t));;
 
-  let with_task_ds f =
+  let with_processor f =
     let id = Domain.DLS.get domain_id_key in 
     let processor = Array.get !processors id in
-    f (Processor.ds processor);;
+    f processor;;
 
-
-
-  let schedule_internal ~has_yielded ds task = 
-    let insert_f = 
-      if has_yielded 
-      then DS.local_insert_after_preemption 
-      else DS.local_insert
-    in
-    while not (insert_f ds task) do () done;;
+  let schedule_internal ~has_yielded task = 
+    with_processor (fun processor ->
+      let ds = Processor.ds processor in 
+      let insert_f = 
+        if has_yielded 
+        then DS.local_insert_after_preemption 
+        else DS.local_insert
+      in
+      while not (insert_f ds task) do () done);;
 
   let schedule_awaiting to_run result = 
     match to_run with 
     | [] -> () 
     | _ ->
-      with_task_ds (fun ds ->
-        List.iter (fun awaiting -> 
-          schedule_internal 
-            ~has_yielded:false 
-            ds 
-            (Scheduled.Task (fun () -> awaiting result)))
-            to_run);;
+      List.iter (fun awaiting -> 
+        schedule_internal 
+          ~has_yielded:false 
+          (Scheduled.Task (fun () -> awaiting result)))
+          to_run;;
 
   let with_effects_handler  f =
     try_with f () 
@@ -144,25 +138,22 @@ module Scheduler (DS : DataStructure) = struct
       match e with
       | Schedule new_f -> 
         Some (fun (k : (a, unit) continuation) -> 
-          let promise = Promise.empty () in 
-          with_task_ds (fun ds -> 
-            schedule_internal ~has_yielded:false ds (Scheduled.Task (fun () -> 
-              let result = new_f () in 
-              let to_run = Promise.fill promise result in 
-              (* Note, this is inside a scheduled task, which can be 
-                stolen. *Must* look up ds again. *)
-              schedule_awaiting to_run result)));
+          let promise = Promise.empty () in     
+          schedule_internal ~has_yielded:false (Scheduled.Task (fun () -> 
+            let result = new_f () in 
+            let to_run = Promise.fill promise result in 
+            (* it's tempting to re-use looked up queue here but this may 
+            run on a different processor and violate local_  *)
+            schedule_awaiting to_run result));
           continue k promise)
       | Yield -> 
         Some (fun k -> 
-          with_task_ds (fun task_ds -> 
-            schedule_internal ~has_yielded:true task_ds (Scheduled.Preempted_task k)))
+          schedule_internal ~has_yielded:true (Scheduled.Preempted_task k))
       | Await promise ->
         Some (fun k -> 
-          if not (Promise.await promise (continue k)) 
-          then 
-            let returned = Promise.returned_exn promise in 
-            continue k returned)
+          match (Promise.await promise (continue k)) with 
+          | `Scheduled -> () 
+          | `Already_done returned -> continue k returned)
       | _ -> None}
 
   let steal ~my_ds = 
@@ -179,7 +170,8 @@ module Scheduler (DS : DataStructure) = struct
     
   let rec run_domain () =
     let scheduled = 
-      with_task_ds (fun task_ds ->  
+      with_processor (fun processor ->
+        let task_ds = Processor.ds processor in
         match DS.local_remove task_ds with 
         | Some task -> task 
         | None -> 
@@ -209,7 +201,7 @@ module Scheduler (DS : DataStructure) = struct
       let msg = Printexc.to_string e
       and stack = Printexc.get_backtrace () in
         Printf.eprintf "There was an error: %s%s\n" msg stack;
-        assert false;;
+        Stdlib.exit 0;;
   let domains = (ref [] : unit Domain.t list ref)
 
   let init ~(f : unit -> unit) n =
