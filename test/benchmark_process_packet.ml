@@ -67,7 +67,7 @@ let rec run_processor ~copy_out ~n () =
 
 let total_executions = 4
 
-module Sched = Schedulr.Scheduler.FIFO
+module Sched = Schedulr.Scheduler.LIFO
 let benchmark () = 
   Sched.init 3 ~f:(fun () ->
     for _j = 1 to 3 do  
