@@ -116,15 +116,29 @@ module Scheduler (DS : DataStructure) = struct
     let processor = Array.get !processors id in
     f (Processor.ds processor);;
 
-  let with_effects_handler  f =
-    let schedule ~preempted task_queue s = 
-      let insert_f = 
-        if preempted 
-        then DS.local_insert_after_preemption 
-        else DS.local_insert
-      in
-      while not (insert_f task_queue s) do () done
+
+
+  let schedule_internal ~has_yielded ds task = 
+    let insert_f = 
+      if has_yielded 
+      then DS.local_insert_after_preemption 
+      else DS.local_insert
     in
+    while not (insert_f ds task) do () done;;
+
+  let schedule_awaiting to_run result = 
+    match to_run with 
+    | [] -> () 
+    | _ ->
+      with_task_ds (fun ds ->
+        List.iter (fun awaiting -> 
+          schedule_internal 
+            ~has_yielded:false 
+            ds 
+            (Scheduled.Task (fun () -> awaiting result)))
+            to_run);;
+
+  let with_effects_handler  f =
     try_with f () 
     { effc = fun (type a) (e : a eff) ->
       match e with
@@ -132,22 +146,17 @@ module Scheduler (DS : DataStructure) = struct
         Some (fun (k : (a, unit) continuation) -> 
           let promise = Promise.empty () in 
           with_task_ds (fun ds -> 
-            schedule ~preempted:false ds (Scheduled.Task (fun () -> 
+            schedule_internal ~has_yielded:false ds (Scheduled.Task (fun () -> 
               let result = new_f () in 
               let to_run = Promise.fill promise result in 
-            (* Note, this is inside a scheduled task, which can be 
-              stolen. Must look the queue up again. *)
-              with_task_ds (fun ds ->
-                List.iter (fun awaiting -> 
-                  schedule 
-                    ~preempted:false 
-                    ds (Scheduled.Task (fun () -> awaiting result)))
-                    to_run))));
+              (* Note, this is inside a scheduled task, which can be 
+                stolen. *Must* look up ds again. *)
+              schedule_awaiting to_run result)));
           continue k promise)
       | Yield -> 
         Some (fun k -> 
           with_task_ds (fun task_ds -> 
-            schedule ~preempted:true task_ds (Scheduled.Preempted_task k)))
+            schedule_internal ~has_yielded:true task_ds (Scheduled.Preempted_task k)))
       | Await promise ->
         Some (fun k -> 
           if not (Promise.await promise (continue k)) 
