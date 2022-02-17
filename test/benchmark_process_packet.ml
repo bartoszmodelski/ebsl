@@ -81,8 +81,8 @@ let workload () =
   in
   let time_end = Core.Time_ns.now () in 
   let difference = Core.Time_ns.diff time_end time_start 
-    |> Core.Time_ns.Span.to_string in 
-  Printf.printf "%s\n" difference;
+    |> Core.Time_ns.Span.to_int_ns in 
+  Printf.printf "time:%d\n" difference;
   Stdlib.flush_all ();;
 
 
