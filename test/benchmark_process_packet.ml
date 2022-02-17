@@ -32,7 +32,7 @@ let smoke_test =
     List.length (find_spaces (List.nth buffers 5) 0 230 []) = 9);;
     
 
-let _log s = 
+let log s = 
   Printf.printf "%s\n" s;
   Stdlib.(flush stdout);;
 let finished = Atomic.make 0
@@ -67,32 +67,35 @@ let rec run_processor ~copy_out ~n () =
 
 let total_executions = 4
 
+let workload () =
+  Atomic.set finished 0;
+  let time_start = Core.Time_ns.now () in 
+  let _ = 
+    for _ = 1 to total_executions do 
+      Schedulr.Scheduler.schedule (run_processor ~copy_out:false ~n:100_000)
+      |> ignore
+    done;
+    while Atomic.get finished < total_executions  do 
+      Schedulr.Scheduler.yield ()
+    done; 
+  in
+  let time_end = Core.Time_ns.now () in 
+  let difference = Core.Time_ns.diff time_end time_start 
+    |> Core.Time_ns.Span.to_string in 
+  Printf.printf "%s\n" difference;
+  Stdlib.flush_all ();;
+
+
 module Sched = Schedulr.Scheduler.LIFO
 let benchmark () = 
   Sched.init 3 ~f:(fun () ->
     for _j = 1 to 3 do  
       for _i = 1 to 10 do 
-        Unix.sleepf 0.2;
-        Atomic.set finished 0;
-        let time_start = Core.Time_ns.now () in 
-        let _ = 
-          for _ = 1 to total_executions do 
-            Schedulr.Scheduler.schedule (run_processor ~copy_out:false ~n:100_000)
-            |> ignore
-          done;
-          while Atomic.get finished < total_executions  do 
-            Schedulr.Scheduler.yield ()
-          done; 
-        in
-        let time_end = Core.Time_ns.now () in 
-        let difference = Core.Time_ns.diff time_end time_start 
-          |> Core.Time_ns.Span.to_string in 
-        (* if j > 1 then *) 
-        Printf.printf "%s\n" difference;
-        Stdlib.flush_all ();
-        Unix.sleepf 0.2;
+        Unix.sleepf 0.1;
+        workload (); 
+        Unix.sleepf 0.1;
         while Sched.pending_tasks () != 0 do
-          _log (Int.to_string (Sched.pending_tasks ()));
+          log (Int.to_string (Sched.pending_tasks ()));
           Schedulr.Scheduler.yield ();
         done;
         Sched.Stats.unsafe_print_latency_histogram ();
@@ -101,3 +104,4 @@ let benchmark () =
     Stdlib.exit 0);;
 
 benchmark ()
+

@@ -5,4 +5,4 @@ Note `<=` since owner increments `tail` optimistically.
 
 * Scheduler should return once all domains idle and queues are empty. 
 * There should be a way to terminate the scheduler if needed.
-
+* Scheduler should not die when a thread outside the pool tries to schedule something. We should have an overflow queue, where those tasks can be pushed. 
