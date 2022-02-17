@@ -87,15 +87,19 @@ let workload () =
 
 
 module Sched = Schedulr.Scheduler.LIFO
+
+let num_of_domains = 3
+let iterations = 3
+let size_param = 10
+
 let benchmark () = 
-  Sched.init 3 ~f:(fun () ->
-    for _j = 1 to 3 do  
-      for _i = 1 to 10 do 
+  Sched.init num_of_domains ~f:(fun () ->
+    for _j = 1 to iterations do  
+      for _i = 1 to size_param do 
         Unix.sleepf 0.1;
         workload (); 
         Unix.sleepf 0.1;
         while Sched.pending_tasks () != 0 do
-          log (Int.to_string (Sched.pending_tasks ()));
           Schedulr.Scheduler.yield ();
         done;
         Sched.Stats.unsafe_print_latency_histogram ();
