@@ -93,8 +93,9 @@ let benchmark () =
         Unix.sleepf 0.2;
         while Sched.pending_tasks () != 0 do
           _log (Int.to_string (Sched.pending_tasks ()));
-        Schedulr.Scheduler.yield ();
+          Schedulr.Scheduler.yield ();
         done;
+        Sched.Stats.unsafe_print_latency_histogram ();
       done; 
     done;
     Stdlib.exit 0);;

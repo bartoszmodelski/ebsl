@@ -96,10 +96,11 @@ module Scheduler (DS : DataStructure) = struct
         latency_histogram = Histogram.init ()
       }
 
-    let ds {ds; _} = ds 
+    let ds {ds; _} = ds
+    let latency_histogram {latency_histogram;_}= latency_histogram 
       
     let log_time {latency_histogram; _} span = 
-      Histogram.log_val latency_histogram (Core.Time_ns.Span.to_int_ns span) 
+      Histogram.log_val latency_histogram (Core.Int63.to_int_exn span) 
     
     let _ = log_time ;;
   end 
@@ -139,22 +140,20 @@ module Scheduler (DS : DataStructure) = struct
     | Error _ -> assert false 
     | Ok v -> v
 
-  let _ = realtime_clock
+  let clock () = realtime_clock Core.Unix.Clock.Monotonic
 
   let with_effects_handler  f =
     try_with f () 
     { effc = fun (type a) (e : a eff) ->
       match e with
       | Schedule new_f ->  
-        let _time_start = 
-          Sys.opaque_identity (realtime_clock Core.Unix.Clock.Realtime) 
-        in 
+        let time_start = clock () in
         Some (fun (k : (a, unit) continuation) -> 
           let promise = Promise.empty () in     
           schedule_internal ~has_yielded:false (Scheduled.Task (fun () -> 
-            (* let time_end = Core.Time_ns.now () in
+            let time_end = clock () in
             with_processor (fun processor -> 
-              Processor.log_time processor (Core.Time_ns.diff time_end time_start)); *)
+              Processor.log_time processor (Core.Int63.(time_end - time_start))); 
             let result = new_f () in 
             let to_run = Promise.fill promise result in 
             (* it's tempting to re-use looked up queue here but this may 
@@ -239,6 +238,21 @@ module Scheduler (DS : DataStructure) = struct
       (fun processor curr -> 
         (DS.indicative_size (Processor.ds processor)) + curr) 
     !processors 0
+
+  module Stats = struct 
+    let unsafe_print_latency_histogram () = 
+      let histograms = Array.map (fun processor -> 
+        Processor.latency_histogram processor) 
+        !processors 
+      in 
+      let merged = 
+        Array.to_list histograms 
+        |> Histogram.merge
+      in
+      Array.iter Histogram.zero_out histograms;
+      Histogram.dump merged;;
+  
+  end
 
 end
 
