@@ -31,40 +31,31 @@ let local_push {top; array; mask; _} element =
   if Option.is_some (Atomic.get cell) then
     false 
   else 
-    (Atomic.set cell (Some element);
+    (assert (Atomic.compare_and_set cell None (Some element));
     Atomic.incr top;
     true);;
 
 let local_pop {top; bottom; array; mask} =
-  Atomic.decr top; 
   let top_val = Atomic.get top in 
   let bottom_val = Atomic.get bottom in
-  (* -1 because because top has been decremented *)
-  if top_val - bottom_val <= -1 then 
-    (* queue was empty, fix it before returning *)
-    (Atomic.incr top;
-    None)
+  if top_val - bottom_val <= 0 then 
+    None
   else 
-    (let cell = Array.get array (top_val land mask) in 
+    (let cell = Array.get array ((top_val-1) land mask) in 
     let value = Atomic.get cell in 
     if Option.is_none value then 
-      (* other thread stole it *)
-      (Atomic.incr top;
-      None)
-    else (
-      if not (Atomic.compare_and_set cell value None) then 
-        (* other thread stole it *)
-        (Atomic.incr top;
-        None)
-      else 
-        value));;
+      None 
+    else if not (Atomic.compare_and_set cell value None) then 
+      None
+    else
+      (Atomic.decr top; 
+      value));;
 
-
-let rec local_replace_with_a_random_item stack item =
+let local_replace_with_a_random_item stack item =
   let ({top; bottom; array; mask} : 'a t) = stack in  
   let top_val = Atomic.get top in 
   let bottom_val = Atomic.get bottom in 
-  if top_val <= bottom_val 
+  if top_val - bottom_val <= 0 
   then None 
   else
     (let diff = top_val - bottom_val in 
@@ -72,14 +63,14 @@ let rec local_replace_with_a_random_item stack item =
     let index = (bottom_val + offset) land mask in 
     let cell = Array.get array index in 
     let current_val = Atomic.get cell in 
-    if Option.is_none current_val || 
-      not (Atomic.compare_and_set cell current_val (Some item))
-    then 
-      local_replace_with_a_random_item stack item 
-    else 
-      match current_val with 
-      | None -> assert false 
-      | Some _ -> current_val)
+    match current_val with 
+    | None -> None
+    | Some existing -> (
+      assert (existing != item);  
+      if not (Atomic.compare_and_set cell current_val (Some item))
+      then None  
+      else 
+        Some existing));;
 
 let local_is_empty {top; bottom; array; mask} = 
   let top_val = Atomic.get top in
@@ -114,7 +105,6 @@ let steal ~from:{top; bottom; array; mask} ~to_local =
       0 
     else (
       let old_bottom_val = bottom_val in
-      let _bottom_val = bottom_val + available_steal in
       let finished = ref false in 
       let stolen = ref 0 in
       while !stolen < available_steal && not !finished do 
@@ -122,8 +112,10 @@ let steal ~from:{top; bottom; array; mask} ~to_local =
         let cell = Array.get array index in 
         let value = Atomic.get cell in 
         if Option.is_some value then 
-          (if Atomic.compare_and_set cell value None then 
-            (let value = match value with 
+          (if Atomic.compare_and_set cell value None 
+          then 
+            (let value = 
+              match value with 
               | None -> assert false 
               | Some v -> v 
             in 

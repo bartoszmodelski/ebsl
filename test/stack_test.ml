@@ -71,41 +71,68 @@ let load_test_with_stealer =
   let main_domain = Domain.spawn (fun () ->  
     let pushed = ref 0 in  
     let popped = ref 0 in 
-    for i = 0 to 1000000000 do
-      match Stack.local_push stack i with 
-      | true -> pushed := !pushed + 1 
-      | false -> ();
+    let sum = ref 0 in 
+    for i = 0 to 10_000_000 do
+      if Random.int 20 < 10 then 
+        (match Stack.local_push stack i with 
+        | true -> pushed := !pushed + 1 
+        | false -> sum := !sum + i)
+      else (
+        match Stack.local_replace_with_a_random_item stack i with 
+        | None -> sum := !sum + i
+        | Some v -> sum := !sum + v); 
       if Random.int 2 = 1 then 
-        match Option.is_some (Stack.local_pop stack) with 
-        | true -> popped := !popped + 1
-        | false -> ()    
+        match Stack.local_pop stack with 
+        | Some v -> 
+          popped := !popped + 1;
+          sum := !sum + v;
+        | None -> ()
     done;
-    while Option.is_some (Stack.local_pop stack) do 
-      popped := !popped + 1
+    (* drain *)
+    let keep_going = ref true in 
+    while !keep_going do
+      match Stack.local_pop stack with 
+      | Some v -> 
+        popped := !popped + 1;
+        sum := !sum + v
+      | None -> 
+        keep_going := false 
     done;
-    (!pushed,!popped))
+    (!pushed,!popped,!sum))
   in
-  let f () = Domain.spawn (fun () -> 
+  let f () = 
+    Domain.spawn (fun () -> 
     let local_stack = Stack.init () in  
     let stolen = ref 0 in  
     let popped = ref 0 in 
-    for _ = 0 to 10000000 do
+    let sum = ref 0 in 
+    for _ = 1 to 1_000_000 do
       let count = Stack.steal ~from:stack ~to_local:local_stack in
       stolen := !stolen + count;
-      while Stack.local_pop local_stack |> Option.is_some do 
-        popped := !popped + 1
+      let keep_going = ref true in 
+      while !keep_going do
+        match Stack.local_pop local_stack with 
+        | Some v -> 
+          popped := !popped + 1;
+          sum := !sum + v
+        | None -> 
+          keep_going := false 
       done;
     done;
     assert (top local_stack = bottom local_stack);
     assert (!stolen = !popped);
-    !stolen)
+    !stolen, !sum)
   in
-  let thief_domain_1 = f () in 
-  let thief_domain_2 = f () in 
-  let (pushed, popped) = Domain.join main_domain in
-  let stolen_1 = Domain.join thief_domain_1 in 
-  let stolen_2 = Domain.join thief_domain_2 in 
-  Printf.printf "Expected size: %d, actual size: %d, stolen: %d, %d\n" 
-    pushed popped stolen_1 stolen_2;
+  let thieves = List.init 15 (fun _ -> f ()) in
+  let (pushed, popped, sum) = Domain.join main_domain in
+  let thieves_results = List.map Domain.join thieves in 
+  let stolen = (thieves_results 
+    |> List.map (fun (v, _) -> v) 
+    |> List.fold_right Int.add) 0 in
+  let stolen_sum = (thieves_results 
+    |> List.map (fun (_, v) -> v) 
+    |> List.fold_right Int.add) 0 in 
   assert (top stack = bottom stack);
-  assert (pushed = popped + stolen_1 + stolen_2);;
+  assert (pushed = popped + stolen);
+  Printf.printf "Expected size: %d, actual size: %d, stolen: %d, sum %d\n" 
+    pushed popped stolen (sum + stolen_sum);;

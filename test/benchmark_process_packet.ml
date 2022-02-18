@@ -17,14 +17,14 @@ let run_processor ~copy_out ~n () =
         |> Sys.opaque_identity 
         |> ignore
       in  
-        f 0 len; 
-        Atomic.incr finished) |> ignore;
-    if i mod 1000 == 0 
+      f 0 len; 
+       Atomic.incr finished) |> ignore;
+    if i mod 1000 == 0
     then Schedulr.Scheduler.yield ()
   done;;
 
 let total_workers = 1
-let items_per_worker = 100_000
+let items_per_worker = 1_000_000
 
 let workload () =
   Atomic.set finished 0;
@@ -47,7 +47,7 @@ let workload () =
 
 module Sched = Schedulr.Scheduler.LIFO
 
-let num_of_domains = 6
+let num_of_domains = 2
 let iterations = 3
 let size_param = 10
 

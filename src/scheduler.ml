@@ -13,9 +13,26 @@ type _ eff += Yield : unit eff
 let yield () = perform Yield
 
 module Scheduled = struct 
-  type t = 
+  type sched = 
     | Task of (unit -> unit)
     | Preempted_task of (unit, unit) continuation
+
+  type t = 
+    {s : sched; 
+    execd : int Atomic.t}
+
+  let task c = 
+    {s = Task c; execd = Atomic.make 0}
+  
+  let preem c = 
+    {s = Preempted_task c; execd = Atomic.make 0}
+
+  let _ = preem
+
+  let get {s; execd} = 
+    Atomic.incr execd; 
+    s;;
+
 end
 
 module Promise = struct 
@@ -142,7 +159,7 @@ module Scheduler (DS : DataStructure) = struct
       List.iter (fun awaiting -> 
         schedule_internal 
           ~has_yielded:false 
-          (Scheduled.Task (fun () -> awaiting result)))
+          (Scheduled.task (fun () -> awaiting result)))
           to_run;;
 
   let realtime_clock = 
@@ -152,7 +169,7 @@ module Scheduler (DS : DataStructure) = struct
 
   let clock () = realtime_clock Core.Unix.Clock.Monotonic
 
-  let with_effects_handler  f =
+  let with_effects_handler f =
     try_with f () 
     { effc = fun (type a) (e : a eff) ->
       match e with
@@ -160,7 +177,7 @@ module Scheduler (DS : DataStructure) = struct
         let time_start = clock () in
         Some (fun (k : (a, unit) continuation) -> 
           let promise = Promise.empty () in     
-          schedule_internal ~has_yielded:false (Scheduled.Task (fun () -> 
+          schedule_internal ~has_yielded:false (Scheduled.task (fun () -> 
             let time_end = clock () in
             with_processor (fun processor -> 
               Processor.log_time processor (Core.Int63.(time_end - time_start));
@@ -173,7 +190,10 @@ module Scheduler (DS : DataStructure) = struct
           continue k promise)
       | Yield -> 
         Some (fun k -> 
-          schedule_internal ~has_yielded:true (Scheduled.Preempted_task k))
+          schedule_internal 
+            ~has_yielded:true 
+            (Scheduled.task (fun () -> 
+              continue k ())))
       | Await promise ->
         Some (fun k -> 
           match (Promise.await promise (continue k)) with 
@@ -193,25 +213,31 @@ module Scheduler (DS : DataStructure) = struct
       DS.steal ~from:other_ds ~to_local:my_ds 
       |> ignore)
     
-  let rec run_domain () =
+  let rec run_domain () = 
     let scheduled = 
       with_processor (fun processor ->
         let task_ds = Processor.ds processor in
         match DS.local_remove task_ds with 
-        | Some task -> task 
+        | Some task -> 
+          task 
         | None -> 
           if DS.local_is_empty task_ds 
           then (steal ~my_ds:task_ds);  
           Option.value (DS.local_remove task_ds)
-            ~default:(Scheduled.Task Domain.cpu_relax))
+            ~default:(Scheduled.task Domain.cpu_relax))
     in
-    match scheduled with
+    (match Scheduled.get scheduled with
     | Task task -> 
-      (with_effects_handler task;
-      run_domain ())
+      (with_effects_handler task)
     | Preempted_task task -> 
-      (continue task ();
-      run_domain ())
+      (try continue task () with 
+       | _ -> 
+        let ({execd; _} : Scheduled.t) = scheduled in 
+        Printf.printf "execd: %d\n" (Atomic.get execd); 
+        Stdlib.flush_all ();
+        assert false      
+      ));
+    run_domain ();;
 
   let setup_domain ~id () = 
     Domain.at_exit (fun () -> assert false);
@@ -226,6 +252,7 @@ module Scheduler (DS : DataStructure) = struct
       let msg = Printexc.to_string e
       and stack = Printexc.get_backtrace () in
         Printf.eprintf "There was an error: %s%s\n" msg stack;
+        Stdlib.flush_all ();
         Stdlib.exit 0;;
   let domains = (ref [] : unit Domain.t list ref)
 
@@ -241,7 +268,7 @@ module Scheduler (DS : DataStructure) = struct
     let processor = Array.get !processors n in 
     let ds = Processor.ds processor in 
     DS.register_domain_id ds;
-    assert (DS.local_insert ds (Scheduled.Task f));
+    assert (DS.local_insert ds (Scheduled.task f));
     run_domain ();;
 
   let pending_tasks () = 
@@ -285,6 +312,7 @@ module FIFO = Scheduler(struct
   let local_remove = local_dequeue
   let local_insert_after_preemption = local_enqueue  
 end)
+
 module LIFO = Scheduler(struct 
   include Stack 
   let local_insert = local_push 
@@ -293,7 +321,13 @@ module LIFO = Scheduler(struct
   let local_insert_after_preemption stack item = 
     (* actually, put the item in a random place in the stack 
     and push the swapped element on top (to be run immediately) *)
-    match local_replace_with_a_random_item stack item with 
-    | None -> local_push stack item
-    | Some new_item -> local_push stack new_item 
-end)
+    let f =  
+      (match local_replace_with_a_random_item stack item with 
+      | None -> fun () -> local_push stack item
+      | Some new_item -> fun () -> local_push stack new_item) 
+    in
+    while not (f ()) do () done;
+    true
+  ;;
+
+end) 
