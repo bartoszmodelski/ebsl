@@ -88,15 +88,25 @@ module Scheduler (DS : DataStructure) = struct
   module Processor = struct 
     type t = {
       ds : Scheduled.t DS.t;
-      latency_histogram : Histogram.t
+      latency_histogram : Histogram.t;
+      executed_tasks : int ref 
     }
 
     let init () = {
         ds = DS.init (); 
-        latency_histogram = Histogram.init ()
+        latency_histogram = Histogram.init ();
+        executed_tasks = ref 0
       }
 
     let ds {ds; _} = ds
+    let incr_tasks {executed_tasks; _} = 
+      executed_tasks := !executed_tasks + 1
+    let executed_tasks {executed_tasks; _} =
+      !executed_tasks
+
+    let zero_executed_tasks {executed_tasks; _} =
+      executed_tasks := 0
+
     let latency_histogram {latency_histogram;_}= latency_histogram 
       
     let log_time {latency_histogram; _} span = 
@@ -153,7 +163,8 @@ module Scheduler (DS : DataStructure) = struct
           schedule_internal ~has_yielded:false (Scheduled.Task (fun () -> 
             let time_end = clock () in
             with_processor (fun processor -> 
-              Processor.log_time processor (Core.Int63.(time_end - time_start))); 
+              Processor.log_time processor (Core.Int63.(time_end - time_start));
+              Processor.incr_tasks processor); 
             let result = new_f () in 
             let to_run = Promise.fill promise result in 
             (* it's tempting to re-use looked up queue here but this may 
@@ -251,7 +262,18 @@ module Scheduler (DS : DataStructure) = struct
       in
       Array.iter Histogram.zero_out histograms;
       Histogram.dump merged;;
-  
+
+    let unsafe_print_executed_tasks () = 
+      let counters = Array.map (fun processor -> 
+        Processor.executed_tasks processor) 
+        !processors in 
+      Array.iter Processor.zero_executed_tasks !processors;
+      counters 
+      |> Array.to_list
+      |> List.map Int.to_string
+      |> String.concat ","
+      |> Printf.printf "executed tasks:[%s]\n"
+
   end
 
 end

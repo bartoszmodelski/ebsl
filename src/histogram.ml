@@ -29,7 +29,7 @@ let dump t =
   Array.to_list t 
   |> List.map Int.to_string
   |> String.concat ","
-  |> Printf.printf "[%s]\n"
+  |> Printf.printf "latency:[%s]\n"
 
 
 let test = 
