@@ -213,6 +213,7 @@ module Scheduler (DS : DataStructure) = struct
       DS.steal ~from:other_ds ~to_local:my_ds 
       |> ignore)
     
+  let _ = DS.local_is_empty
   let rec run_domain () = 
     let scheduled = 
       with_processor (fun processor ->
@@ -221,22 +222,20 @@ module Scheduler (DS : DataStructure) = struct
         | Some task -> 
           task 
         | None -> 
-          if DS.local_is_empty task_ds 
-          then (steal ~my_ds:task_ds);  
-          Option.value (DS.local_remove task_ds)
-            ~default:(Scheduled.task Domain.cpu_relax))
+          let task = ref None in 
+          while Option.is_none !task do 
+            steal ~my_ds:task_ds; 
+            task := DS.local_remove task_ds
+          done;
+          match !task with 
+          | None -> assert false 
+          | Some task -> task)
     in
     (match Scheduled.get scheduled with
     | Task task -> 
       (with_effects_handler task)
     | Preempted_task task -> 
-      (try continue task () with 
-       | _ -> 
-        let ({execd; _} : Scheduled.t) = scheduled in 
-        Printf.printf "execd: %d\n" (Atomic.get execd); 
-        Stdlib.flush_all ();
-        assert false      
-      ));
+      continue task ());
     run_domain ();;
 
   let setup_domain ~id () = 

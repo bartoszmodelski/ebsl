@@ -145,7 +145,7 @@ let steal ~from:{top; bottom; array; mask} ~to_local =
       !stolen));;
 
 let indicative_size {top; bottom; _} =
-  max (Atomic.get top - Atomic.get bottom) 0
+  max ((Atomic.get top) - (Atomic.get bottom)) 0
 
 let register_domain_id _ = 
   (* TODO stop ignoring this *)

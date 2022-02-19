@@ -18,12 +18,13 @@ let run_processor ~copy_out ~n () =
         |> ignore
       in  
       f 0 len; 
-       Atomic.incr finished) |> ignore;
-    if i mod 1000 == 0
+      Atomic.incr finished) |> ignore;
+    if i mod 50 == 0
     then Schedulr.Scheduler.yield ()
   done;;
 
 let total_workers = 1
+
 let items_per_worker = 1_000_000
 
 let workload () =
@@ -44,10 +45,9 @@ let workload () =
   Printf.printf "time:%d\n" (difference/1000_000);
   Stdlib.flush_all ();;
 
+module Sched = Schedulr.Scheduler.FIFO
 
-module Sched = Schedulr.Scheduler.LIFO
-
-let num_of_domains = 2
+let num_of_domains = 9
 let iterations = 3
 let size_param = 10
 
@@ -67,4 +67,5 @@ let benchmark () =
     Stdlib.exit 0);;
 
 benchmark ()
+
 
