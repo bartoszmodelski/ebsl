@@ -62,29 +62,24 @@ let local_dequeue {head; tail; mask; array; owned_by_id} : 'a option =
   assert_domain_id "deq" owned_by_id;
   (* local deque is optimistic because it can fix its mistake if needed *)
   let index = Atomic.fetch_and_add head 1 in
-  let take_val () = 
-    let cell = Array.get array (index land mask) in
+  let tail_val = Atomic.get tail in
+  if index = tail_val 
+  then
+    (* nobody else would speculate *)
+    (assert (Atomic.compare_and_set head (index + 1) index);
+    None)
+  else if index > tail_val 
+  then 
+    assert false
+  else 
+    (let cell = Array.get array (index land mask) in
     let element = Atomic.get cell in
     Atomic.set cell None; 
-    Some (value_exn element)
-  in
-  let tail_val = Atomic.get tail in
-  if index = tail_val then
-    (if Atomic.compare_and_set head (index + 1) index then 
-      (* successfuly rolled back *)
-      None 
-    else
-      (* failed to rollback, since no one else can speculate, 
-        there must be a value to take *)  
-      take_val ())
-  else if index > tail_val then (
-    Printf.printf "%d - %d \n" index tail_val;
-    Stdlib.flush_all ();
-    assert false )
-  else 
-    take_val ();;
-
+    assert (Option.is_some element); 
+    element);;
     
+    
+(* successfuly rolled back *)
 let local_is_empty_thorough {head = _; tail; mask; array; _} : bool =
   let size = Array.length array in 
   let tail_value = Atomic.get tail in
@@ -129,8 +124,14 @@ let steal ~from ~to_local =
     else 
       (for i = 0 to stealable - 1 do
         let cell = Array.get array ((head_val + i) land mask) in
-        assert (local_enqueue to_local (value_exn (Atomic.get cell)));
+        let value = ref (Atomic.get cell) in 
+        if i == stealable - 1 
+        then   
+          (while Option.is_none !value do 
+            value := Atomic.get cell
+          done);    
         Atomic.set cell None;
+        while not (local_enqueue to_local (value_exn !value)) do () done;
       done;
       stealable)));; 
   
