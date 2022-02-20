@@ -31,7 +31,8 @@ let local_push {top; array; mask; _} element =
   if Option.is_some (Atomic.get cell) then
     false 
   else 
-    (assert (Atomic.compare_and_set cell None (Some element));
+    (Atomic.set cell (Some element);
+    (* (assert (Atomic.compare_and_set cell None (Some element)); *)    
     Atomic.incr top;
     true);;
 

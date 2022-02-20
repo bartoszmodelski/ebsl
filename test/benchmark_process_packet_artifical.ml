@@ -10,17 +10,25 @@ let finished = Atomic.make 0
 let run_processor ~copy_out ~n () =
   for i = 1 to n do 
     Schedulr.Scheduler.schedule (fun () ->
-      let packet = Mock_packet.get_by_index n ~copy_out in
-      let len = Buffer.length packet in 
-      let f from to_ = 
-        Mock_packet.find_spaces packet from to_ [] 
-        |> Sys.opaque_identity 
-        |> ignore
-      in  
-      f 0 len; 
-      Atomic.incr finished) 
-    |> ignore;
-    if i mod 50 == 0
+      let packet = Mock_packet.get_by_index n ~copy_out in 
+        Schedulr.Scheduler.schedule (fun () ->
+          Buffer.add_int64_be packet (Random.int64 Int64.max_int);
+          Schedulr.Scheduler.schedule (fun () ->
+            Buffer.add_int64_be packet (Random.int64 Int64.max_int);
+            Schedulr.Scheduler.schedule (fun () -> 
+            let len = Buffer.length packet in 
+            let f from to_ = 
+              Mock_packet.find_spaces packet from to_ [] 
+              |> Sys.opaque_identity 
+              |> ignore
+            in  
+            f 0 len; 
+            Atomic.incr finished) 
+            |> ignore)
+          |> ignore) 
+        |> ignore) 
+      |> ignore;
+    if i mod 10 == 0
     then Schedulr.Scheduler.yield ()
   done;;
 let items_total = 100_000

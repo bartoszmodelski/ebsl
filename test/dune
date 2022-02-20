@@ -1,5 +1,6 @@
 (executables
- (names benchmark_process_packet benchmark_mixer test1 test2 
+ (names benchmark_process_packet benchmark_process_packet_artifical
+  benchmark_mixer test1 test2 
   stack_test stack_validation spmc_queue_validate benchmark_time
   scheduler_promises_test)
  (libraries schedulr unix dscheck core oclock)
