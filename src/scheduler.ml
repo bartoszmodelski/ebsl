@@ -93,6 +93,8 @@ module type DataStructure = sig
   val register_domain_id : 'a t -> unit
 
   val indicative_size : 'a t -> int
+
+  val name : String.t
 end;;
 
 type _ eff += Await : 'a Promise.t -> 'a eff
@@ -102,6 +104,9 @@ type _ eff += Schedule : (unit -> 'a) -> 'a Promise.t eff
 let schedule f = perform (Schedule f)
 
 module Scheduler (DS : DataStructure) = struct 
+  
+  let scheduler_footprint = DS.name;;
+
   module Processor = struct 
     type t = {
       ds : Scheduled.t DS.t;
@@ -298,8 +303,7 @@ module Scheduler (DS : DataStructure) = struct
       |> Array.to_list
       |> List.map Int.to_string
       |> String.concat ","
-      |> Printf.printf "executed tasks:[%s]\n"
-
+      |> Printf.printf "executed-tasks:[%s]\n"
   end
 
 end
@@ -310,6 +314,8 @@ module FIFO = Scheduler(struct
   let local_insert = local_enqueue
   let local_remove = local_dequeue
   let local_insert_after_preemption = local_enqueue  
+
+  let name = "FIFO"
 end)
 
 module LIFO = Scheduler(struct 
@@ -329,4 +335,16 @@ module LIFO = Scheduler(struct
     true
   ;;
 
+  let name = "LIFO"
 end) 
+
+
+module type S = sig
+  val init : f:(unit -> unit) -> int -> unit
+  val pending_tasks : unit -> int
+  val scheduler_footprint : String.t
+  module Stats : sig 
+    val unsafe_print_latency_histogram : unit -> unit 
+    val unsafe_print_executed_tasks : unit -> unit
+  end 
+end 

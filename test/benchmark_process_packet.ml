@@ -22,20 +22,17 @@ let run_processor ~copy_out ~n () =
     if i mod 50 == 0
     then Schedulr.Scheduler.yield ()
   done;;
+let items_per_worker = 100_000
 
-let total_workers = 1
-
-let items_per_worker = 1_000_000
-
-let workload () =
+let workload ~num_of_spawners () =
   Atomic.set finished 0;
   let time_start = Core.Time_ns.now () in 
   let _ = 
-    for _ = 1 to total_workers do 
+    for _ = 1 to num_of_spawners do 
       Schedulr.Scheduler.schedule (run_processor ~copy_out:true ~n:items_per_worker)
       |> ignore
     done;
-    while Atomic.get finished < total_workers*items_per_worker do 
+    while Atomic.get finished < num_of_spawners * items_per_worker do 
       Schedulr.Scheduler.yield ()
     done; 
   in
@@ -45,27 +42,50 @@ let workload () =
   Printf.printf "time:%d\n" (difference/1000_000);
   Stdlib.flush_all ();;
 
-module Sched = Schedulr.Scheduler.FIFO
+let iterations = 11
 
-let num_of_domains = 9
-let iterations = 3
-let size_param = 10
-
-let benchmark () = 
-  Sched.init num_of_domains ~f:(fun () ->
-    for _j = 1 to iterations do  
-      for _i = 1 to size_param do 
-        Unix.sleepf 0.1;
-        workload (); 
-        Unix.sleepf 1.;
-        if Sched.pending_tasks () != 0  
-        then assert false; 
-        Sched.Stats.unsafe_print_latency_histogram (); 
-        Sched.Stats.unsafe_print_executed_tasks ();
-      done; 
-    done;
+let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Scheduler.S) =
+  Printf.printf "config(sched:%s,spawners:%d,domains:%d)\n"
+    Sched.scheduler_footprint
+    num_of_spawners
+    num_of_domains;
+  Sched.init (num_of_domains-1) ~f:(fun () ->
+    for i = 1 to iterations do 
+      Printf.printf "iteration:%d\n" i;
+      Unix.sleepf 0.1;
+      workload ~num_of_spawners (); 
+      Unix.sleepf 0.1;
+      if Sched.pending_tasks () != 0  
+      then assert false; 
+      Sched.Stats.unsafe_print_latency_histogram (); 
+      Sched.Stats.unsafe_print_executed_tasks ();
+    done; 
     Stdlib.exit 0);;
 
-benchmark ()
+(* cmd *)
+
+let () =
+  let usage_msg = "benchmark -scheduler (FIFO|LIFO)" in 
+  let anon_fun _ = failwith "no anon parameters expected" in
+  let scheduler = ref "" in
+  let num_of_domains = ref 0 in 
+  let num_of_spawners = ref 0 in 
+  let speclist =
+    [("-scheduler", Arg.Set_string scheduler, "set scheduler algo");
+    ("-num-of-domains", Arg.Set_int num_of_domains, "set num of domains");
+    ("-num-of-spawners", Arg.Set_int num_of_spawners, "set num of spawners")] 
+  in 
+  Arg.parse speclist anon_fun usage_msg;
+  let scheduler_module =
+    match !scheduler with 
+    | "FIFO" -> (module Schedulr.Scheduler.FIFO : Schedulr.Scheduler.S)
+    | "LIFO" -> (module Schedulr.Scheduler.LIFO)
+    | s -> failwith ("unknown scheduler type " ^ s)
+  in 
+  assert (0 < !num_of_domains && !num_of_domains < 512);
+  assert (0 < !num_of_spawners && !num_of_spawners < 512);
+  let num_of_domains = !num_of_domains in
+  let num_of_spawners = !num_of_spawners in 
+  benchmark ~num_of_domains ~num_of_spawners scheduler_module;;
 
 
