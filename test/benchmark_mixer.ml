@@ -62,25 +62,40 @@ let start_mixer ~n_packets ~n_legs (f : bytes -> unit) () =
 let log s = 
   Printf.printf "%s\n" s;
   Stdlib.(flush stdout);;
-  
-let total_executions = 5
 
-module Scheduler = Schedulr.Scheduler.LIFO
-let benchmark () = 
-  Scheduler.init 3 ~f:(fun () ->  
-    let promises = 
-      Array.init total_executions 
-        (fun _ -> 
-          Schedulr.Scheduler.schedule  
-          (start_mixer 
-            ~n_packets:10000
-            ~n_legs:3
-            (fun v -> Sys.opaque_identity v |> ignore))) 
-    in 
-    Array.iter Schedulr.Scheduler.await promises; 
-    while Scheduler.pending_tasks () != 0 do 
+let workload ~n_mixers () = 
+  let promises = 
+    Array.init n_mixers 
+      (fun _ -> 
+        Schedulr.Scheduler.schedule  
+        (start_mixer 
+          ~n_packets:10000
+          ~n_legs:3
+          (fun v -> Sys.opaque_identity v |> ignore))) 
+  in 
+  Array.iter Schedulr.Scheduler.await promises;;
+
+let time f = 
+  let time_start = Core.Time_ns.now () in 
+  f ();
+  let time_end = Core.Time_ns.now () in 
+  let difference = Core.Time_ns.diff time_end time_start 
+    |> Core.Time_ns.Span.to_int_ns 
+  in 
+  Printf.printf "time:%d\n" (difference/1000_000);
+  Stdlib.flush_all ();;
+
+
+module Sched = Schedulr.Scheduler.FIFO
+let benchmark ~iters ~domains ~n_mixers () = 
+  Sched.init domains ~f:(fun () ->  
+    for _i = 0 to iters do 
       Unix.sleepf 0.1;
+      time (workload ~n_mixers);
+      while Sched.pending_tasks () != 0 do 
+        Unix.sleepf 0.1;
+      done;
     done;
     Stdlib.exit 0);;
 
-benchmark ()
+benchmark ~domains:3 ~n_mixers:5 ~iters:10 ()
