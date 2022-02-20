@@ -10,3 +10,5 @@
 
 # ocamlbuild working directory
 _build/
+
+.ipynb_checkpoints
