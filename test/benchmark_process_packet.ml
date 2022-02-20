@@ -22,9 +22,10 @@ let run_processor ~copy_out ~n () =
     if i mod 50 == 0
     then Schedulr.Scheduler.yield ()
   done;;
-let items_per_worker = 100_000
+let items_total = 100_000
 
 let workload ~num_of_spawners () =
+  let items_per_worker = items_total / num_of_spawners in 
   Atomic.set finished 0;
   let time_start = Core.Time_ns.now () in 
   let _ = 
