@@ -79,7 +79,7 @@ let start_mixer ~n_packets ~n_legs () =
     done;
     let () = 
       let end_timestamp = clock () in 
-      if !earliest_timestamp + 3_000_000 < end_timestamp 
+      if !earliest_timestamp + 10_000_000 < end_timestamp 
       then latency_breach_count := !latency_breach_count + 1;
       let diff = end_timestamp - start_timestamp in 
       total_processing_time := !total_processing_time + diff;
@@ -132,8 +132,9 @@ let get_gc_stat () =
 
 let benchmark ~domains ~n_mixers (module Sched : Schedulr.Scheduler.S) = 
   Sched.init domains ~f:(fun () ->  
+    Printf.printf "start\n";
     for i = 0 to 10 do 
-      Printf.printf "iteration-%d\n" i;
+      Printf.printf "iteration:%d\n" i;
       Unix.sleepf 0.1;
       let () = 
         let (start_minor_words, start_major_words) = get_gc_stat () in 
@@ -146,14 +147,15 @@ let benchmark ~domains ~n_mixers (module Sched : Schedulr.Scheduler.S) =
       while Sched.pending_tasks () != 0 do 
         Unix.sleepf 0.1;
       done;
-      Printf.printf "total-breaches:%d\n" 
-        (Atomic.get global_latency_breach_count);
+      Printf.printf "breaches-rate:%d\n" 
+        (Atomic.get global_latency_breach_count / n_mixers);
       Printf.printf "avg-processing-time:%d\n" 
         (Atomic.get global_total_processing_time 
           / Atomic.get global_total_processed);
       Stdlib.flush_all ();
-
     done;
+    Printf.printf "done\n";
+    Stdlib.flush_all ();
     Stdlib.exit 0);;
 
 
