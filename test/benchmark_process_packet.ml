@@ -45,7 +45,7 @@ let workload ~num_of_spawners () =
 let iterations = 11
 
 let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Scheduler.S) =
-  Printf.printf "config(sched:%s,spawners:%d,domains:%d)\n"
+  Printf.printf "start(sched:%s,spawners:%d,domains:%d)\n"
     Sched.scheduler_footprint
     num_of_spawners
     num_of_domains;
@@ -60,6 +60,8 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
       Sched.Stats.unsafe_print_latency_histogram (); 
       Sched.Stats.unsafe_print_executed_tasks ();
     done; 
+    Printf.printf "done\n"; 
+    Stdlib.flush_all ();
     Stdlib.exit 0);;
 
 (* cmd *)
