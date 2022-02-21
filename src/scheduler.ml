@@ -114,8 +114,8 @@ module Scheduler (DS : DataStructure) = struct
       executed_tasks : int ref 
     }
 
-    let init () = {
-        ds = DS.init (); 
+    let init ?size_exponent () = {
+        ds = DS.init ?size_exponent (); 
         latency_histogram = Histogram.init ();
         executed_tasks = ref 0
       }
@@ -260,9 +260,9 @@ module Scheduler (DS : DataStructure) = struct
         Stdlib.exit 0;;
   let domains = (ref [] : unit Domain.t list ref)
 
-  let init ~(f : unit -> unit) n =
+  let init ?size_exponent ~(f : unit -> unit) n =
     processors := List.init (n+1) 
-        (fun _ -> Processor.init ()) 
+        (fun _ -> Processor.init ?size_exponent ()) 
       |> Array.of_list;
     (* since this thread can schedule as well *)
     domains := List.init n (fun id ->
@@ -340,7 +340,7 @@ end)
 
 
 module type S = sig
-  val init : f:(unit -> unit) -> int -> unit
+  val init : ?size_exponent:int -> f:(unit -> unit) -> int -> unit
   val pending_tasks : unit -> int
   val scheduler_footprint : String.t
   module Stats : sig 
