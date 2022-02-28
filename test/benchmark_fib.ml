@@ -53,14 +53,14 @@ let get_gc_stat () =
   
 
 let benchmark ~domains ~n_jobs (module Sched : Schedulr.Scheduler.S) = 
-  Sched.init ~size_exponent:21 domains ~f:(fun () ->  
+  Sched.init (domains-1) ~f:(fun () ->  
     Printf.printf "start\n";
     for i = 0 to 10 do 
       Printf.printf "iteration:%d\n" i;
       Unix.sleepf 0.1;
       let () = 
         let (start_minor_words, start_major_words) = get_gc_stat () in 
-        time (workload ~n_jobs ~n:25);
+        time (workload ~n_jobs ~n:20);
         let (end_minor_words, end_major_words) = get_gc_stat () in
         Printf.printf "minor_words:%.0f\nmajor_words:%.0f\n" 
           (end_minor_words -. start_minor_words)
@@ -89,12 +89,8 @@ let () =
     ("-num-of-spawners", Arg.Set_int num_of_spawners, "set num of spawners")] 
   in 
   Arg.parse speclist anon_fun usage_msg;
-  let scheduler_module =
-    match !scheduler with 
-    | "FIFO" -> (module Schedulr.Scheduler.FIFO : Schedulr.Scheduler.S)
-    | "LIFO" -> (module Schedulr.Scheduler.LIFO)
-    | s -> failwith ("unknown scheduler type " ^ s)
-  in 
+  let scheduler_module = Flags.parse_sched scheduler in 
+  
   assert (0 < !num_of_domains && !num_of_domains < 512);
   assert (0 < !num_of_spawners && !num_of_spawners < 512);
   let domains = !num_of_domains in

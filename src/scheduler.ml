@@ -84,7 +84,7 @@ module type DataStructure = sig
   *)
   val local_is_empty : 'a t -> bool
 
-  val steal : from:'a t -> to_local:'a t -> int
+  val global_steal : from:'a t -> to_local:'a t -> int
 
   (** Debugging misuse of local_ methods is tricky. Scheduler calls 
       [register_domain_id] to register the domain considered local. 
@@ -215,7 +215,7 @@ module Scheduler (DS : DataStructure) = struct
     else 
       (let other_processor = Array.get !processors other_queue_id in
       let other_ds = Processor.ds other_processor in 
-      DS.steal ~from:other_ds ~to_local:my_ds 
+      DS.global_steal ~from:other_ds ~to_local:my_ds 
       |> ignore)
     
   let _ = DS.local_is_empty
@@ -315,10 +315,12 @@ module FIFO = Scheduler(struct
   let local_remove = local_dequeue
   let local_insert_after_preemption = local_enqueue  
 
+  let global_steal = steal
   let name = "FIFO"
 end)
 
-module LIFO = Scheduler(struct 
+
+module Stack_ext = struct
   include Stack 
   let local_insert = local_push 
   let local_remove = local_pop
@@ -335,9 +337,62 @@ module LIFO = Scheduler(struct
     true
   ;;
 
+  let global_steal ~from ~to_local = 
+    steal ~from ~to_local ()
+
   let name = "LIFO"
+end
+
+module LIFO = Scheduler(struct
+  include Stack_ext
 end) 
 
+module Hybrid_random = Scheduler(struct 
+  include Stack_ext
+  
+  let local_remove t = 
+    if Random.bool () then
+    steal ~auto_retry:true ~steal_size_limit:1 ~from:t ~to_local:t () |> ignore; 
+    local_pop t;;
+
+end)
+
+module Hybrid_alternating = Scheduler(struct 
+  include Stack_ext
+  
+  let previously_stole = ref false 
+
+  let local_remove t = 
+    if not !previously_stole
+    then
+      steal ~auto_retry:true ~steal_size_limit:1 ~from:t ~to_local:t () 
+      |> ignore;
+
+    previously_stole := not !previously_stole;
+    local_pop t;;
+end)
+
+
+module Hybrid_reverse_every_n = Scheduler(struct 
+  include Stack_ext
+  
+  let curr_n = ref 0 
+  let to_steal = ref 0 
+
+  let local_remove t = 
+    if !to_steal > 0
+    then
+      (steal ~auto_retry:true ~steal_size_limit:1 ~from:t ~to_local:t () 
+      |> ignore; 
+      to_steal := !to_steal - 1) 
+    else if !curr_n > 200 
+    then
+      (curr_n := 0;
+      to_steal := indicative_size t)
+    else 
+      curr_n := !curr_n + 1;
+    local_pop t;;
+end)
 
 module type S = sig
   val init : ?size_exponent:int -> f:(unit -> unit) -> int -> unit

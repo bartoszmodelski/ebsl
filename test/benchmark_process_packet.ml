@@ -80,12 +80,7 @@ let () =
     ("-num-of-spawners", Arg.Set_int num_of_spawners, "set num of spawners")] 
   in 
   Arg.parse speclist anon_fun usage_msg;
-  let scheduler_module =
-    match !scheduler with 
-    | "FIFO" -> (module Schedulr.Scheduler.FIFO : Schedulr.Scheduler.S)
-    | "LIFO" -> (module Schedulr.Scheduler.LIFO)
-    | s -> failwith ("unknown scheduler type " ^ s)
-  in 
+  let scheduler_module = Flags.parse_sched scheduler in 
   assert (0 < !num_of_domains && !num_of_domains < 512);
   assert (0 < !num_of_spawners && !num_of_spawners < 512);
   let num_of_domains = !num_of_domains in

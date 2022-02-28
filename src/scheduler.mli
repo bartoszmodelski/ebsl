@@ -25,3 +25,15 @@ end
 module LIFO : sig
   include S
 end
+
+module Hybrid_random : sig 
+  include S 
+end
+
+module Hybrid_alternating : sig 
+  include S
+end
+
+module Hybrid_reverse_every_n : sig
+  include S
+end

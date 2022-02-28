@@ -49,14 +49,14 @@ let test_steal =
   assert (Stack.local_push other_stack 2);
   assert (Stack.local_push other_stack 3);
   assert (Stack.local_push other_stack 4);
-  assert (Stack.steal ~from:other_stack ~to_local:my_stack = 2);
+  assert (Stack.steal ~from:other_stack ~to_local:my_stack () = 2);
   assert (Stack.local_pop my_stack = Some 2);
   assert (Stack.local_pop my_stack = Some 1);
-  assert (Stack.steal ~from:other_stack ~to_local:my_stack = 1);
+  assert (Stack.steal ~from:other_stack ~to_local:my_stack () = 1);
   assert (Stack.local_pop my_stack = Some 3);
-  assert (Stack.steal ~from:other_stack ~to_local:my_stack = 1);
+  assert (Stack.steal ~from:other_stack ~to_local:my_stack () = 1);
   assert (Stack.local_pop my_stack = Some 4);
-  assert (Stack.steal ~from:other_stack ~to_local:my_stack = 0);
+  assert (Stack.steal ~from:other_stack ~to_local:my_stack () = 0);
   assert (top other_stack = 4);
   assert (bottom other_stack = 4);
   assert (top my_stack = 0);
@@ -107,7 +107,7 @@ let load_test_with_stealer =
     let popped = ref 0 in 
     let sum = ref 0 in 
     for _ = 1 to 1_000_000 do
-      let count = Stack.steal ~from:stack ~to_local:local_stack in
+      let count = Stack.steal ~from:stack ~to_local:local_stack () in
       stolen := !stolen + count;
       let keep_going = ref true in 
       while !keep_going do

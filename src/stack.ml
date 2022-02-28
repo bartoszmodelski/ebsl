@@ -90,12 +90,17 @@ let local_is_empty {top; bottom; array; mask} =
     not !seen_not_free)
 
 
-let steal ~from:{top; bottom; array; mask} ~to_local =
+let rec steal ?(auto_retry=false) ?(steal_size_limit=Int.max_int) ~from 
+    ~to_local () =
+  let ({top; bottom; array; mask} : 'a t) = from in
   let bottom_val = Atomic.get bottom in
   let top_val = Atomic.get top in 
-  let available_steal = (top_val - bottom_val + 1) / 2 in 
+  let available_steal = 
+    (top_val - bottom_val + 1) / 2 
+    |> max steal_size_limit
+  in 
   if available_steal <= 0 then 
-    0 
+    0
   else 
     (let stolen = 
       Atomic.compare_and_set bottom bottom_val (bottom_val + available_steal) 
@@ -103,7 +108,10 @@ let steal ~from:{top; bottom; array; mask} ~to_local =
     if not stolen then
       (* we could retry, but this inevitably means that someone else 
         succeded, so probably shouldn't without knowing more *)
-      0 
+      (if not auto_retry then 
+        0 
+      else
+        steal ~auto_retry ~steal_size_limit ~from ~to_local ())
     else (
       let old_bottom_val = bottom_val in
       let finished = ref false in 
