@@ -4,7 +4,11 @@ open EffectHandlers.Deep
 let _ = Printexc.record_backtrace true
 
 type _ eff += Yield : unit eff
+type _ eff += Await : 'a Promise.t -> 'a eff
+type _ eff += Schedule : (unit -> 'a) -> 'a Promise.t eff
 let yield () = perform Yield
+let await promise = perform (Await promise)
+let schedule f = perform (Schedule f)
 
 module Scheduled = struct 
   type sched = 
@@ -54,11 +58,6 @@ module type DataStructure = sig
   val name : String.t
 end;;
 
-type _ eff += Await : 'a Promise.t -> 'a eff
-let await promise = perform (Await promise)
-
-type _ eff += Schedule : (unit -> 'a) -> 'a Promise.t eff
-let schedule f = perform (Schedule f)
 
 module Make (DS : DataStructure) = struct 
   
