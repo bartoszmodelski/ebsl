@@ -1,4 +1,5 @@
 open! Schedulr.Scheduler
+open Schedulr.Instance
 
 let log s =
   Printf.printf s;
