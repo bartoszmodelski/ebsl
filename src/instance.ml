@@ -31,12 +31,11 @@ module Stack_ext = struct
 
   let global_steal ~from ~to_local = 
     steal ~from ~to_local ()
-
-  let name = "LIFO"
 end
 
 module LIFO = Scheduler.Make(struct
   include Stack_ext
+  let name = "LIFO"
 end) 
 
 module Hybrid_random = Scheduler.Make(struct 
@@ -47,6 +46,7 @@ module Hybrid_random = Scheduler.Make(struct
     steal ~auto_retry:true ~steal_size_limit:1 ~from:t ~to_local:t () |> ignore; 
     local_pop t;;
 
+  let name = "Hybrid_random"
 end)
 
 module Hybrid_alternating = Scheduler.Make(struct 
@@ -62,6 +62,8 @@ module Hybrid_alternating = Scheduler.Make(struct
 
     previously_stole := not !previously_stole;
     local_pop t;;
+  
+  let name = "Hybrid_alternating"
 end)
 
 
@@ -84,4 +86,6 @@ module Hybrid_reverse_every_n = Scheduler.Make(struct
     else 
       curr_n := !curr_n + 1;
     local_pop t;;
+
+  let name = "Hybrid_reverse_every_n"
 end)

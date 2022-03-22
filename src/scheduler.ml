@@ -48,6 +48,14 @@ module type DataStructure = sig
   val name : String.t
 end;;
 
+module Clock = struct 
+  let realtime = 
+    match Core.Unix.Clock.gettime with 
+    | Error _ -> assert false 
+    | Ok v -> v
+
+  let get () = realtime Core.Unix.Clock.Monotonic
+end
 
 module Make (DS : DataStructure) = struct   
   let scheduler_footprint = DS.name;;
@@ -112,23 +120,16 @@ module Make (DS : DataStructure) = struct
           (Scheduled.task (fun () -> awaiting result)))
           to_run;;
 
-  let realtime_clock = 
-    match Core.Unix.Clock.gettime with 
-    | Error _ -> assert false 
-    | Ok v -> v
-
-  let clock () = realtime_clock Core.Unix.Clock.Monotonic
-
   let with_effects_handler f =
     try_with f () 
     { effc = fun (type a) (e : a eff) ->
       match e with
       | Schedule new_f ->  
-        let time_start = clock () in
+        let time_start = Clock.get () in
         Some (fun (k : (a, unit) continuation) -> 
           let promise = Promise.empty () in     
           schedule_internal ~has_yielded:false (Scheduled.task (fun () -> 
-            let time_end = clock () in
+            let time_end = Clock.get () in
             with_processor (fun processor -> 
               Processor.log_time processor (Core.Int63.(time_end - time_start));
               Processor.incr_tasks processor); 
@@ -188,7 +189,10 @@ module Make (DS : DataStructure) = struct
     run_domain ();;
 
   let setup_domain ~id () = 
-    Domain.at_exit (fun () -> assert false);
+    Domain.at_exit (fun () -> 
+      Printf.printf "domain exited unexpectedly";
+      Stdlib.flush_all ();
+      Stdlib.exit 1);
     Domain.DLS.set domain_id_key id;
     let processor = Array.get !processors id in 
     let ds = Processor.ds processor in 
@@ -199,25 +203,29 @@ module Make (DS : DataStructure) = struct
     try f () with e ->
       let msg = Printexc.to_string e
       and stack = Printexc.get_backtrace () in
-        Printf.eprintf "There was an error: %s%s\n" msg stack;
+        Printf.eprintf "Uncaught exception: %s%s\n" msg stack;
         Stdlib.flush_all ();
-        Stdlib.exit 0;;
+        Stdlib.exit 1;;
   let domains = (ref [] : unit Domain.t list ref)
 
-  let init ?size_exponent ~(f : unit -> unit) n =
-    processors := List.init (n+1) 
+  let init ?(join_the_pool=true) ?size_exponent ~(f : unit -> unit) n =
+    let num_of_processors = 
+      if join_the_pool then n+1 else n
+    in
+    processors := List.init num_of_processors 
         (fun _ -> Processor.init ?size_exponent ()) 
       |> Array.of_list;
     (* since this thread can schedule as well *)
     domains := List.init n (fun id ->
       Domain.spawn (notify_user (setup_domain ~id)));
     (* run f from within the pool *)
-    Domain.DLS.set domain_id_key n;
-    let processor = Array.get !processors n in 
-    let ds = Processor.ds processor in 
-    DS.register_domain_id ds;
-    assert (DS.local_insert ds (Scheduled.task f));
-    run_domain ();;
+    if join_the_pool then (
+      Domain.DLS.set domain_id_key n;
+      let processor = Array.get !processors n in 
+      let ds = Processor.ds processor in 
+      DS.register_domain_id ds;
+      assert (DS.local_insert ds (Scheduled.task f));
+      run_domain ());;
 
   let pending_tasks () = 
     Array.fold_right 
@@ -249,11 +257,10 @@ module Make (DS : DataStructure) = struct
       |> String.concat ","
       |> Printf.printf "executed-tasks:[%s]\n"
   end
-
 end
 
 module type S = sig
-  val init : ?size_exponent:int -> f:(unit -> unit) -> int -> unit
+  val init : ?join_the_pool:bool -> ?size_exponent:int -> f:(unit -> unit) -> int -> unit
   val pending_tasks : unit -> int
   val scheduler_footprint : String.t
   module Stats : sig 

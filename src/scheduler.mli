@@ -4,7 +4,7 @@ val yield : unit -> unit
 
 
 module type S = sig
-  val init : ?size_exponent:int -> f:(unit -> unit) -> int -> unit
+  val init : ?join_the_pool:bool -> ?size_exponent:int -> f:(unit -> unit) -> int -> unit
   
   val pending_tasks : unit -> int
   val scheduler_footprint : String.t
