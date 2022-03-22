@@ -213,8 +213,7 @@ module Make (DS : DataStructure) = struct
   let setup_domain processor = 
     Domain.at_exit (fun () -> 
       Printf.printf "domain exited unexpectedly";
-      Stdlib.flush_all ();
-      Stdlib.exit 1);
+      Stdlib.flush_all ());
     Domain.DLS.set domain_key (Some processor); 
     let ds = Processor.ds processor in 
     DS.register_domain_id ds;
@@ -229,6 +228,7 @@ module Make (DS : DataStructure) = struct
         Stdlib.flush_all ();
         Stdlib.exit 1;;
   
+
   let init ?(join_the_pool=true) ?size_exponent ~(f : unit -> unit) n =
     let num_of_processors = 
       if join_the_pool then n+1 else n
@@ -241,13 +241,13 @@ module Make (DS : DataStructure) = struct
     List.init n (fun index -> 
       let processor = Array.get processors index in  
       Atomic.set (Processor.maybe_all_processors processor) (Some processors);
-      Domain.spawn (notify_user (setup_domain processor)) 
-      |> ignore) 
+      Domain.spawn (fun () -> notify_user (setup_domain processor) ()) |> ignore) 
     |> ignore;
     (* run f from within the pool *)
     if join_the_pool then (
       let processor = Array.get processors n in 
       Domain.DLS.set domain_key (Some processor);
+      Atomic.set (Processor.maybe_all_processors processor) (Some processors);
       let ds = Processor.ds processor in 
       DS.register_domain_id ds;
       assert (DS.local_insert ds (Scheduled.task f));
@@ -278,7 +278,6 @@ module Make (DS : DataStructure) = struct
         Histogram.dump merged);;
 
     let unsafe_print_executed_tasks () =
-       
       with_processor (fun processor -> 
         let processors = Processor.all_processors processor in
         let counters = Array.map (fun processor -> 
