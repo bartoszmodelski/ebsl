@@ -63,19 +63,39 @@ module Make (DS : DataStructure) = struct
   module Processor = struct 
     type t = {
       ds : Scheduled.t DS.t;
+      my_id : int; 
+      maybe_all_processors : t Array.t Option.t Atomic.t; 
       latency_histogram : Histogram.t;
-      executed_tasks : int ref 
+      executed_tasks : int ref;
     }
 
-    let init ?size_exponent () = {
-        ds = DS.init ?size_exponent (); 
+    let init ?size_exponent my_id = {
+        ds = DS.init ?size_exponent ();
+        my_id; 
+        maybe_all_processors = Atomic.make None; 
         latency_histogram = Histogram.init ();
-        executed_tasks = ref 0
+        executed_tasks = ref 0;
       }
-
+    
+    let my_id {my_id; _} = my_id
     let ds {ds; _} = ds
+
+    let maybe_all_processors {maybe_all_processors; _} =
+      maybe_all_processors
+
+    let all_processors {maybe_all_processors; _} = 
+      match Atomic.get maybe_all_processors with 
+      | None -> assert false 
+      | Some p -> p
+
+    let wait_until_init_complete {maybe_all_processors; _} =
+      while Option.is_none (Atomic.get maybe_all_processors) do 
+        Domain.cpu_relax () 
+      done;;
+
     let incr_tasks {executed_tasks; _} = 
       executed_tasks := !executed_tasks + 1
+
     let executed_tasks {executed_tasks; _} =
       !executed_tasks
 
@@ -89,15 +109,16 @@ module Make (DS : DataStructure) = struct
     
     let _ = log_time ;;
   end 
-  
-  let domain_id_key = Domain.DLS.new_key 
-    (fun () -> -1);;
 
-  let processors = ref (Array.make 0 (Processor.init () : Processor.t));;
+  let domain_key = Domain.DLS.new_key 
+    (fun () -> None);;
 
   let with_processor f =
-    let id = Domain.DLS.get domain_id_key in 
-    let processor = Array.get !processors id in
+    let processor = 
+      match Domain.DLS.get domain_key with 
+      | None -> assert false 
+      | Some p -> p 
+    in
     f processor;;
 
   let schedule_internal ~has_yielded task = 
@@ -153,16 +174,17 @@ module Make (DS : DataStructure) = struct
       | _ -> None}
 
   let steal ~my_ds = 
-    let my_id = Domain.DLS.get domain_id_key in
-    assert (my_id != -1);
-    let other_queue_id = Random.int (Array.length !processors) in 
-    if other_queue_id = my_id then
-      ()
-    else 
-      (let other_processor = Array.get !processors other_queue_id in
-      let other_ds = Processor.ds other_processor in 
-      DS.global_steal ~from:other_ds ~to_local:my_ds 
-      |> ignore)
+    with_processor (fun processor -> 
+      let my_id = Processor.my_id processor in
+      let all_processors = Processor.all_processors processor in 
+      let other_queue_id = Random.int (Array.length all_processors) in 
+      if other_queue_id = my_id then
+        ()
+      else 
+        (let other_processor = Array.get all_processors other_queue_id in
+        let other_ds = Processor.ds other_processor in 
+        DS.global_steal ~from:other_ds ~to_local:my_ds 
+        |> ignore))
     
   let rec run_domain () = 
     let scheduled = 
@@ -188,15 +210,15 @@ module Make (DS : DataStructure) = struct
       continue task ());
     run_domain ();;
 
-  let setup_domain ~id () = 
+  let setup_domain processor = 
     Domain.at_exit (fun () -> 
       Printf.printf "domain exited unexpectedly";
       Stdlib.flush_all ();
       Stdlib.exit 1);
-    Domain.DLS.set domain_id_key id;
-    let processor = Array.get !processors id in 
+    Domain.DLS.set domain_key (Some processor); 
     let ds = Processor.ds processor in 
     DS.register_domain_id ds;
+    Processor.wait_until_init_complete processor;
     run_domain ();;
     
   let notify_user f () =
@@ -206,56 +228,68 @@ module Make (DS : DataStructure) = struct
         Printf.eprintf "Uncaught exception: %s%s\n" msg stack;
         Stdlib.flush_all ();
         Stdlib.exit 1;;
-  let domains = (ref [] : unit Domain.t list ref)
-
+  
   let init ?(join_the_pool=true) ?size_exponent ~(f : unit -> unit) n =
     let num_of_processors = 
       if join_the_pool then n+1 else n
+    in 
+    let processors = 
+      List.init num_of_processors 
+        (fun id -> Processor.init ?size_exponent id) 
+      |> Array.of_list 
     in
-    processors := List.init num_of_processors 
-        (fun _ -> Processor.init ?size_exponent ()) 
-      |> Array.of_list;
-    (* since this thread can schedule as well *)
-    domains := List.init n (fun id ->
-      Domain.spawn (notify_user (setup_domain ~id)));
+    List.init n (fun index -> 
+      let processor = Array.get processors index in  
+      Atomic.set (Processor.maybe_all_processors processor) (Some processors);
+      Domain.spawn (notify_user (setup_domain processor)) 
+      |> ignore) 
+    |> ignore;
     (* run f from within the pool *)
     if join_the_pool then (
-      Domain.DLS.set domain_id_key n;
-      let processor = Array.get !processors n in 
+      let processor = Array.get processors n in 
+      Domain.DLS.set domain_key (Some processor);
       let ds = Processor.ds processor in 
       DS.register_domain_id ds;
       assert (DS.local_insert ds (Scheduled.task f));
       run_domain ());;
 
   let pending_tasks () = 
-    Array.fold_right 
-      (fun processor curr -> 
-        (DS.indicative_size (Processor.ds processor)) + curr) 
-    !processors 0
+    with_processor (fun processor -> 
+      let processors = Processor.all_processors processor in 
+      Array.fold_right 
+        (fun processor curr -> 
+          (DS.indicative_size (Processor.ds processor)) + curr) 
+      processors 0)
 
   module Stats = struct 
     let unsafe_print_latency_histogram () = 
-      let histograms = Array.map (fun processor -> 
-        Processor.latency_histogram processor) 
-        !processors 
-      in 
-      let merged = 
-        Array.to_list histograms 
-        |> Histogram.merge
-      in
-      Array.iter Histogram.zero_out histograms;
-      Histogram.dump merged;;
+      with_processor (fun processor -> 
+        let processors = Processor.all_processors processor in 
+        let histograms = 
+          Array.map (fun processor -> 
+            Processor.latency_histogram processor) 
+            processors 
+        in 
+        let merged = 
+          Array.to_list histograms 
+          |> Histogram.merge
+        in
+        Array.iter Histogram.zero_out histograms;
+        Histogram.dump merged);;
 
-    let unsafe_print_executed_tasks () = 
-      let counters = Array.map (fun processor -> 
-        Processor.executed_tasks processor) 
-        !processors in 
-      Array.iter Processor.zero_executed_tasks !processors;
-      counters 
-      |> Array.to_list
-      |> List.map Int.to_string
-      |> String.concat ","
-      |> Printf.printf "executed-tasks:[%s]\n"
+    let unsafe_print_executed_tasks () =
+       
+      with_processor (fun processor -> 
+        let processors = Processor.all_processors processor in
+        let counters = Array.map (fun processor -> 
+          Processor.executed_tasks processor) 
+          processors in 
+        Array.iter Processor.zero_executed_tasks processors;
+        counters 
+        |> Array.to_list
+        |> List.map Int.to_string
+        |> String.concat ","
+        |> Printf.printf "executed-tasks:[%s]\n");;
   end
 end
 
