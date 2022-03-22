@@ -56,7 +56,7 @@ let iterations = 11
 
 let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Scheduler.S) =
   Printf.printf "start(sched:%s,spawners:%d,domains:%d)\n"
-    Sched.scheduler_footprint
+    Sched.scheduler_name
     num_of_spawners
     num_of_domains;
   Sched.init (num_of_domains-1) ~f:(fun () ->

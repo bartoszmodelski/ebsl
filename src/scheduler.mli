@@ -7,7 +7,7 @@ module type S = sig
   val init : ?join_the_pool:bool -> ?size_exponent:int -> f:(unit -> unit) -> int -> unit
   
   val pending_tasks : unit -> int
-  val scheduler_footprint : String.t
+  val scheduler_name : String.t
   module Stats : sig 
     val unsafe_print_latency_histogram : unit -> unit 
     val unsafe_print_executed_tasks : unit -> unit

@@ -58,13 +58,12 @@ module Clock = struct
 end
 
 module Make (DS : DataStructure) = struct   
-  let scheduler_footprint = DS.name;;
+  let scheduler_name = DS.name;;
 
   module Processor = struct 
     type t = {
       ds : Scheduled.t DS.t;
       my_id : int; 
-      maybe_all_processors : t Array.t Option.t Atomic.t; 
       latency_histogram : Histogram.t;
       executed_tasks : int ref;
     }
@@ -72,26 +71,12 @@ module Make (DS : DataStructure) = struct
     let init ?size_exponent my_id = {
         ds = DS.init ?size_exponent ();
         my_id; 
-        maybe_all_processors = Atomic.make None; 
         latency_histogram = Histogram.init ();
         executed_tasks = ref 0;
       }
     
     let my_id {my_id; _} = my_id
     let ds {ds; _} = ds
-
-    let maybe_all_processors {maybe_all_processors; _} =
-      maybe_all_processors
-
-    let all_processors {maybe_all_processors; _} = 
-      match Atomic.get maybe_all_processors with 
-      | None -> assert false 
-      | Some p -> p
-
-    let wait_until_init_complete {maybe_all_processors; _} =
-      while Option.is_none (Atomic.get maybe_all_processors) do 
-        Domain.cpu_relax () 
-      done;;
 
     let incr_tasks {executed_tasks; _} = 
       executed_tasks := !executed_tasks + 1
@@ -110,16 +95,27 @@ module Make (DS : DataStructure) = struct
     let _ = log_time ;;
   end 
 
+  module Context = struct 
+    type t = {
+      processor : Processor.t;
+      all_processors : Processor.t Array.t
+    }
+  end
+
   let domain_key = Domain.DLS.new_key 
     (fun () -> None);;
 
-  let with_processor f =
+  let with_context f =
     let processor = 
       match Domain.DLS.get domain_key with 
       | None -> assert false 
       | Some p -> p 
     in
     f processor;;
+
+  let with_processor f = 
+    with_context (fun ({processor; _} : Context.t) ->
+      f processor);;
 
   let schedule_internal ~has_yielded task = 
     with_processor (fun processor ->
@@ -174,9 +170,8 @@ module Make (DS : DataStructure) = struct
       | _ -> None}
 
   let steal ~my_ds = 
-    with_processor (fun processor -> 
+    with_context (fun {processor; all_processors} -> 
       let my_id = Processor.my_id processor in
-      let all_processors = Processor.all_processors processor in 
       let other_queue_id = Random.int (Array.length all_processors) in 
       if other_queue_id = my_id then
         ()
@@ -210,14 +205,15 @@ module Make (DS : DataStructure) = struct
       continue task ());
     run_domain ();;
 
-  let setup_domain processor = 
+  let setup_domain context = 
     Domain.at_exit (fun () -> 
       Printf.printf "domain exited unexpectedly";
       Stdlib.flush_all ());
-    Domain.DLS.set domain_key (Some processor); 
-    let ds = Processor.ds processor in 
+    Domain.DLS.set domain_key (Some context); 
+    let ds =
+      let ({processor; _} : Context.t) = context in 
+      Processor.ds processor in 
     DS.register_domain_id ds;
-    Processor.wait_until_init_complete processor;
     run_domain ();;
     
   let notify_user f () =
@@ -233,42 +229,40 @@ module Make (DS : DataStructure) = struct
     let num_of_processors = 
       if join_the_pool then n+1 else n
     in 
-    let processors = 
+    let all_processors = 
       List.init num_of_processors 
         (fun id -> Processor.init ?size_exponent id) 
       |> Array.of_list 
     in
     List.init n (fun index -> 
-      let processor = Array.get processors index in  
-      Atomic.set (Processor.maybe_all_processors processor) (Some processors);
-      Domain.spawn (fun () -> notify_user (setup_domain processor) ()) |> ignore) 
+      let processor = Array.get all_processors index in  
+      let context = ({processor; all_processors} : Context.t) in 
+      Domain.spawn (fun () -> notify_user (setup_domain context) ()) |> ignore) 
     |> ignore;
     (* run f from within the pool *)
     if join_the_pool then (
-      let processor = Array.get processors n in 
-      Domain.DLS.set domain_key (Some processor);
-      Atomic.set (Processor.maybe_all_processors processor) (Some processors);
+      let processor = Array.get all_processors n in 
+      let context = ({processor; all_processors} : Context.t) in
+      Domain.DLS.set domain_key (Some context);
       let ds = Processor.ds processor in 
       DS.register_domain_id ds;
       assert (DS.local_insert ds (Scheduled.task f));
       run_domain ());;
 
   let pending_tasks () = 
-    with_processor (fun processor -> 
-      let processors = Processor.all_processors processor in 
+    with_context (fun ({all_processors; _} : Context.t) -> 
       Array.fold_right 
         (fun processor curr -> 
           (DS.indicative_size (Processor.ds processor)) + curr) 
-      processors 0)
+      all_processors 0)
 
   module Stats = struct 
     let unsafe_print_latency_histogram () = 
-      with_processor (fun processor -> 
-        let processors = Processor.all_processors processor in 
+      with_context (fun ({all_processors; _} : Context.t) -> 
         let histograms = 
           Array.map (fun processor -> 
             Processor.latency_histogram processor) 
-            processors 
+            all_processors 
         in 
         let merged = 
           Array.to_list histograms 
@@ -278,12 +272,11 @@ module Make (DS : DataStructure) = struct
         Histogram.dump merged);;
 
     let unsafe_print_executed_tasks () =
-      with_processor (fun processor -> 
-        let processors = Processor.all_processors processor in
+      with_context (fun {all_processors; _} -> 
         let counters = Array.map (fun processor -> 
           Processor.executed_tasks processor) 
-          processors in 
-        Array.iter Processor.zero_executed_tasks processors;
+          all_processors in 
+        Array.iter Processor.zero_executed_tasks all_processors;
         counters 
         |> Array.to_list
         |> List.map Int.to_string
@@ -295,7 +288,7 @@ end
 module type S = sig
   val init : ?join_the_pool:bool -> ?size_exponent:int -> f:(unit -> unit) -> int -> unit
   val pending_tasks : unit -> int
-  val scheduler_footprint : String.t
+  val scheduler_name : String.t
   module Stats : sig 
     val unsafe_print_latency_histogram : unit -> unit 
     val unsafe_print_executed_tasks : unit -> unit
