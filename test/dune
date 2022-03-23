@@ -2,7 +2,6 @@
  (names benchmark_process_packet benchmark_process_packet_artifical
   benchmark_mixer test1 test2 benchmark_fib
   stack_test stack_validation spmc_queue_validate benchmark_time
-  scheduler_promises_test test_inject)
- (libraries schedulr unix dscheck core oclock)
- (ocamlopt_flags -O3)
-  )
+  scheduler_promises_test test_inject micropools_test)
+ (libraries schedulr unix dscheck core oclock micropools)
+ (ocamlopt_flags -O3))

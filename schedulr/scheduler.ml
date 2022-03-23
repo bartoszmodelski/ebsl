@@ -191,16 +191,20 @@ module Make (DS : DataStructure) = struct
 
   let rec steal ~context = 
     let ({processor; all_processors; _} : Context.t) = context in 
-    let my_id = Processor.id processor in
-    let other_queue_id = Random.int (Array.length all_processors) in 
-    if other_queue_id = my_id then
-      steal ~context 
-    else 
-      (let other_processor = Array.get all_processors other_queue_id in
-      let other_ds = Processor.ds other_processor in 
-      let my_ds = Processor.ds processor in 
-      DS.global_steal ~from:other_ds ~to_local:my_ds  
-      |> ignore)
+    let num_of_processors = Array.length all_processors in 
+    if num_of_processors < 2 
+    then () 
+    else
+      (let my_id = Processor.id processor in
+      let other_queue_id = Random.int num_of_processors in 
+      if other_queue_id = my_id then
+        steal ~context 
+      else 
+        (let other_processor = Array.get all_processors other_queue_id in
+        let other_ds = Processor.ds other_processor in 
+        let my_ds = Processor.ds processor in 
+        DS.global_steal ~from:other_ds ~to_local:my_ds  
+        |> ignore))
     
   let take_from_global_queue ~context = 
     let ({processor; _} : Context.t) = context in 
@@ -260,8 +264,11 @@ module Make (DS : DataStructure) = struct
         Stdlib.exit 1;;
 
   let init ?(afterwards=`join_the_pool) ?size_exponent ~(f : unit -> unit) n =
+    assert (n > 0);
     let num_of_processors = 
-      if afterwards == `join_the_pool then n+1 else n
+      match afterwards with 
+      | `join_the_pool -> n+1 
+      | `return -> n
     in 
     let all_processors = 
       List.init num_of_processors 
@@ -276,11 +283,12 @@ module Make (DS : DataStructure) = struct
       let context = 
         ({processor; all_processors; global_queue; global_queue_mutex} : Context.t) 
       in 
-      Domain.spawn (fun () -> notify_user (setup_domain context) ()) |> ignore) 
-    |> ignore;
+      Domain.spawn (fun () -> 
+        notify_user (setup_domain context) ()) |> ignore) 
+      |> ignore;
     (* run f from within the pool *)
     match afterwards with
-    | `return ->  
+    | `return -> 
       {global_queue; global_queue_mutex}
     | `join_the_pool -> 
       let processor = Array.get all_processors n in 
