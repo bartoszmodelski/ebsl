@@ -74,7 +74,7 @@ let benchmark ~domains ~n_jobs (module Sched : Schedulr.Scheduler.S) =
     done;
     Printf.printf "done\n";
     Stdlib.flush_all ();
-    Stdlib.exit 0);;
+    Stdlib.exit 0) |> ignore;;
 
 
 let () =

@@ -64,7 +64,7 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
     done; 
     Printf.printf "done\n"; 
     Stdlib.flush_all ();
-    Stdlib.exit 0);;
+    Stdlib.exit 0) |> ignore;;
 
 (* cmd *)
 

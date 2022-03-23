@@ -32,4 +32,4 @@ let () =
     log "scheduled\n";
     Unix.sleep 15;
     log "exit \n";
-    ())
+    ()) |> ignore

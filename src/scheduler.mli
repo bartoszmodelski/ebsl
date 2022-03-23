@@ -2,10 +2,15 @@ val await : 'a Promise.t -> 'a
 val schedule : (unit -> 'a) -> 'a Promise.t
 val yield : unit -> unit
 
-
 module type S = sig
-  val init : ?join_the_pool:bool -> ?size_exponent:int -> f:(unit -> unit) -> int -> unit
-  
+  type t 
+  val init : ?afterwards:[`join_the_pool | `return] 
+    -> ?size_exponent:int 
+    -> f:(unit -> unit) 
+    -> int 
+    -> t
+  val inject_task : t -> (unit -> unit) -> unit
+
   val pending_tasks : unit -> int
   val scheduler_name : String.t
   module Stats : sig 

@@ -41,4 +41,4 @@ let () = FIFO.init 10 ~f:(fun () ->
   log "scheduled\n";
   let _a = Stdlib.read_line () in
   log "exit \n";
-  ());;
+  ()) |> ignore;;

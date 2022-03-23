@@ -10,7 +10,7 @@ let test_1 () =
     Printf.printf "- %s %s\n" (await a) (await b);
     Printf.printf "done\n";
     Stdlib.flush_all ();
-    ());
+    ()) |> ignore;
   Unix.sleep 2;
   Printf.printf "exiting\n";
   Stdlib.flush_all ();;
@@ -26,7 +26,7 @@ let test_2 () =
         (await a + await b) 
     in
     Printf.printf "result: %d\n" (fib 13);
-    Stdlib.flush_all ());
+    Stdlib.flush_all ()) |> ignore;
   let _a = Stdlib.read_line () in
   Printf.printf "exiting\n";
   Stdlib.flush_all ();;

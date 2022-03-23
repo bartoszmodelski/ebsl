@@ -112,6 +112,16 @@ module Make (DS : DataStructure) = struct
         Mutex.unlock global_queue_mutex);; 
   end
 
+  type t = {
+    global_queue : (unit -> unit) Queue.t; 
+    global_queue_mutex : Mutex.t
+  }
+
+  let inject_task {global_queue; global_queue_mutex} f = 
+    Mutex.lock global_queue_mutex; 
+    Queue.push f global_queue;
+    Mutex.unlock global_queue_mutex;;
+
   let domain_key = Domain.DLS.new_key 
     (fun () -> None);;
 
@@ -234,12 +244,13 @@ module Make (DS : DataStructure) = struct
 
   let setup_domain context = 
     Domain.at_exit (fun () -> 
-      Printf.printf "domain exited unexpectedly";
+      Printf.printf "Domain exited unexpectedly\n";
       Stdlib.flush_all ());
     Domain.DLS.set domain_key (Some context); 
     let ds =
       let ({processor; _} : Context.t) = context in 
-      Processor.ds processor in 
+      Processor.ds processor 
+    in 
     DS.register_domain_id ds;
     run_domain ();;
     
@@ -251,9 +262,9 @@ module Make (DS : DataStructure) = struct
         Stdlib.flush_all ();
         Stdlib.exit 1;;
 
-  let init ?(join_the_pool=true) ?size_exponent ~(f : unit -> unit) n =
+  let init ?(afterwards=`join_the_pool) ?size_exponent ~(f : unit -> unit) n =
     let num_of_processors = 
-      if join_the_pool then n+1 else n
+      if afterwards == `join_the_pool then n+1 else n
     in 
     let all_processors = 
       List.init num_of_processors 
@@ -261,6 +272,7 @@ module Make (DS : DataStructure) = struct
       |> Array.of_list 
     in
     let global_queue = Queue.create () in 
+    Queue.add f global_queue;
     let global_queue_mutex = Mutex.create () in 
     List.init n (fun index -> 
       let processor = Array.get all_processors index in  
@@ -270,16 +282,15 @@ module Make (DS : DataStructure) = struct
       Domain.spawn (fun () -> notify_user (setup_domain context) ()) |> ignore) 
     |> ignore;
     (* run f from within the pool *)
-    if join_the_pool then (
+    match afterwards with
+    | `return ->  
+      {global_queue; global_queue_mutex}
+    | `join_the_pool -> 
       let processor = Array.get all_processors n in 
       let context = 
         ({processor; all_processors; global_queue; global_queue_mutex} : Context.t) 
       in 
-      Domain.DLS.set domain_key (Some context);
-      let ds = Processor.ds processor in 
-      DS.register_domain_id ds;
-      assert (DS.local_insert ds (Scheduled.task f));
-      run_domain ());;
+      setup_domain context;;
 
   let pending_tasks () = 
     with_context (fun ({all_processors; _} : Context.t) -> 
@@ -318,7 +329,15 @@ module Make (DS : DataStructure) = struct
 end
 
 module type S = sig
-  val init : ?join_the_pool:bool -> ?size_exponent:int -> f:(unit -> unit) -> int -> unit
+  type t
+
+  val init : ?afterwards:[`join_the_pool | `return] 
+    -> ?size_exponent:int 
+    -> f:(unit -> unit) 
+    -> int 
+    -> t
+  val inject_task : t -> (unit -> unit) -> unit
+
   val pending_tasks : unit -> int
   val scheduler_name : String.t
   module Stats : sig 
