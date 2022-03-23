@@ -48,34 +48,27 @@ module type DataStructure = sig
   val name : String.t
 end;;
 
-module Clock = struct 
-  let realtime = 
-    match Core.Unix.Clock.gettime with 
-    | Error _ -> assert false 
-    | Ok v -> v
-
-  let get () = realtime Core.Unix.Clock.Monotonic
-end
-
 module Make (DS : DataStructure) = struct   
   let scheduler_name = DS.name;;
 
   module Processor = struct 
     type t = {
       ds : Scheduled.t DS.t;
-      my_id : int; 
+      id : int; 
       latency_histogram : Histogram.t;
       executed_tasks : int ref;
+      steal_attempts : int ref; 
     }
 
-    let init ?size_exponent my_id = {
+    let init ?size_exponent id = {
         ds = DS.init ?size_exponent ();
-        my_id; 
+        id; 
         latency_histogram = Histogram.init ();
         executed_tasks = ref 0;
+        steal_attempts = ref 0;
       }
     
-    let my_id {my_id; _} = my_id
+    let id {id; _} = id
     let ds {ds; _} = ds
 
     let incr_tasks {executed_tasks; _} = 
@@ -93,13 +86,30 @@ module Make (DS : DataStructure) = struct
       Histogram.log_val latency_histogram (Core.Int63.to_int_exn span) 
     
     let _ = log_time ;;
+
+    let take_from {steal_attempts; _} = 
+      steal_attempts := !steal_attempts + 1;
+      if !steal_attempts mod 4 = 0 then 
+        `Global_queue 
+      else 
+        `Steal;;
+
   end 
 
   module Context = struct 
     type t = {
       processor : Processor.t;
-      all_processors : Processor.t Array.t
+      all_processors : Processor.t Array.t;
+      global_queue : (unit -> unit) Queue.t; 
+      global_queue_mutex : Mutex.t
     }
+
+    let try_with_global_queue {global_queue; global_queue_mutex; _} f = 
+      if not (Mutex.try_lock global_queue_mutex)
+      then ()  
+      else
+        (f global_queue;  
+        Mutex.unlock global_queue_mutex);; 
   end
 
   let domain_key = Domain.DLS.new_key 
@@ -142,11 +152,11 @@ module Make (DS : DataStructure) = struct
     { effc = fun (type a) (e : a eff) ->
       match e with
       | Schedule new_f ->  
-        let time_start = Clock.get () in
+        let time_start = Fast_clock.now () in
         Some (fun (k : (a, unit) continuation) -> 
           let promise = Promise.empty () in     
           schedule_internal ~has_yielded:false (Scheduled.task (fun () -> 
-            let time_end = Clock.get () in
+            let time_end = Fast_clock.now () in
             with_processor (fun processor -> 
               Processor.log_time processor (Core.Int63.(time_end - time_start));
               Processor.incr_tasks processor); 
@@ -169,29 +179,46 @@ module Make (DS : DataStructure) = struct
           | `Already_done returned -> continue k returned)
       | _ -> None}
 
-  let steal ~my_ds = 
-    with_context (fun {processor; all_processors} -> 
-      let my_id = Processor.my_id processor in
-      let other_queue_id = Random.int (Array.length all_processors) in 
-      if other_queue_id = my_id then
-        ()
-      else 
-        (let other_processor = Array.get all_processors other_queue_id in
-        let other_ds = Processor.ds other_processor in 
-        DS.global_steal ~from:other_ds ~to_local:my_ds 
-        |> ignore))
+  let rec steal ~context = 
+    let ({processor; all_processors; _} : Context.t) = context in 
+    let my_id = Processor.id processor in
+    let other_queue_id = Random.int (Array.length all_processors) in 
+    if other_queue_id = my_id then
+      steal ~context 
+    else 
+      (let other_processor = Array.get all_processors other_queue_id in
+      let other_ds = Processor.ds other_processor in 
+      let my_ds = Processor.ds processor in 
+      DS.global_steal ~from:other_ds ~to_local:my_ds  
+      |> ignore)
     
+  let take_from_global_queue ~context = 
+    let ({processor; _} : Context.t) = context in 
+    let ds = Processor.ds processor in 
+    Context.try_with_global_queue context (fun queue -> 
+      match Queue.take_opt queue with 
+      | None -> ()
+      | Some task -> 
+        assert (DS.local_insert ds (Scheduled.task task)))
+  ;;
+      
+  let find_work ~context =
+    let ({processor; _}: Context.t) = context in 
+    match Processor.take_from processor with 
+    | `Global_queue -> take_from_global_queue ~context
+    | `Steal -> steal ~context;;
+
   let rec run_domain () = 
     let scheduled = 
-      with_processor (fun processor ->
+      with_context (fun context ->
+        let ({processor; _} : Context.t) = context in 
         let task_ds = Processor.ds processor in
         match DS.local_remove task_ds with 
-        | Some task -> 
-          task 
+        | Some task -> task 
         | None -> 
           let task = ref None in 
           while Option.is_none !task do 
-            steal ~my_ds:task_ds; 
+            find_work ~context; 
             task := DS.local_remove task_ds
           done;
           match !task with 
@@ -223,7 +250,6 @@ module Make (DS : DataStructure) = struct
         Printf.eprintf "Uncaught exception: %s%s\n" msg stack;
         Stdlib.flush_all ();
         Stdlib.exit 1;;
-  
 
   let init ?(join_the_pool=true) ?size_exponent ~(f : unit -> unit) n =
     let num_of_processors = 
@@ -234,15 +260,21 @@ module Make (DS : DataStructure) = struct
         (fun id -> Processor.init ?size_exponent id) 
       |> Array.of_list 
     in
+    let global_queue = Queue.create () in 
+    let global_queue_mutex = Mutex.create () in 
     List.init n (fun index -> 
       let processor = Array.get all_processors index in  
-      let context = ({processor; all_processors} : Context.t) in 
+      let context = 
+        ({processor; all_processors; global_queue; global_queue_mutex} : Context.t) 
+      in 
       Domain.spawn (fun () -> notify_user (setup_domain context) ()) |> ignore) 
     |> ignore;
     (* run f from within the pool *)
     if join_the_pool then (
       let processor = Array.get all_processors n in 
-      let context = ({processor; all_processors} : Context.t) in
+      let context = 
+        ({processor; all_processors; global_queue; global_queue_mutex} : Context.t) 
+      in 
       Domain.DLS.set domain_key (Some context);
       let ds = Processor.ds processor in 
       DS.register_domain_id ds;
