@@ -243,9 +243,6 @@ module Make (DS : DataStructure) = struct
     run_domain ();;
 
   let setup_domain context = 
-    Domain.at_exit (fun () -> 
-      Printf.printf "Domain exited unexpectedly\n";
-      Stdlib.flush_all ());
     Domain.DLS.set domain_key (Some context); 
     let ds =
       let ({processor; _} : Context.t) = context in 
