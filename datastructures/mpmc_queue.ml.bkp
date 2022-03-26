@@ -1,11 +1,10 @@
 (* MPMC queue inspired by https://dl.acm.org/doi/pdf/10.1145/3437801.3441583
-  Modified to disallow overlaps.
 *)
 
 module Atomic = Dscheck.TracedAtomic
 
 type 'a t = {
-  array: 'a Atomic.t Array.t;
+  array: 'a Option.t Atomic.t Array.t;
   head: int Atomic.t;
   realised_head: int Atomic.t; 
   tail: int Atomic.t;
@@ -16,11 +15,10 @@ type 'a t = {
   tail points one ahead of the last element (if any)
 *)
 
-let empty_cell = Obj.magic 0
 
 let init ?(size_exponent=8) () : 'a t =
   let size = 1 lsl size_exponent in
-  let array = Array.init size (fun _ -> Atomic.make (empty_cell)) in 
+  let array = Array.init size (fun _ -> Atomic.make None) in 
   let mask = size - 1 in
   let head = Atomic.make 0 in 
   let tail = Atomic.make 0 in  
@@ -31,9 +29,15 @@ let enqueue {array; tail; mask; _} element =
   let index = (Atomic.fetch_and_add tail 1) land mask in
   Stdlib.flush_all ();
   let cell = Array.get array index in 
-  while not (Atomic.compare_and_set cell empty_cell element) do
+  while not (Atomic.compare_and_set cell None element) do
     Domain.cpu_relax ()     
   done;;
+
+let value_exn = 
+  (function 
+  | None -> assert false 
+  | Some v -> v)
+;;
 
 let rec dequeue queue =
   let ({array; head; realised_head; tail; mask; _} : 'a t) = queue in
@@ -51,11 +55,12 @@ let rec dequeue queue =
       let index = head_value land mask in 
       let cell = Array.get array index in 
       let cell_value = Atomic.get cell in
-      Atomic.set cell empty_cell;
+      Atomic.set cell None;
       (while not (Atomic.compare_and_set realised_head head_value new_head) do 
         ()
       done);
-      Some cell_value);;
+      Some (value_exn cell_value))
+;;
   
 let log ~thr s = 
   let s = 

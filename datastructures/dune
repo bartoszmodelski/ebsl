@@ -1,0 +1,4 @@
+(library
+ (name datastructures)
+ (libraries unix dscheck core)
+ )
