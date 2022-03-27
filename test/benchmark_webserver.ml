@@ -6,29 +6,38 @@ let process_pool = ref None
 let decode_pool = ref None 
 let accept_pool = ref None 
 
+let hist = Schedulr.Histogram.init ~size:48 ()
+
 let process ~start_time () = 
   Unix.sleepf 0.0001;
   Micropools.schedule (fun () -> 
-    Unix.sleepf 0.0001;
     let end_time = Schedulr.Fast_clock.now () in 
-    let _diff =  Base.Int63.(to_int_exn(end_time-start_time)) in
-    Printf.printf "%d-" (_diff / 1_000_000); 
+    let diff =  Base.Int63.(to_int_exn(end_time-start_time)) in 
+    Schedulr.Histogram.log_val hist (diff + 1);
     Atomic.incr _done);;
 
 let accept ~start_time () = 
-  Unix.sleepf 0.00001;
+  Unix.sleepf 0.0001;
   Micropools.schedule ?pool_name:!decode_pool (fun () -> 
+    Unix.sleepf 0.0001;
     Micropools.schedule ?pool_name:!process_pool (process ~start_time));;
 
 let total_calls = 10000
 
 let pool_size = ref 1
+let ready = Atomic.make 0 
+
 let bench () =
   Micropools.schedule ~pool_size:!pool_size ~pool_name:"general" (fun () -> 
-    (* touch pools first *)
-    Micropools.schedule ~pool_size:!pool_size ?pool_name:!process_pool (fun () -> ());
-    Micropools.schedule ~pool_size:!pool_size ?pool_name:!decode_pool (fun () -> ());
-    Micropools.schedule ~pool_size:!pool_size ?pool_name:!accept_pool (fun () -> ());
+    if Option.is_some !process_pool 
+    then 
+      ((* touch pools first *)
+      let start_f = fun () -> Atomic.incr ready in 
+      Micropools.schedule ~pool_size:!pool_size ?pool_name:!process_pool start_f;
+      Micropools.schedule ~pool_size:!pool_size ?pool_name:!decode_pool start_f;
+      Micropools.schedule ~pool_size:!pool_size ?pool_name:!accept_pool start_f;
+      (* wait for setup *)
+      while Atomic.get ready < 3 do () done);
     (* bench *)
     for _ = 1 to total_calls do
       let start_time = Schedulr.Fast_clock.now () in  
@@ -52,4 +61,5 @@ let set_mode = function
 
 let () =
   set_mode `Single;
-  bench () 
+  bench (); 
+  Schedulr.Histogram.dump hist;;
