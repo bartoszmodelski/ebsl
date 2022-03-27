@@ -1,1 +1,1 @@
-val schedule : ?pool_name:String.t -> (unit -> unit) -> unit
+val schedule : ?pool_size:int -> ?pool_name:String.t -> (unit -> unit) -> unit
