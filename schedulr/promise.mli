@@ -6,5 +6,5 @@ type 'a t = private {
 
 val empty : unit -> 'a t
 
-val await : 'a t -> ('a -> unit) -> [> `Already_done of 'a | `Scheduled ]
+val await : 'a t -> ('a -> unit) -> [> `Already_done of 'a | `Task ]
 val fill : 'a t -> 'a -> ('a -> unit) list

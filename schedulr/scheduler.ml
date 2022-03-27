@@ -12,27 +12,6 @@ let yield () = perform Yield
 let await promise = perform (Await promise)
 let schedule f = perform (Schedule f)
 
-module Scheduled = struct 
-  type sched = 
-    | Task of (unit -> unit)
-    | Preempted_task of (unit, unit) continuation
-
-  type t = 
-    {s : sched; 
-    execd : int Atomic.t}
-
-  let task c = 
-    {s = Task c; execd = Atomic.make 0}
-  
-  let preem c = 
-    {s = Preempted_task c; execd = Atomic.make 0}
-
-  let _ = preem
-
-  let get {s; execd} = 
-    Atomic.incr execd; 
-    s;;
-end
 
 module type DataStructure = sig 
   (* TODO: make global/local submodules *)
@@ -55,7 +34,7 @@ module Make (DS : DataStructure) = struct
 
   module Processor = struct 
     type t = {
-      ds : Scheduled.t DS.t;
+      ds : Task.t DS.t;
       id : int; 
       latency_histogram : Histogram.t;
       executed_tasks : int ref;
@@ -145,7 +124,7 @@ module Make (DS : DataStructure) = struct
       List.iter (fun awaiting -> 
         schedule_internal 
           ~has_yielded:false 
-          (Scheduled.task (fun () -> awaiting result)))
+          (Task.new_task (fun () -> awaiting result)))
           to_run;;
 
   let with_effects_handler f =
@@ -156,7 +135,7 @@ module Make (DS : DataStructure) = struct
         let time_start = Fast_clock.now () in
         Some (fun (k : (a, unit) continuation) -> 
           let promise = Promise.empty () in     
-          schedule_internal ~has_yielded:false (Scheduled.task (fun () -> 
+          schedule_internal ~has_yielded:false (Task.new_task (fun () -> 
             let time_end = Fast_clock.now () in
             with_processor (fun processor -> 
               Processor.log_time processor (Core.Int63.(time_end - time_start));
@@ -171,12 +150,12 @@ module Make (DS : DataStructure) = struct
         Some (fun k -> 
           schedule_internal 
             ~has_yielded:true 
-            (Scheduled.task (fun () -> 
+            (Task.new_task (fun () -> 
               continue k ())))
       | Await promise ->
         Some (fun k -> 
           match (Promise.await promise (continue k)) with 
-          | `Scheduled -> () 
+          | `Task -> () 
           | `Already_done returned -> continue k returned)
       | _ -> None}
 
@@ -203,7 +182,7 @@ module Make (DS : DataStructure) = struct
     match Custom_queue.dequeue global_queue with 
     | None -> ()
     | Some task -> 
-      assert (DS.local_insert ds (Scheduled.task task))
+      assert (DS.local_insert ds (Task.new_task task))
   ;;
       
   let find_work ~context =
@@ -229,10 +208,10 @@ module Make (DS : DataStructure) = struct
           | None -> assert false 
           | Some task -> task)
     in
-    (match Scheduled.get scheduled with
-    | Task task -> 
+    (match Task.get scheduled with
+    | New task -> 
       (with_effects_handler task)
-    | Preempted_task task -> 
+    | Preempted task -> 
       continue task ());
     run_domain ();;
 

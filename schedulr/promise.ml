@@ -24,7 +24,7 @@ let await promise f =
     match !awaiting with 
     | Some awaiting_val -> 
       awaiting := Some (f :: awaiting_val); 
-      `Scheduled
+      `Task
     | None -> 
       match !returned with 
       | None -> assert false 
