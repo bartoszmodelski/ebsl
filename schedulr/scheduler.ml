@@ -1,6 +1,8 @@
 open EffectHandlers
 open EffectHandlers.Deep 
 
+module Custom_queue = Datastructures.Mpmc_queue
+
 let _ = Printexc.record_backtrace true
 
 type _ eff += Yield : unit eff
@@ -100,27 +102,16 @@ module Make (DS : DataStructure) = struct
     type t = {
       processor : Processor.t;
       all_processors : Processor.t Array.t;
-      global_queue : (unit -> unit) Queue.t; 
-      global_queue_mutex : Mutex.t
+      global_queue : (unit -> unit) Custom_queue.t;
     }
-
-    let try_with_global_queue {global_queue; global_queue_mutex; _} f = 
-      if not (Mutex.try_lock global_queue_mutex)
-      then ()  
-      else
-        (f global_queue;  
-        Mutex.unlock global_queue_mutex);; 
   end
 
   type t = {
-    global_queue : (unit -> unit) Queue.t; 
-    global_queue_mutex : Mutex.t
+    global_queue : (unit -> unit) Custom_queue.t;
   }
 
-  let inject_task {global_queue; global_queue_mutex} f = 
-    Mutex.lock global_queue_mutex; 
-    Queue.push f global_queue;
-    Mutex.unlock global_queue_mutex;;
+  let inject_task {global_queue} f = 
+    Custom_queue.enqueue global_queue f;;
 
   let domain_key = Domain.DLS.new_key 
     (fun () -> None);;
@@ -207,13 +198,12 @@ module Make (DS : DataStructure) = struct
         |> ignore))
     
   let take_from_global_queue ~context = 
-    let ({processor; _} : Context.t) = context in 
-    let ds = Processor.ds processor in 
-    Context.try_with_global_queue context (fun queue -> 
-      match Queue.take_opt queue with 
-      | None -> ()
-      | Some task -> 
-        assert (DS.local_insert ds (Scheduled.task task)))
+    let ({processor; global_queue; _} : Context.t) = context in 
+    let ds = Processor.ds processor in  
+    match Custom_queue.dequeue global_queue with 
+    | None -> ()
+    | Some task -> 
+      assert (DS.local_insert ds (Scheduled.task task))
   ;;
       
   let find_work ~context =
@@ -275,13 +265,12 @@ module Make (DS : DataStructure) = struct
         (fun id -> Processor.init ?size_exponent id) 
       |> Array.of_list 
     in
-    let global_queue = Queue.create () in 
-    Queue.add f global_queue;
-    let global_queue_mutex = Mutex.create () in 
+    let global_queue = Custom_queue.init () in 
+    Custom_queue.enqueue global_queue f;
     List.init n (fun index -> 
       let processor = Array.get all_processors index in  
       let context = 
-        ({processor; all_processors; global_queue; global_queue_mutex} : Context.t) 
+        ({processor; all_processors; global_queue} : Context.t) 
       in 
       Domain.spawn (fun () -> 
         notify_user (setup_domain context) ()) |> ignore) 
@@ -289,11 +278,11 @@ module Make (DS : DataStructure) = struct
     (* run f from within the pool *)
     match afterwards with
     | `return -> 
-      {global_queue; global_queue_mutex}
+      {global_queue}
     | `join_the_pool -> 
       let processor = Array.get all_processors n in 
       let context = 
-        ({processor; all_processors; global_queue; global_queue_mutex} : Context.t) 
+        ({processor; all_processors; global_queue} : Context.t) 
       in 
       setup_domain context;;
 

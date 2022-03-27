@@ -1,4 +1,4 @@
 (library
  (name schedulr)
- (libraries unix dscheck core)
+ (libraries unix dscheck core datastructures)
  )
