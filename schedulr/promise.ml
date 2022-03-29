@@ -5,7 +5,6 @@ let with_mutex mtx f =
   Mutex.unlock mtx; 
   v;; 
 
-
 (* this should be a variant! *)
 type 'a t = {
   returned : 'a option ref;

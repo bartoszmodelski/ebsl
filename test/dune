@@ -4,5 +4,4 @@
   stack_test stack_validation spmc_queue_validate benchmark_time
   scheduler_promises_test test_inject micropools_test benchmark_queue
   benchmark_webserver)
- (libraries schedulr unix dscheck core oclock micropools datastructures)
- (ocamlopt_flags -O3))
+ (libraries schedulr unix dscheck core oclock micropools datastructures))

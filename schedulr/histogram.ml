@@ -11,6 +11,11 @@ let log_val t value =
     let current_value = Array.get t index in
     Array.set t index (current_value + 1));;
 
+
+let add_val t value =
+  let current_value = Array.get t value in
+  Array.set t value (current_value + 1);;
+
 let zero_out t = 
   Array.fill t 0 (Array.length t) 0;;
 
@@ -27,10 +32,26 @@ let merge l =
 
 let dump t = 
   Array.to_list t 
-  |> List.map Int.to_string
+  |> List.map (Printf.sprintf "%6d")
   |> String.concat ","
   |> Printf.printf "latency:[%s]\n"
 
+let quantile ~quantile t = 
+  let total = 
+    Array.fold_right 
+      (fun element  curr_sum -> element + curr_sum) t 0 
+  in
+  let index = ref 0 in 
+  let array_index = ref 0 in 
+  let target_index = 
+    (Int.to_float total) *. quantile
+  in 
+  while Int.to_float !index < target_index do 
+    index := !index + (Array.get t !array_index);
+    array_index := !array_index + 1;
+  done;
+  !array_index - 1
+;;
 
 let test = 
   let t1 = init () in
@@ -48,3 +69,46 @@ let test =
   assert (nth 2 = 0); 
   assert (nth 3 = 1); 
   assert (nth 4 = 0);;
+
+let test_quantile_1 = 
+  let t = init () in 
+  for i = 0 to 119 do
+    add_val t (i/4);
+  done;
+  assert (quantile ~quantile:0.5 t == 14);
+  assert (quantile ~quantile:0.01 t == 0);
+  assert (quantile ~quantile:0.99 t == 29);; 
+
+
+let test_quantile_2 = 
+  let t = init () in 
+  for _ = 0 to 30 do
+    add_val t 0;
+  done;
+  add_val t 10;
+  assert (quantile ~quantile:0.99 t == 10);; 
+
+module Per_thread = struct 
+  let current_index = Atomic.make 0
+  let array = ref (Array.make 0 (init ()));; 
+
+  let init ?size count = 
+    array := Array.init count (fun _ -> init ?size ());; 
+
+  let key = Domain.DLS.new_key (fun () ->
+    let index = Atomic.fetch_and_add current_index 1 in 
+    if index >= (Array.length !array) 
+    then 
+      (Printf.printf "hist index exceeded initializaiton\n"; 
+      Stdlib.flush_all ());
+    index);;
+
+  let get_hist () = 
+    Array.get !array (Domain.DLS.get key);;
+
+  let all () =
+    Array.to_list !array |> merge;;
+
+  let dump_each () = 
+    Array.iter dump !array 
+end
