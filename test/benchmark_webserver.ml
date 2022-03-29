@@ -16,9 +16,9 @@ let process ~start_time () =
     Atomic.incr _done);;
 
 let accept ~start_time () = 
-  Micropools.schedule ?pool_name:!decode_pool (fun () -> 
-    Micropools.schedule ?pool_name:!process_pool (process ~start_time));;
-
+  Micropools.schedule ?pool_name:!accept_pool (fun () ->
+    Micropools.schedule ?pool_name:!decode_pool (fun () -> 
+      Micropools.schedule ?pool_name:!process_pool (process ~start_time)));;
 
 
 let total_calls = 10000000
@@ -39,12 +39,13 @@ let bench () =
       (* wait for setup *)
       while Atomic.get ready < 4 do () done);
     (* bench *)
+
     for _ = 1 to 10 do 
+      let start_time = Schedulr.Fast_clock.now () in  
       for _ = 1 to total_calls/10 do
-        let start_time = Schedulr.Fast_clock.now () in  
-        Micropools.schedule ?pool_name:!accept_pool (accept ~start_time);
+        accept ~start_time ();
       done;
-      (*Unix.sleepf 0.00001;*) 
+      Unix.sleepf 0.00001; 
     done);
   while Atomic.get _done < total_calls do () done;
   Printf.printf "done\n";
@@ -85,4 +86,4 @@ let () =
   let f v = 
     Schedulr.Histogram.quantile ~quantile:v merged
   in
-  Printf.printf ".99: %d, .999: %d, 9995: %d\n" (f 0.99) (f 0.999) (f 0.9995);;
+  Printf.printf ".5: %d, .99: %d, .999: %d, 9995: %d\n" (f 0.5) (f 0.99) (f 0.999) (f 0.9995);;
