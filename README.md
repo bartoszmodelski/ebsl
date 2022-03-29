@@ -7,3 +7,7 @@ Directories:
 * `evaluation` - jupyter notebooks with benchmarks.  
 * `test` - mix of tests and benchmarks.
 * `dscheck` - vendored dscheck (to be removed).
+
+Todo:
+* Move stack and other queues into `datastructure`
+* Trim dependencies 
