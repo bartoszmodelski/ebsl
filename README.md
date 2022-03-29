@@ -6,4 +6,4 @@ Directories:
 * `micropools` - extension of `schedulr` to a multischeduler graph framework (SEDA-like).
 * `evaluation` - jupyter notebooks with benchmarks.  
 * `test` - mix of tests and benchmarks.
-* `dscheck` - vendored dscheck (TO BE REMOVED).
+* `dscheck` - vendored dscheck (to be removed).
