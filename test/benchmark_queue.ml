@@ -70,6 +70,6 @@ let () =
   in
   let times = 
     List.map (fun v -> Int64.div v 1_000_000L) times 
+    |> List.map (Int64.to_string) |> String.concat ","  
   in
-  List.iter (fun v -> 
-    Printf.printf "time: %Ld ms\n" v) times;;
+  Printf.printf "[%s]\n" times;;
