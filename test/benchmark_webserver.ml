@@ -35,10 +35,10 @@ module Pools = struct
     in
     Micropools.schedule ?pool_size ?pool_name f
 
-    let sched_accept = sched `Accept
-    let sched_process = sched `Process
-    let sched_time = sched `Time
-    let sched_decode = sched `Decode
+    let sched_accept ?pool_size f = sched `Accept ?pool_size f 
+    let sched_process ?pool_size f = sched `Process ?pool_size f 
+    let sched_time ?pool_size f = sched `Time ?pool_size f 
+    let sched_decode ?pool_size f = sched `Decode ?pool_size f 
     let sched_general ?pool_size f = sched ?pool_size `General f
 
 
@@ -49,15 +49,16 @@ module Pools = struct
     match !mode with 
     | None -> assert false 
     | Some Single -> 
-      (sched_general ~pool_size:5 start_f;
+      (sched_general ~pool_size:10 start_f;
       while Atomic.get ready < 1 do () done)
     | Some Pools ->
       ((* touch pools first *)
-      sched_general ~pool_size:1 start_f;
-      sched_accept start_f;
-      sched_process start_f;
-      sched_time start_f;
-      sched_decode start_f;
+      let pool_size = 2 in 
+      sched_general ~pool_size start_f;
+      sched_accept ~pool_size start_f;
+      sched_process ~pool_size start_f;
+      sched_time ~pool_size start_f;
+      sched_decode ~pool_size start_f;
       (* wait for setup *)
       while Atomic.get ready < 4 do () done);;
 end
@@ -65,8 +66,11 @@ end
 
 let accept ~start_time () = 
   Pools.sched_accept (fun () ->
+    Unix.sleepf 0.000_001;
     Pools.sched_decode (fun () -> 
+      Unix.sleepf 0.000_001;
         Pools.sched_process (fun () ->
+          Unix.sleepf 0.000_001;
           Pools.sched_time (fun () -> 
             let end_time = Schedulr.Fast_clock.now () in 
             let diff =  Base.Int63.(to_int_exn(end_time-start_time)) in 
@@ -75,7 +79,7 @@ let accept ~start_time () =
             Atomic.incr _done))));;
 
 
-let total_calls = 10000000
+let total_calls = 1000000
 
 let pool_size = ref 1
 
@@ -117,4 +121,5 @@ let () =
   let f v = 
     Schedulr.Histogram.quantile ~quantile:v merged
   in
-  Printf.printf ".5: %d, .99: %d, .999: %d, 9995: %d\n" (f 0.5) (f 0.99) (f 0.999) (f 0.9995);;
+  Printf.printf ".5: %d, .99: %d, .999: %d, 9995: %d\n" 
+    (f 0.5) (f 0.99) (f 0.999) (f 0.9995);;
