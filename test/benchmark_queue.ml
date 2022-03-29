@@ -1,5 +1,5 @@
 
-let total_rounds = 8
+let total_rounds = 30
 let bench ~num_of_domains ~item_count (module Queue : Datastructures.Queue_intf.S) = 
   assert (num_of_domains mod 2 == 0);
   Random.init 0;
@@ -46,15 +46,20 @@ let () =
   let anon_fun _ = failwith "no anon parameters expected" in
   let queue = ref "" in
   let num_of_domains = ref 0 in 
+  let num_of_queues = ref 0 in 
   let speclist =
     [("-queue", Arg.Set_string queue, "set scheduler algo");
-    ("-num-of-domains", Arg.Set_int num_of_domains, "set num of domains")] 
+    ("-num-of-domains", Arg.Set_int num_of_domains, "set num of domains");
+    ("-num-of-queues", Arg.Set_int num_of_queues, "set num of queues (LFM only)")] 
   in 
   Arg.parse speclist anon_fun usage_msg;
   let queue_module =
       match !queue with 
       | "LF" -> (module Datastructures.Mpmc_queue : Datastructures.Queue_intf.S)
       | "LOCK" -> (module Datastructures.Lock_queue)
+      | "LFM" -> 
+        assert (!num_of_queues > 0);
+        (module Datastructures.Multi_mpmc_queue.Make(struct let num_of_queues = !num_of_queues end))
       | _ -> assert false
   in 
   assert (0 < !num_of_domains && !num_of_domains < 512);

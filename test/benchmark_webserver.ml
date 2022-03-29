@@ -49,11 +49,11 @@ module Pools = struct
     match !mode with 
     | None -> assert false 
     | Some Single -> 
-      (sched_general ~pool_size:10 start_f;
+      (sched_general ~pool_size:50 start_f;
       while Atomic.get ready < 1 do () done)
     | Some Pools ->
       ((* touch pools first *)
-      let pool_size = 2 in 
+      let pool_size = 10 in 
       sched_general ~pool_size start_f;
       sched_accept ~pool_size start_f;
       sched_process ~pool_size start_f;
@@ -79,12 +79,13 @@ let accept ~start_time () =
             Atomic.incr _done))));;
 
 
-let total_calls = 1000000
+let total_calls = 10000000
 
 let pool_size = ref 1
 
 let bench () =
   Pools.init ();
+  Unix.sleep 2;
   Pools.sched_general (fun () -> 
     (* bench *)
     for _ = 1 to 10 do 
@@ -100,7 +101,7 @@ let bench () =
 
 
 let () =
-  Schedulr.Histogram.Per_thread.init 10;
+  Schedulr.Histogram.Per_thread.init 55;
   let usage_msg = "benchmark -mode (pools|single)" in 
   let mode = ref "" in
   let speclist =

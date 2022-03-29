@@ -70,7 +70,7 @@ module Make (DS : DataStructure) = struct
 
     let take_from {steal_attempts; _} = 
       steal_attempts := !steal_attempts + 1;
-      if !steal_attempts mod 4 = 0 then 
+      if !steal_attempts mod 2 = 0 then 
         `Global_queue 
       else 
         `Steal;;
