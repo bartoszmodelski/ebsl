@@ -16,7 +16,7 @@ let schedule ?(pool_size=1) ?pool_name f =
         Mutex.lock creator_mtx; 
         let copied_pools = Hashtbl.copy (Atomic.get pools) in 
         let pool = 
-          Printf.printf "starting micropool %s\n" pool_name;
+          Printf.printf "starting micropool %s (sz:%d)\n" pool_name pool_size;
           Scheduler.init ~afterwards:`return ~f:(fun () -> ()) pool_size
         in
         Hashtbl.add copied_pools pool_name pool;

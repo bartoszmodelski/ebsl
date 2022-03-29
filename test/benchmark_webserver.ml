@@ -2,67 +2,98 @@
 let total_wait = Atomic.make 0
 let _done = Atomic.make 0;;
 
-let process_pool = ref None 
-let decode_pool = ref None 
-let accept_pool = ref None 
-let time_pool = ref None 
+module Pools = struct 
+  type t = 
+    | Single 
+    | Pools
+  let mode = ref None
 
-let process ~start_time () = 
-  Micropools.schedule ?pool_name:!time_pool (fun () -> 
-    let end_time = Schedulr.Fast_clock.now () in 
-    let diff =  Base.Int63.(to_int_exn(end_time-start_time)) in 
-    let hist = Schedulr.Histogram.Per_thread.get_hist () in 
-    Schedulr.Histogram.log_val hist (diff + 1);
-    Atomic.incr _done);;
+  let set_mode = function
+    | `Single -> 
+      mode := Some Single
+    | `Pools -> 
+      mode := Some Pools
+  ;;
+
+
+  let process_pool = "process"
+  let decode_pool = "decode"
+  let accept_pool = "accept"
+  let time_pool = "time"
+  let general_pool = "general"
+
+  let sched ?pool_size pool f =
+    let pool_name =
+      match !mode, pool with 
+      | None, _ -> assert false 
+      | Some Single, (`Process | `Decode | `Accept | `Time) -> None
+      | Some (Single | Pools), `General -> Some general_pool
+      | Some Pools, `Process -> Some process_pool
+      | Some Pools, `Decode -> Some decode_pool
+      | Some Pools, `Accept -> Some accept_pool
+      | Some Pools, `Time -> Some time_pool
+    in
+    Micropools.schedule ?pool_size ?pool_name f
+
+    let sched_accept = sched `Accept
+    let sched_process = sched `Process
+    let sched_time = sched `Time
+    let sched_decode = sched `Decode
+    let sched_general ?pool_size f = sched ?pool_size `General f
+
+
+
+  let init () = 
+    let ready = Atomic.make 0 in
+    let start_f = fun () -> Atomic.incr ready in 
+    match !mode with 
+    | None -> assert false 
+    | Some Single -> 
+      (sched_general ~pool_size:5 start_f;
+      while Atomic.get ready < 1 do () done)
+    | Some Pools ->
+      ((* touch pools first *)
+      sched_general ~pool_size:1 start_f;
+      sched_accept start_f;
+      sched_process start_f;
+      sched_time start_f;
+      sched_decode start_f;
+      (* wait for setup *)
+      while Atomic.get ready < 4 do () done);;
+end
+
 
 let accept ~start_time () = 
-  Micropools.schedule ?pool_name:!accept_pool (fun () ->
-    Micropools.schedule ?pool_name:!decode_pool (fun () -> 
-      Micropools.schedule ?pool_name:!process_pool (process ~start_time)));;
+  Pools.sched_accept (fun () ->
+    Pools.sched_decode (fun () -> 
+        Pools.sched_process (fun () ->
+          Pools.sched_time (fun () -> 
+            let end_time = Schedulr.Fast_clock.now () in 
+            let diff =  Base.Int63.(to_int_exn(end_time-start_time)) in 
+            let hist = Schedulr.Histogram.Per_thread.get_hist () in 
+            Schedulr.Histogram.log_val hist (diff + 1);
+            Atomic.incr _done))));;
 
 
 let total_calls = 10000000
 
 let pool_size = ref 1
-let ready = Atomic.make 0 
 
 let bench () =
-  Micropools.schedule ~pool_size:!pool_size ~pool_name:"general" (fun () -> 
-    if Option.is_some !process_pool 
-    then 
-      ((* touch pools first *)
-      let start_f = fun () -> Atomic.incr ready in 
-      Micropools.schedule ~pool_size:1 ?pool_name:!process_pool start_f;
-      Micropools.schedule ~pool_size:1 ?pool_name:!decode_pool start_f;
-      Micropools.schedule ~pool_size:1 ?pool_name:!accept_pool start_f;
-      Micropools.schedule ~pool_size:1 ?pool_name:!time_pool start_f;
-      (* wait for setup *)
-      while Atomic.get ready < 4 do () done);
+  Pools.init ();
+  Pools.sched_general (fun () -> 
     (* bench *)
-
     for _ = 1 to 10 do 
       let start_time = Schedulr.Fast_clock.now () in  
       for _ = 1 to total_calls/10 do
         accept ~start_time ();
       done;
-      Unix.sleepf 0.00001; 
+      (*Unix.sleepf 0.00001;*)
     done);
   while Atomic.get _done < total_calls do () done;
   Printf.printf "done\n";
   Stdlib.flush_all ();;
 
-let set_mode = function
-  | `Pools -> 
-    (process_pool := Some "process";
-    decode_pool := Some "decode";
-    accept_pool := Some "accept";
-    time_pool := Some "time";
-    pool_size := 1) 
-  | `Single -> 
-    (process_pool := None;
-    decode_pool := None;
-    accept_pool := None;
-    pool_size := 4);;
 
 let () =
   Schedulr.Histogram.Per_thread.init 10;
@@ -78,7 +109,7 @@ let () =
       | "single" -> `Single
       | _ -> assert false
   in 
-  set_mode mode;
+  Pools.set_mode mode;
   bench (); 
   (*Schedulr.Histogram.Per_thread.dump_each ();*)
   let merged = Schedulr.Histogram.Per_thread.all () in 
