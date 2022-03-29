@@ -1,4 +1,18 @@
 
+module Time = struct 
+  let current = Atomic.make 0
+
+  let update () =
+    Domain.spawn (fun () ->
+      while true do 
+        let updated_time = (Schedulr.Fast_clock.now () |> Core.Int63.to_int_exn) in 
+        Atomic.set current updated_time
+      done) |> ignore;
+    while Atomic.get current == 0 do () done;;
+
+  let get () = Atomic.get current 
+end
+
 let total_wait = Atomic.make 0
 let _done = Atomic.make 0;;
 
@@ -66,14 +80,11 @@ end
 
 let accept ~start_time () = 
   Pools.sched_accept (fun () ->
-    Unix.sleepf 0.000_001;
     Pools.sched_decode (fun () -> 
-      Unix.sleepf 0.000_001;
         Pools.sched_process (fun () ->
-          Unix.sleepf 0.000_001;
           Pools.sched_time (fun () -> 
-            let end_time = Schedulr.Fast_clock.now () in 
-            let diff =  Base.Int63.(to_int_exn(end_time-start_time)) in 
+            let end_time = Time.get () in 
+            let diff = end_time-start_time in 
             let hist = Schedulr.Histogram.Per_thread.get_hist () in 
             Schedulr.Histogram.log_val hist (diff + 1);
             Atomic.incr _done))));;
@@ -86,22 +97,22 @@ let pool_size = ref 1
 let bench () =
   Pools.init ();
   Unix.sleep 2;
-  Pools.sched_general (fun () -> 
-    (* bench *)
-    for _ = 1 to 10 do 
-      let start_time = Schedulr.Fast_clock.now () in  
+  (* bench *)
+  for _ = 1 to 10 do 
+    Pools.sched_general (fun () -> 
+      let start_time = Time.get () in  
       for _ = 1 to total_calls/10 do
         accept ~start_time ();
-      done;
-      (*Unix.sleepf 0.00001;*)
-    done);
+      done)
+    done;
   while Atomic.get _done < total_calls do () done;
   Printf.printf "done\n";
   Stdlib.flush_all ();;
 
 
 let () =
-  Schedulr.Histogram.Per_thread.init 55;
+  Time.update ();
+  Schedulr.Histogram.Per_thread.init ~size:48 55;
   let usage_msg = "benchmark -mode (pools|single)" in 
   let mode = ref "" in
   let speclist =

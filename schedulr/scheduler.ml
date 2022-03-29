@@ -1,7 +1,7 @@
 open EffectHandlers
 open EffectHandlers.Deep 
 
-module Custom_queue = Datastructures.Mpmc_queue
+module Custom_queue = Datastructures.Multi_mpmc_queue.Make(struct let num_of_queues = 10 end)
 
 let _ = Printexc.record_backtrace true
 

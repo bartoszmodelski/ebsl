@@ -17,6 +17,7 @@ let schedule ?(pool_size=1) ?pool_name f =
         let copied_pools = Hashtbl.copy (Atomic.get pools) in 
         let pool = 
           Printf.printf "starting micropool %s (sz:%d)\n" pool_name pool_size;
+          Stdlib.(flush stdout);
           Scheduler.init ~afterwards:`return ~f:(fun () -> ()) pool_size
         in
         Hashtbl.add copied_pools pool_name pool;
