@@ -97,7 +97,7 @@ let rec steal ?(auto_retry=false) ?(steal_size_limit=Int.max_int) ~from
   let top_val = Atomic.get top in 
   let available_steal = 
     (top_val - bottom_val + 1) / 2 
-    |> max steal_size_limit
+    |> min steal_size_limit
   in 
   if available_steal <= 0 then 
     0
