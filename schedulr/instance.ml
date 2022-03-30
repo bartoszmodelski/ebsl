@@ -70,6 +70,7 @@ end)
 module Hybrid_reverse_every_n = Scheduler.Make(struct 
   include Stack_ext
   
+  let threshold = 200
   let curr_n = ref 0 
   let to_steal = ref 0 
 
@@ -79,7 +80,7 @@ module Hybrid_reverse_every_n = Scheduler.Make(struct
       (steal ~auto_retry:true ~steal_size_limit:1 ~from:t ~to_local:t () 
       |> ignore; 
       to_steal := !to_steal - 1) 
-    else if !curr_n > 200 
+    else if !curr_n > threshold 
     then
       (curr_n := 0;
       to_steal := indicative_size t)

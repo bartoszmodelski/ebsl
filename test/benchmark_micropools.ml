@@ -1,17 +1,5 @@
+let get_time () = (Schedulr.Fast_clock.now () |> Core.Int63.to_int_exn)
 
-module Time = struct 
-  let current = Atomic.make 0
-
-  let update () =
-    Domain.spawn (fun () ->
-      while true do 
-        let updated_time = (Schedulr.Fast_clock.now () |> Core.Int63.to_int_exn) in 
-        Atomic.set current updated_time
-      done) |> ignore;
-    while Atomic.get current == 0 do () done;;
-
-  let get () = Atomic.get current 
-end
 
 let total_wait = Atomic.make 0
 let _done = Atomic.make 0;;
@@ -63,16 +51,16 @@ module Pools = struct
     match !mode with 
     | None -> assert false 
     | Some Single -> 
-      (sched_general ~pool_size:50 start_f;
+      (sched_general ~pool_size:10 start_f;
       while Atomic.get ready < 1 do () done)
     | Some Pools ->
       ((* touch pools first *)
-      let pool_size = 10 in 
+      let pool_size = 2 in 
       sched_general ~pool_size start_f;
       sched_accept ~pool_size start_f;
+      sched_decode ~pool_size start_f;
       sched_process ~pool_size start_f;
       sched_time ~pool_size start_f;
-      sched_decode ~pool_size start_f;
       (* wait for setup *)
       while Atomic.get ready < 4 do () done);;
 end
@@ -83,26 +71,28 @@ let accept ~start_time () =
     Pools.sched_decode (fun () -> 
         Pools.sched_process (fun () ->
           Pools.sched_time (fun () -> 
-            let end_time = Time.get () in 
+            let end_time = get_time () in 
             let diff = end_time-start_time in 
             let hist = Schedulr.Histogram.Per_thread.get_hist () in 
             Schedulr.Histogram.log_val hist (diff + 1);
             Atomic.incr _done))));;
 
 
-let total_calls = 10000000
+let total_calls = 100000
 
 let pool_size = ref 1
+
+let batches = 1
 
 let bench () =
   Pools.init ();
   Unix.sleep 2;
   (* bench *)
-  for _ = 1 to 10 do 
+  for _ = 1 to batches do 
     Pools.sched_general (fun () -> 
-      let start_time = Time.get () in  
-      for _ = 1 to total_calls/10 do
-        accept ~start_time ();
+      let start_time = get_time () in 
+      for _ = 1 to total_calls/batches do
+        accept ~start_time (); 
       done)
     done;
   while Atomic.get _done < total_calls do () done;
@@ -111,7 +101,6 @@ let bench () =
 
 
 let () =
-  Time.update ();
   Schedulr.Histogram.Per_thread.init ~size:48 55;
   let usage_msg = "benchmark -mode (pools|single)" in 
   let mode = ref "" in

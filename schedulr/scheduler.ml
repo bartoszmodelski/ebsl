@@ -1,7 +1,7 @@
 open EffectHandlers
 open EffectHandlers.Deep 
 
-module Custom_queue = Datastructures.Multi_mpmc_queue.Make(struct let num_of_queues = 10 end)
+module Custom_queue = Datastructures.Multi_mpmc_queue.Make(struct let num_of_queues = 2 end)
 
 let _ = Printexc.record_backtrace true
 
@@ -70,7 +70,7 @@ module Make (DS : DataStructure) = struct
 
     let take_from {steal_attempts; _} = 
       steal_attempts := !steal_attempts + 1;
-      if !steal_attempts mod 2 = 0 then 
+      if !steal_attempts mod 4 = 0 then 
         `Global_queue 
       else 
         `Steal;;
@@ -233,7 +233,7 @@ module Make (DS : DataStructure) = struct
         Stdlib.exit 1;;
 
   let init ?(afterwards=`join_the_pool) ?size_exponent ~(f : unit -> unit) n =
-    assert (n > 0);
+    assert (n > -1);
     let num_of_processors = 
       match afterwards with 
       | `join_the_pool -> n+1 
