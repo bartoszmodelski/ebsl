@@ -1,10 +1,11 @@
-* Benchmarked queues, removed some slow blocking in the dequeue of MPMC, created sharded MPMC that scales far better (enque random and blocking, deque iters over all queues). 
+# Queues
+Benchmarked queues, removed some slow blocking in the dequeue of MPMC, created sharded MPMC that scales far better (enque random and blocking, deque iters over all queues). 
 
 Result: https://github.com/bartoszmodelski/ebsl/blob/main/evaluation/queue/queues2.png - half domains send, half receive. LF - lock-free, LFM - sharded. 
 
 
-
-* Queues between stages don't really improve latency. If the tasks are very lightweight and queue very optimized the performance is similar - gains from pooling are similar to costs of extra queueing. If the tasks are heavy, I think that work-stealing wins due to better resource allocation. 
+# Staged architecture
+Queues between stages don't really improve latency. If the tasks are very lightweight and queue very optimized the performance is similar - gains from pooling are similar to costs of extra queueing. If the tasks are heavy, I think that work-stealing wins due to better resource allocation. 
 
 Tested with 5 pools undercommited & overcommited.
 
@@ -12,7 +13,8 @@ Maybe having them autoscale would help bring out benefits? That is, currently, t
 
 
 
-* Created a bunch of heuristics (`instance.ml`) for improving tail latency of LIFO and they work, e.g.:
+# LIFO Latency
+Created a bunch of heuristics (`instance.ml`) for improving tail latency of LIFO and they work, e.g.:
 
 ```
 ./benchmark_process_packet.exe -scheduler LIFO -num-of-domains 1 -num-of-spawners 1
