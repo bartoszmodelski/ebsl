@@ -16,8 +16,8 @@ let value_exn = function
 type 'a t = {
   head : int Atomic.t; 
   tail : int Atomic.t;
-  mask : int;
-  array : 'a option Atomic.t Array.t;
+  mask : int Atomic.t;
+  array : 'a option Atomic.t Array.t Atomic.t;
   owned_by_id: Domain.id option ref;
 } 
 
@@ -25,8 +25,8 @@ let init ?(size_exponent=10) () =
   let size = Int.shift_left 1 size_exponent in
   { head = Atomic.make 0;
     tail = Atomic.make 0;
-    mask = size - 1;
-    array = Array.init size (fun _ -> Atomic.make None);
+    mask = Atomic.make (size - 1);
+    array = Atomic.make (Array.init size (fun _ -> Atomic.make None));
     owned_by_id = ref None}
 
 (* Cautionary check because debugging broken 'local' invariant 
@@ -45,8 +45,45 @@ let assert_domain_id scenario owned_by_id =
     assert false)
     
 
+(* [local_resize] resizes the array. 
+
+  1. Create new array.
+  2. Overshoot the head to discourage any new stealers.
+  3. Transfer covered elements to the new array. 
+  4. Ensure all other stealers finished (i.e. no elements in the old array).
+  5. Swap arrays.
+  6. Update mask, set tail and head to 0. In this order to discourage stealers. 
+*)
+let local_resize t = 
+  let {mask; array; tail; head; _} = t in 
+  let (mask_val,array_val) = Atomic.(get mask, get array) in 
+  let size = (Atomic.get mask) + 1 in 
+  let new_array_val = 
+    Array.init (size * 2) (fun _ -> Atomic.make None)
+  in 
+  let old_head_val = Atomic.fetch_and_add head size in 
+  let head_val = old_head_val + old_head_val in 
+  let tail_val = Atomic.get tail in 
+  let num_of_items_to_copy = tail_val - old_head_val in 
+  for i = 0 to num_of_items_to_copy - 1 do 
+    let cell = Array.get array_val ((old_head_val + i) land mask_val) in 
+    assert (Option.is_some (Atomic.get cell));
+    Array.set new_array_val i cell;
+  done;
+  for i = 0 to head_val - tail_val do (* the rest of the array has been copied *)
+    let index = (tail_val + i) land mask_val in 
+    while Option.is_some (Atomic.get (Array.get array_val index)) do () done;
+  done;
+  Atomic.set array new_array_val; 
+  Atomic.set mask (Array.length new_array_val - 1);
+  Atomic.set tail num_of_items_to_copy; 
+  Atomic.set head 0;;
+
+
+
 let local_enqueue {tail; mask; array; owned_by_id; _} element =
   assert_domain_id "enq" owned_by_id;
+  let (mask,array) = Atomic.(get mask, get array) in 
   let tail_val = Atomic.get tail in 
   let index = tail_val land mask in 
   let cell = Array.get array index in 
@@ -59,6 +96,7 @@ let local_enqueue {tail; mask; array; owned_by_id; _} element =
 
 let local_dequeue {head; tail; mask; array; owned_by_id} : 'a option =
   assert_domain_id "deq" owned_by_id;
+  let (mask,array) = Atomic.(get mask, get array) in 
   (* local deque is optimistic because it can fix its mistake if needed *)
   let index = Atomic.fetch_and_add head 1 in
   let tail_val = Atomic.get tail in
@@ -67,7 +105,7 @@ let local_dequeue {head; tail; mask; array; owned_by_id} : 'a option =
     (* nobody else would speculate *)
     (assert (Atomic.compare_and_set head (index + 1) index);
     None)
-  else if index > tail_val 
+  else if index > tail_val (* FIX THIS! *)
   then 
     assert false
   else 
@@ -80,6 +118,7 @@ let local_dequeue {head; tail; mask; array; owned_by_id} : 'a option =
     
 (* successfuly rolled back *)
 let local_is_empty_thorough {head = _; tail; mask; array; _} : bool =
+  let (mask,array) = Atomic.(get mask, get array) in 
   let size = Array.length array in 
   let tail_value = Atomic.get tail in
   let seen_not_free = ref false in 
@@ -104,6 +143,7 @@ let steal ~from ~to_local =
   let {owned_by_id; _} = to_local in 
   assert_domain_id "stl" owned_by_id;
   let ({head; tail; mask; array; _} : 'a t) = from in
+  let (mask,array) = Atomic.(get mask, get array) in 
   (* assumes there's space in the queue *)
   (let tail_val = Atomic.get tail in 
   let head_val = Atomic.get head in 

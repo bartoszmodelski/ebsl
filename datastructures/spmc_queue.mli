@@ -3,8 +3,8 @@ module Atomic = Dscheck.TracedAtomic
 type 'a t = private {
   head : int Atomic.t; 
   tail : int Atomic.t;
-  mask : int;
-  array : 'a option Atomic.t Array.t;
+  mask : int Atomic.t;
+  array : 'a option Atomic.t Array.t Atomic.t;
   owned_by_id: Domain.id option ref;
 } 
 

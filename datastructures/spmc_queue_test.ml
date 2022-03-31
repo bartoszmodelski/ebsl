@@ -3,7 +3,7 @@ module Atomic = Dscheck.TracedAtomic
 let dump_spmc ({head; tail; array; _} : int Spmc_queue.t) = 
   let head = Atomic.get head in 
   let tail = Atomic.get tail in 
-  let data = Array.to_list array 
+  let data = Array.to_list (Atomic.get array) 
     |> List.map Atomic.get
     |> List.map (function 
       | Some v -> Int.to_string v
