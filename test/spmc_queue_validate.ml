@@ -1,4 +1,4 @@
-open! Schedulr
+open Datastructures
 module Atomic = Dscheck.TracedAtomic
 let total_checked = ref 0
 

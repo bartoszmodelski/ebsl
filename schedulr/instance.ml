@@ -1,7 +1,7 @@
 
 
 module FIFO = Scheduler.Make(struct 
-  include Spmc_queue
+  include Datastructures.Spmc_queue
   
   let local_insert = local_enqueue
   let local_remove = local_dequeue
@@ -13,7 +13,7 @@ end)
 
 
 module Stack_ext = struct
-  include Stack 
+  include Datastructures.Stack 
   let local_insert = local_push 
   let local_remove = local_pop
 
