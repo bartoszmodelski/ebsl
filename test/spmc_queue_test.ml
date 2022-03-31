@@ -1,6 +1,9 @@
-module Atomic = Dscheck.TracedAtomic
-(*
+open Datastructures
 
+module Atomic = Dscheck.TracedAtomic
+
+
+(*
 let dump_spmc ({head; tail; mask = _; buffer} : int Spmc_queue.t) = 
   let head = Atomic.get head in 
   let tail = Atomic.get tail in 

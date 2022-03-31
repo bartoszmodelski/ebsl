@@ -51,7 +51,7 @@ let dequeue queue =
     in
     take_or_rollback ())
 ;;
-  
+
 let log ~thr s = 
   let s = 
     match s with 
@@ -85,8 +85,7 @@ let _test_1 () =
   Domain.join a |> ignore;
   ();;
 
-
-  
+  (*
 let create_test upto () =
   let queue = init ~size_exponent:1 () in
   for _ = 1 to upto do
@@ -99,3 +98,4 @@ let create_test upto () =
   
 let () =
   Atomic.trace (create_test 2)
+*)

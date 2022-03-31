@@ -1,4 +1,5 @@
 (library
  (name datastructures)
  (libraries unix dscheck core)
- )
+ (inline_tests)
+ (preprocess (pps ppx_expect)))

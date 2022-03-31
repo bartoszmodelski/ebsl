@@ -37,8 +37,7 @@ let register_domain_id {owned_by_id; _} =
 let assert_domain_id scenario owned_by_id = 
   let this_thr = Domain.self () in 
   match !owned_by_id with 
-  | None -> 
-    assert false
+  | None -> ()
   | Some _id -> 
     if _id != this_thr then (
     Printf.printf "%s: local method accessed by a foreign thread!\n" scenario; 
