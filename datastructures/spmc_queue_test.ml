@@ -1,6 +1,7 @@
 module Atomic = Dscheck.TracedAtomic
 
-let dump_spmc ({head; tail; array; _} : int Spmc_queue.t) = 
+let dump_spmc ?(with_mask=false) ({head; tail; array; mask; _} : int Spmc_queue.t) = 
+  let mask = Atomic.get mask in 
   let head = Atomic.get head in 
   let tail = Atomic.get tail in 
   let data = Array.to_list (Atomic.get array) 
@@ -10,7 +11,12 @@ let dump_spmc ({head; tail; array; _} : int Spmc_queue.t) =
       | None -> "_") 
     |> String.concat ", "
   in
-  Printf.printf "head: %d, tail %d\n data: %s\n\n" head tail data;;
+  let mask_s = 
+    if not with_mask 
+    then ""
+    else Printf.sprintf ", mask: %d" mask
+  in
+  Printf.printf "head: %d, tail %d%s\n data: %s\n\n" head tail mask_s data;;
 
 
 let%expect_test _ = 
@@ -110,3 +116,24 @@ let%expect_test _ =
     head: 0, tail 15
      data: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, _ |}];;
     
+
+let%expect_test _ = 
+  let q = (Spmc_queue.init ~size_exponent:4 () : int Spmc_queue.t) in 
+  for i = 0 to 15 do  
+    assert (Spmc_queue.local_enqueue q i); 
+  done;
+  assert (not (Spmc_queue.local_enqueue q 16));
+  dump_spmc ~with_mask:true q;
+  [%expect {|
+    head: 0, tail 16, mask: 15
+     data: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 |}];
+  Spmc_queue.local_resize q;
+  dump_spmc ~with_mask:true q;
+  [%expect {|
+    head: 0, tail 16, mask: 31
+     data: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ |}];
+  assert (Spmc_queue.local_enqueue q 16);
+  dump_spmc q;
+  [%expect {|
+    head: 0, tail 17
+     data: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ |}];;  
