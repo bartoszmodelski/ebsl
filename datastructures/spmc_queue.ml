@@ -80,7 +80,6 @@ let local_resize t =
   Atomic.set head 0;;
 
 
-
 let local_enqueue {tail; mask; array; owned_by_id; _} element =
   assert_domain_id "enq" owned_by_id;
   let (mask,array) = Atomic.(get mask, get array) in 
@@ -94,6 +93,26 @@ let local_enqueue {tail; mask; array; owned_by_id; _} element =
     Atomic.set tail (tail_val + 1);
     true);;
 
+let rec local_enqueue_with_resize t element =
+  let {tail; mask; array; owned_by_id; _} = t in 
+  assert_domain_id "enq" owned_by_id;
+  let (mask,array) = Atomic.(get mask, get array) in 
+  let tail_val = Atomic.get tail in 
+  let cell = Array.get array (tail_val land mask) in 
+  match Atomic.get cell with
+  | None -> 
+    Atomic.set cell (Some element);
+    (* tail might have been changed by resize *)
+    Atomic.set tail (Atomic.get tail + 1)
+  | Some _ ->  
+    let i = ref 0 in 
+    (* I suppose we should be getting increasingly hesitant to increase 
+    as the buffer is already big. *)
+    while Option.is_some (Atomic.get cell) && !i < 30 do i := !i + 1 done;
+    if Option.is_some (Atomic.get cell) 
+    then local_resize t;
+    local_enqueue_with_resize t element;;
+
 let local_dequeue {head; tail; mask; array; owned_by_id} : 'a option =
   assert_domain_id "deq" owned_by_id;
   let (mask,array) = Atomic.(get mask, get array) in 
@@ -105,7 +124,7 @@ let local_dequeue {head; tail; mask; array; owned_by_id} : 'a option =
     (* nobody else would speculate *)
     (assert (Atomic.compare_and_set head (index + 1) index);
     None)
-  else if index > tail_val (* FIX THIS! *)
+  else if index - tail_val > 0 
   then 
     assert false
   else 

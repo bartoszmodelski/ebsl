@@ -13,6 +13,7 @@ val local_enqueue : 'a t -> 'a -> bool
 val local_dequeue : 'a t -> 'a option
 val steal : from:'a t -> to_local:'a t -> int
 val local_resize : 'a t -> unit
+val local_enqueue_with_resize : 'a t -> 'a -> unit
 
 val register_domain_id : 'a t -> unit
 

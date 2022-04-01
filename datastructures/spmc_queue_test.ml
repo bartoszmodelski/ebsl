@@ -48,7 +48,7 @@ let%expect_test _ =
     dequeued: 0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15 |}];;
 
 
-let%expect_test _ = 
+let%expect_test "steal" = 
   let q = (Spmc_queue.init ~size_exponent:4 () : int Spmc_queue.t) in 
   let q_2 = (Spmc_queue.init ~size_exponent:4 () : int Spmc_queue.t) in 
   for i = 0 to 14 do  
@@ -117,23 +117,52 @@ let%expect_test _ =
      data: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, _ |}];;
     
 
-let%expect_test _ = 
-  let q = (Spmc_queue.init ~size_exponent:4 () : int Spmc_queue.t) in 
-  for i = 0 to 15 do  
+let%expect_test "resize" = 
+  let q = (Spmc_queue.init ~size_exponent:2 () : int Spmc_queue.t) in 
+  for i = 0 to 3 do  
     assert (Spmc_queue.local_enqueue q i); 
   done;
-  assert (not (Spmc_queue.local_enqueue q 16));
+  assert (not (Spmc_queue.local_enqueue q 4));
   dump_spmc ~with_mask:true q;
   [%expect {|
-    head: 0, tail 16, mask: 15
-     data: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 |}];
+    head: 0, tail 4, mask: 3
+     data: 0, 1, 2, 3 |}];
   Spmc_queue.local_resize q;
   dump_spmc ~with_mask:true q;
   [%expect {|
-    head: 0, tail 16, mask: 31
-     data: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ |}];
-  assert (Spmc_queue.local_enqueue q 16);
+    head: 0, tail 4, mask: 7
+     data: 0, 1, 2, 3, _, _, _, _ |}];
+  assert (Spmc_queue.local_enqueue q 4);
   dump_spmc q;
   [%expect {|
-    head: 0, tail 17
-     data: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, _, _, _, _, _, _, _, _, _, _, _, _, _, _, _ |}];;  
+    head: 0, tail 5
+     data: 0, 1, 2, 3, 4, _, _, _ |}];;  
+
+
+let%expect_test "auto-resize" = 
+  let q = (Spmc_queue.init ~size_exponent:2 () : int Spmc_queue.t) in 
+  dump_spmc q;
+  [%expect {|
+    head: 0, tail 0
+     data: _, _, _, _ |}];
+  for i = 0 to 9 do  
+    Spmc_queue.local_enqueue_with_resize q i; 
+  done;
+  dump_spmc q;
+  [%expect {|
+    head: 0, tail 10
+     data: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, _, _, _, _, _, _ |}];
+  for _ = 0 to 4 do 
+    ignore (Spmc_queue.local_dequeue q);
+  done;
+  dump_spmc q;
+  [%expect {|
+    head: 5, tail 10
+     data: _, _, _, _, _, 5, 6, 7, 8, 9, _, _, _, _, _, _ |}];
+  for i = 0 to 9 do  
+    Spmc_queue.local_enqueue_with_resize q (20+i); 
+  done;
+  dump_spmc q;
+  [%expect {|
+    head: 5, tail 20
+     data: 26, 27, 28, 29, _, 5, 6, 7, 8, 9, 20, 21, 22, 23, 24, 25 |}];
