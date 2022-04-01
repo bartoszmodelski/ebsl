@@ -9,5 +9,4 @@ Directories:
 * `dscheck` - vendored dscheck (to be removed).
 
 Todo:
-* Move stack and other queues into `datastructure`
 * Trim dependencies 
