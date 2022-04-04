@@ -81,16 +81,16 @@ module Make (DS : DataStructure) = struct
     type t = {
       processor : Processor.t;
       all_processors : Processor.t Array.t;
-      global_queue : (unit -> unit) Custom_queue.t;
+      global_queue : Task.t Custom_queue.t;
     }
   end
 
   type t = {
-    global_queue : (unit -> unit) Custom_queue.t;
+    global_queue : Task.t Custom_queue.t;
   }
 
   let inject_task {global_queue} f = 
-    Custom_queue.enqueue global_queue f;;
+    Custom_queue.enqueue global_queue (Task.new_task f)
 
   let domain_key = Domain.DLS.new_key 
     (fun () -> None);;
@@ -108,14 +108,20 @@ module Make (DS : DataStructure) = struct
       f processor);;
 
   let schedule_internal ~has_yielded task = 
-    with_processor (fun processor ->
+    with_context (fun {processor; global_queue; _} ->
       let ds = Processor.ds processor in 
       let insert_f = 
         if has_yielded 
         then DS.local_insert_after_preemption 
         else DS.local_insert
       in
-      while not (insert_f ds task) do () done);;
+      let spins = ref 0 in 
+      while !spins < 30 && not (insert_f ds task) do 
+        spins := !spins + 1
+      done;
+      if !spins == 30 then 
+        (* chuck into the global queue *)
+        (Custom_queue.enqueue global_queue task));;
 
   let schedule_awaiting to_run result = 
     match to_run with 
@@ -182,7 +188,7 @@ module Make (DS : DataStructure) = struct
     match Custom_queue.dequeue global_queue with 
     | None -> ()
     | Some task -> 
-      assert (DS.local_insert ds (Task.new_task task))
+      assert (DS.local_insert ds task)
   ;;
       
   let find_work ~context =
@@ -245,7 +251,7 @@ module Make (DS : DataStructure) = struct
       |> Array.of_list 
     in
     let global_queue = Custom_queue.init () in 
-    Custom_queue.enqueue global_queue f;
+    Custom_queue.enqueue global_queue (Task.new_task f);
     List.init n (fun index -> 
       let processor = Array.get all_processors index in  
       let context = 
