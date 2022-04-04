@@ -80,16 +80,18 @@ let local_resize t =
   Atomic.set head 0;;
 
 
-let local_enqueue {tail; mask; array; owned_by_id; _} element =
+let local_enqueue {tail; head; mask; array; owned_by_id; _} element =
   assert_domain_id "enq" owned_by_id;
   let (mask,array) = Atomic.(get mask, get array) in 
   let tail_val = Atomic.get tail in 
+  let head_val = Atomic.get head in 
   let index = tail_val land mask in 
   let cell = Array.get array index in 
-  if Option.is_some (Atomic.get cell)
+  if tail_val == head_val + mask + 1
   then false
   else 
-    (Atomic.set cell (Some element);
+    (while Option.is_some (Atomic.get cell) do () done;
+    Atomic.set cell (Some element);
     Atomic.set tail (tail_val + 1);
     true);;
 

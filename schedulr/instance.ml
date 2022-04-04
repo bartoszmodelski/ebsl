@@ -12,6 +12,21 @@ module FIFO = Scheduler.Make(struct
 end)
 
 
+module FIFO_with_resize = Scheduler.Make(struct 
+  include Datastructures.Spmc_queue
+  
+  let local_insert q v = 
+    local_enqueue_with_resize q v; 
+    true;;
+    
+  let local_remove = local_dequeue
+  let local_insert_after_preemption = local_enqueue  
+
+  let global_steal = steal
+  let name = "FIFO"
+end)
+
+
 module Stack_ext = struct
   include Datastructures.Stack 
   let local_insert = local_push 
