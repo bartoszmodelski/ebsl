@@ -1,7 +1,8 @@
 open EffectHandlers
 open EffectHandlers.Deep 
 
-module Custom_queue = Datastructures.Multi_mpmc_queue.Make(struct let num_of_queues = 2 end)
+(* module Custom_queue = Datastructures.Multi_mpmc_queue.Make(struct let num_of_queues = 2 end) *)
+module Custom_queue = Datastructures.Lock_queue
 
 let _ = Printexc.record_backtrace true
 
@@ -165,22 +166,25 @@ module Make (DS : DataStructure) = struct
           | `Already_done returned -> continue k returned)
       | _ -> None}
 
-  let rec steal ~context = 
+  let steal ~context = 
     let ({processor; all_processors; _} : Context.t) = context in 
-    let num_of_processors = Array.length all_processors in 
-    if num_of_processors < 2 
+    let num_of_other_processors = Array.length all_processors - 1 in 
+    if num_of_other_processors < 1 
     then () 
     else
       (let my_id = Processor.id processor in
-      let other_queue_id = Random.int num_of_processors in 
-      if other_queue_id = my_id then
-        steal ~context 
-      else 
-        (let other_processor = Array.get all_processors other_queue_id in
-        let other_ds = Processor.ds other_processor in 
-        let my_ds = Processor.ds processor in 
-        DS.global_steal ~from:other_ds ~to_local:my_ds  
-        |> ignore))
+      let other_queue_id = 
+        let r = Random.int num_of_other_processors in 
+        if r == my_id then
+          r + 1 
+        else 
+          r
+      in
+      let other_processor = Array.get all_processors other_queue_id in
+      let other_ds = Processor.ds other_processor in 
+      let my_ds = Processor.ds processor in 
+      DS.global_steal ~from:other_ds ~to_local:my_ds  
+      |> ignore)
     
   let take_from_global_queue ~context = 
     let ({processor; global_queue; _} : Context.t) = context in 

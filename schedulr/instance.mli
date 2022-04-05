@@ -3,6 +3,10 @@ module FIFO : sig
   include Scheduler.S
 end
 
+module FIFO_with_resize : sig
+  include Scheduler.S
+end
+
 module LIFO : sig
   include Scheduler.S
 end

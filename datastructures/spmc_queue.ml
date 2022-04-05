@@ -44,7 +44,6 @@ let assert_domain_id scenario owned_by_id =
     Stdlib.flush_all ();
     assert false)
     
-
 (* [local_resize] resizes the array. 
 
   1. Create new array.
@@ -62,7 +61,7 @@ let local_resize t =
     Array.init (size * 2) (fun _ -> Atomic.make None)
   in 
   let old_head_val = Atomic.fetch_and_add head size in 
-  let head_val = old_head_val + old_head_val in 
+  let temp_head_val = old_head_val + size in 
   let tail_val = Atomic.get tail in 
   let num_of_items_to_copy = tail_val - old_head_val in 
   for i = 0 to num_of_items_to_copy - 1 do 
@@ -70,7 +69,8 @@ let local_resize t =
     assert (Option.is_some (Atomic.get cell));
     Array.set new_array_val i cell;
   done;
-  for i = 0 to head_val - tail_val do (* the rest of the array has been copied *)
+  let num_of_items_to_ensure_taken = temp_head_val - tail_val - 1 in 
+  for i = 0 to num_of_items_to_ensure_taken do
     let index = (tail_val + i) land mask_val in 
     while Option.is_some (Atomic.get (Array.get array_val index)) do () done;
   done;
@@ -94,6 +94,8 @@ let local_enqueue {tail; head; mask; array; owned_by_id; _} element =
     Atomic.set cell (Some element);
     Atomic.set tail (tail_val + 1);
     true);;
+
+
 
 let rec local_enqueue_with_resize t element =
   let {tail; mask; array; owned_by_id; _} = t in 

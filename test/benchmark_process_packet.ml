@@ -8,7 +8,7 @@ let log s =
 let finished = Atomic.make 0
 
 let run_processor ~copy_out ~n () =
-  for i = 1 to n do 
+  for _i = 1 to n do 
     Schedulr.Scheduler.schedule (fun () ->
       let packet = Mock_packet.get_by_index n ~copy_out in
       let len = Buffer.length packet in 
@@ -20,8 +20,8 @@ let run_processor ~copy_out ~n () =
       f 0 len; 
       Atomic.incr finished) 
     |> ignore;
-    if i mod 50 == 0
-    then Schedulr.Scheduler.yield ()
+    if _i mod 100 == 0
+    then Schedulr.Scheduler.yield () 
   done;;
 let items_total = 100_000
 

@@ -5,7 +5,7 @@ type 'a t = {
   max_size : int;
 }
 
-let init ?(size_exponent=8) () = 
+let init ?(size_exponent=31) () = 
   let max_size = 1 lsl size_exponent in
   { queue = Queue.create ();
     mutex = Mutex.create ();
