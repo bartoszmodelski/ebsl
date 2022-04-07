@@ -40,14 +40,17 @@ module Make (DS : DataStructure) = struct
       latency_histogram : Histogram.t;
       executed_tasks : int ref;
       steal_attempts : int ref; 
+      local_requesting_queue : Task.t Datastructures.Queue_of_queues.Local.t 
     }
 
-    let init ?size_exponent id = {
+    let init ?size_exponent requesting_queue id = 
+      {
         ds = DS.init ?size_exponent ();
         id; 
         latency_histogram = Histogram.init ();
         executed_tasks = ref 0;
         steal_attempts = ref 0;
+        local_requesting_queue = Datastructures.Queue_of_queues.Local.init requesting_queue;
       }
     
     let id {id; _} = id
@@ -83,6 +86,7 @@ module Make (DS : DataStructure) = struct
       processor : Processor.t;
       all_processors : Processor.t Array.t;
       global_queue : Task.t Custom_queue.t;
+      requesting_queue : Task.t Datastructures.Queue_of_queues.Global.t;
     }
   end
 
@@ -249,9 +253,10 @@ module Make (DS : DataStructure) = struct
       | `join_the_pool -> n+1 
       | `return -> n
     in 
+    let requesting_queue = Datastructures.Queue_of_queues.Global.init () in
     let all_processors = 
       List.init num_of_processors 
-        (fun id -> Processor.init ?size_exponent id) 
+        (fun id -> Processor.init ?size_exponent requesting_queue id) 
       |> Array.of_list 
     in
     let global_queue = Custom_queue.init () in 
@@ -259,7 +264,7 @@ module Make (DS : DataStructure) = struct
     List.init n (fun index -> 
       let processor = Array.get all_processors index in  
       let context = 
-        ({processor; all_processors; global_queue} : Context.t) 
+        ({processor; all_processors; global_queue; requesting_queue} : Context.t) 
       in 
       Domain.spawn (fun () -> 
         notify_user (setup_domain context) ()) |> ignore) 
@@ -271,7 +276,7 @@ module Make (DS : DataStructure) = struct
     | `join_the_pool -> 
       let processor = Array.get all_processors n in 
       let context = 
-        ({processor; all_processors; global_queue} : Context.t) 
+        ({processor; all_processors; global_queue; requesting_queue} : Context.t) 
       in 
       setup_domain context;;
 
