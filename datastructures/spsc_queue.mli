@@ -5,6 +5,8 @@ type 'a t = private {
   tail : int Atomic.t;
   head : int Atomic.t;
   mask : int;
+  enqueuer : Domain.id option ref;
+  dequeuer : Domain.id option ref;
 }
 
 val init : ?size_exponent:int -> unit -> 'a t

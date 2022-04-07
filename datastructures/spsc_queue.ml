@@ -5,6 +5,8 @@ type 'a t = {
   tail : int Atomic.t;
   head : int Atomic.t;
   mask : int;
+  enqueuer : Domain.id option ref;
+  dequeuer : Domain.id option ref;
 }
 
 let init ?(size_exponent=10) () =
@@ -13,9 +15,20 @@ let init ?(size_exponent=10) () =
     tail = Atomic.make 0;
     mask = size - 1;
     array = Array.init size (fun _ -> None); 
+    enqueuer = ref None; 
+    dequeuer = ref None;
   };;
 
-let enqueue {array; head; tail; mask} element =
+
+let assert_domain_id id = 
+  match !id with 
+  | None -> 
+    id := Some (Domain.self ())
+  | Some id -> 
+    assert (id == Domain.self ());;
+
+let enqueue {array; head; tail; mask; enqueuer; _ } element =
+  assert_domain_id enqueuer;
   let size = mask + 1 in
   let head_val = Atomic.get head in 
   let tail_val = Atomic.get tail in 
@@ -26,7 +39,8 @@ let enqueue {array; head; tail; mask} element =
     Atomic.set tail (tail_val + 1);
     true)
 
-let dequeue {array; head; tail; mask} =
+let dequeue {array; head; tail; mask; dequeuer; _} =
+  assert_domain_id dequeuer;
   let head_val = Atomic.get head in 
   let tail_val = Atomic.get tail in 
   if head_val == tail_val
