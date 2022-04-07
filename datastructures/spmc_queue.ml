@@ -163,20 +163,22 @@ let local_is_empty queue =
   else local_is_empty_thorough queue
   
 let steal ~from ~to_local =
-  let {owned_by_id; _} = to_local in 
+  let {owned_by_id; mask = target_mask; _} = to_local in 
   assert_domain_id "stl" owned_by_id;
+  let target_size = Atomic.get target_mask + 1 in
   let ({head; tail; mask; array; _} : 'a t) = from in
   let (mask,array) = Atomic.(get mask, get array) in 
   (* assumes there's space in the queue *)
-  (let tail_val = Atomic.get tail in 
+  let tail_val = Atomic.get tail in 
   let head_val = Atomic.get head in 
   let size = tail_val - head_val in 
   if size < 1  
-  then 0 
+  then 
+    0
   else 
     (let stealable = 
       (* We want to steal even if there's a single element, thus +1 *)
-      (size + 1)/2  
+      min ((size + 1)/2) target_size  
     in
     let new_head_val = head_val + stealable in
     assert (new_head_val <= tail_val);
@@ -195,7 +197,7 @@ let steal ~from ~to_local =
         Atomic.set cell None;
         while not (local_enqueue to_local (value_exn !value)) do () done;
       done;
-      stealable)));; 
+      stealable));; 
   
 
 let indicative_size {head; tail; _} =

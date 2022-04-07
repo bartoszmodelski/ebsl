@@ -116,11 +116,12 @@ module Make (DS : DataStructure) = struct
         then DS.local_insert_after_preemption 
         else DS.local_insert
       in
+      let spin_threshold = 30 in 
       let spins = ref 0 in 
-      while !spins < 30 && not (insert_f ds task) do 
+      while !spins < spin_threshold && not (insert_f ds task) do 
         spins := !spins + 1
       done;
-      if !spins == 30 then 
+      if !spins == spin_threshold then 
         (* chuck into the global queue *)
         (Custom_queue.enqueue global_queue task));;
 
@@ -155,10 +156,9 @@ module Make (DS : DataStructure) = struct
           continue k promise)
       | Yield -> 
         Some (fun k -> 
-          schedule_internal 
-            ~has_yielded:true 
-            (Task.new_task (fun () -> 
-              continue k ())))
+          with_context (fun {global_queue; _} -> 
+            Custom_queue.enqueue global_queue (Task.new_task (fun () -> 
+              continue k ()))))
       | Await promise ->
         Some (fun k -> 
           match (Promise.await promise (continue k)) with 
