@@ -2,7 +2,6 @@ type 'a t = private {
   returned : 'a option ref;
   awaiting : ('a -> unit) List.t option ref;
   mutex : Mutex.t;
-  counter : int Atomic.t;
 }
 
 val empty : unit -> 'a t
