@@ -37,7 +37,6 @@ module Make (DS : DataStructure) = struct
     type t = {
       ds : Task.t DS.t;
       id : int; 
-      latency_histogram : Histogram.t;
       executed_tasks : int ref;
       steal_attempts : int ref; 
       local_requesting_queue : Task.t Datastructures.Queue_of_queues.Local.t 
@@ -47,7 +46,6 @@ module Make (DS : DataStructure) = struct
       {
         ds = DS.init ?size_exponent ();
         id; 
-        latency_histogram = Histogram.init ();
         executed_tasks = ref 0;
         steal_attempts = ref 0;
         local_requesting_queue = Datastructures.Queue_of_queues.Local.init requesting_queue;
@@ -64,13 +62,6 @@ module Make (DS : DataStructure) = struct
 
     let zero_executed_tasks {executed_tasks; _} =
       executed_tasks := 0
-
-    let latency_histogram {latency_histogram;_}= latency_histogram 
-      
-    let log_time {latency_histogram; _} span = 
-      Histogram.log_val latency_histogram (Core.Int63.to_int_exn span) 
-    
-    let _ = log_time ;;
 
     let take_from {steal_attempts; _} = 
       steal_attempts := !steal_attempts + 1;
@@ -144,13 +135,10 @@ module Make (DS : DataStructure) = struct
     { effc = fun (type a) (e : a eff) ->
       match e with
       | Schedule new_f ->  
-        let time_start = Fast_clock.now () in
         Some (fun (k : (a, unit) continuation) -> 
           let promise = Promise.empty () in     
           schedule_internal ~has_yielded:false (Task.new_task (fun () -> 
-            let time_end = Fast_clock.now () in
             with_processor (fun processor -> 
-              Processor.log_time processor (Core.Int63.(time_end - time_start));
               Processor.incr_tasks processor); 
             let result = new_f () in 
             let to_run = Promise.fill promise result in 
@@ -288,20 +276,6 @@ module Make (DS : DataStructure) = struct
       all_processors 0)
 
   module Stats = struct 
-    let unsafe_print_latency_histogram () = 
-      with_context (fun ({all_processors; _} : Context.t) -> 
-        let histograms = 
-          Array.map (fun processor -> 
-            Processor.latency_histogram processor) 
-            all_processors 
-        in 
-        let merged = 
-          Array.to_list histograms 
-          |> Histogram.merge
-        in
-        Array.iter Histogram.zero_out histograms;
-        Histogram.dump merged);;
-
     let unsafe_print_executed_tasks () =
       with_context (fun {all_processors; _} -> 
         let counters = Array.map (fun processor -> 
@@ -329,7 +303,6 @@ module type S = sig
   val pending_tasks : unit -> int
   val scheduler_name : String.t
   module Stats : sig 
-    val unsafe_print_latency_histogram : unit -> unit 
     val unsafe_print_executed_tasks : unit -> unit
   end 
 end 

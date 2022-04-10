@@ -14,7 +14,6 @@ module type S = sig
   val pending_tasks : unit -> int
   val scheduler_name : String.t
   module Stats : sig 
-    val unsafe_print_latency_histogram : unit -> unit 
     val unsafe_print_executed_tasks : unit -> unit
   end 
 end 

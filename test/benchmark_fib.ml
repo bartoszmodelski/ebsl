@@ -69,7 +69,6 @@ let benchmark ~domains ~n_jobs (module Sched : Schedulr.Scheduler.S) =
       while Sched.pending_tasks () != 0 do 
         Unix.sleepf 0.1;
       done;
-      Sched.Stats.unsafe_print_latency_histogram ();
       Stdlib.flush_all ();
     done;
     Printf.printf "done\n";

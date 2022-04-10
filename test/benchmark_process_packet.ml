@@ -59,7 +59,6 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
       Unix.sleepf 0.1;
       if Sched.pending_tasks () != 0  
       then assert false; 
-      Sched.Stats.unsafe_print_latency_histogram (); 
       Sched.Stats.unsafe_print_executed_tasks ();
     done; 
     Printf.printf "done\n"; 
