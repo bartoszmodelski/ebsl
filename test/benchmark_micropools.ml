@@ -1,4 +1,4 @@
-let get_time () = (Schedulr.Fast_clock.now () |> Core.Int63.to_int_exn)
+let get_time () = (Fast_clock.now () |> Core.Int63.to_int_exn)
 
 
 let total_wait = Atomic.make 0
