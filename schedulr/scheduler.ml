@@ -151,9 +151,9 @@ module Make (DS : DataStructure) = struct
         spins := !spins + 1
       done;
       if !spins == spin_threshold then 
-        task_pressure context;
+        (task_pressure context;
         (* chuck into the global queue *)
-        (Custom_queue.enqueue global_queue task));;
+        Custom_queue.enqueue global_queue task));;
 
   let schedule_awaiting to_run result = 
     match to_run with 

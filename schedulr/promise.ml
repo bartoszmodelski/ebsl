@@ -9,13 +9,15 @@ let with_mutex mtx f =
 type 'a t = {
   returned : 'a option ref;
   awaiting : ('a -> unit) List.t option ref;
-  mutex : Mutex.t
+  mutex : Mutex.t;
 }
 
 let empty () = 
-  ({ returned = ref None; 
-  awaiting = ref (Some []);
-  mutex = Mutex.create () } : 'a t)
+  ({ 
+    returned = ref None; 
+    awaiting = ref (Some []);
+    mutex = Mutex.create ();
+  } : 'a t)
 
 let await promise f = 
   let ({awaiting; mutex; returned} : 'a t) = promise in  
