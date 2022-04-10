@@ -39,7 +39,8 @@ module Make (DS : DataStructure) = struct
       id : int; 
       executed_tasks : int ref;
       steal_attempts : int ref; 
-      local_requesting_queue : Task.t Datastructures.Queue_of_queues.Local.t 
+      local_requesting_queue : Task.t Datastructures.Queue_of_queues.Local.t;
+      suggest_steal : int option Atomic.t; 
     }
 
     let init ?size_exponent requesting_queue id = 
@@ -49,11 +50,11 @@ module Make (DS : DataStructure) = struct
         executed_tasks = ref 0;
         steal_attempts = ref 0;
         local_requesting_queue = Datastructures.Queue_of_queues.Local.init requesting_queue;
+        suggest_steal = Atomic.make None;
       }
     
     let id {id; _} = id
     let ds {ds; _} = ds
-
     let incr_tasks {executed_tasks; _} = 
       executed_tasks := !executed_tasks + 1
 
@@ -63,12 +64,22 @@ module Make (DS : DataStructure) = struct
     let zero_executed_tasks {executed_tasks; _} =
       executed_tasks := 0
 
-    let take_from {steal_attempts; _} = 
+    let take_from {steal_attempts; suggest_steal; _} = 
       steal_attempts := !steal_attempts + 1;
       if !steal_attempts mod 4 = 0 then 
         `Global_queue 
       else 
-        `Steal;;
+        (let kind = 
+          match Atomic.get suggest_steal with 
+          | None -> None 
+          | Some id -> 
+            (Atomic.set suggest_steal None;
+            Some id)
+        in 
+        `Steal kind);;
+
+    let set_suggest_steal {suggest_steal; _} id = 
+      Atomic.set suggest_steal (Some id);;
 
   end 
 
@@ -103,8 +114,31 @@ module Make (DS : DataStructure) = struct
     with_context (fun ({processor; _} : Context.t) ->
       f processor);;
 
+
+  let random_id ({processor; all_processors; _} : Context.t) =
+    let num_of_other_processors = Array.length all_processors - 1 in 
+    if num_of_other_processors < 1 
+    then None 
+    else
+      Some (let r = Random.int num_of_other_processors in 
+        let my_id = Processor.id processor in
+        if r == my_id then
+          r + 1 
+        else 
+          r);;
+
+  let task_pressure context =
+    let ({all_processors; processor; _} : Context.t) = context in 
+    match random_id context with 
+    | None -> () 
+    | Some other_id ->
+      let my_id = Processor.id processor in 
+      let other_processor = Array.get all_processors other_id in 
+      Processor.set_suggest_steal other_processor my_id;;
+
   let schedule_internal ~has_yielded task = 
-    with_context (fun {processor; global_queue; _} ->
+    with_context (fun context ->
+      let ({processor; global_queue; _} : Context.t) = context in 
       let ds = Processor.ds processor in 
       let insert_f = 
         if has_yielded 
@@ -117,6 +151,7 @@ module Make (DS : DataStructure) = struct
         spins := !spins + 1
       done;
       if !spins == spin_threshold then 
+        task_pressure context;
         (* chuck into the global queue *)
         (Custom_queue.enqueue global_queue task));;
 
@@ -158,25 +193,17 @@ module Make (DS : DataStructure) = struct
           | `Already_done returned -> continue k returned)
       | _ -> None}
 
-  let steal ~context = 
+  let steal ~context ~force_id = 
     let ({processor; all_processors; _} : Context.t) = context in 
-    let num_of_other_processors = Array.length all_processors - 1 in 
-    if num_of_other_processors < 1 
-    then () 
-    else
-      (let my_id = Processor.id processor in
-      let other_queue_id = 
-        let r = Random.int num_of_other_processors in 
-        if r == my_id then
-          r + 1 
-        else 
-          r
-      in
-      let other_processor = Array.get all_processors other_queue_id in
+    match force_id, random_id context with 
+    | None, None -> () 
+    | (Some other_queue_id, (Some _ | None)) 
+    | (None, Some other_queue_id) ->
+      (let other_processor = Array.get all_processors other_queue_id in
       let other_ds = Processor.ds other_processor in 
       let my_ds = Processor.ds processor in 
       DS.global_steal ~from:other_ds ~to_local:my_ds  
-      |> ignore)
+      |> ignore);;
     
   let take_from_global_queue ~context = 
     let ({processor; global_queue; _} : Context.t) = context in 
@@ -191,7 +218,7 @@ module Make (DS : DataStructure) = struct
     let ({processor; _}: Context.t) = context in 
     match Processor.take_from processor with 
     | `Global_queue -> take_from_global_queue ~context
-    | `Steal -> steal ~context;;
+    | `Steal id -> steal ~context ~force_id:id ;;
 
   let rec run_domain () = 
     let scheduled = 
