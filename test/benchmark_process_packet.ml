@@ -42,11 +42,12 @@ let workload ~num_of_spawners () =
   let difference = Core.Time_ns.diff time_end time_start 
     |> Core.Time_ns.Span.to_int_ns in 
   Printf.printf "time:%d\n" (difference/1000_000);
-  Stdlib.flush_all ();;
+  Stdlib.flush_all ();
+  difference;;
 
 let iterations = 11
 
-let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Scheduler.S) =
+let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Scheduler.S) report =
   Printf.printf "start(sched:%s,spawners:%d,domains:%d)\n"
     Sched.scheduler_name
     num_of_spawners
@@ -55,7 +56,8 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
     for i = 1 to iterations do 
       Printf.printf "iteration:%d\n" i;
       Unix.sleepf 0.1;
-      workload ~num_of_spawners (); 
+      let time = workload ~num_of_spawners () in 
+      Reporting.Report.log_execution report time;
       Unix.sleepf 0.1;
       if Sched.pending_tasks () != 0  
       then assert false; 
@@ -84,6 +86,11 @@ let () =
   assert (0 < !num_of_spawners && !num_of_spawners < 512);
   let num_of_domains = !num_of_domains in
   let num_of_spawners = !num_of_spawners in 
-  benchmark ~num_of_domains ~num_of_spawners scheduler_module;;
+  let report = 
+    let module M = (val scheduler_module : Schedulr.Scheduler.S) in 
+    let params = Printf.sprintf "scheduler:%s,domains:%d,spawners:%d" M.scheduler_name num_of_domains num_of_spawners in 
+    Reporting.Report.init ~name:"process-packet" ~params
+  in
+  benchmark ~num_of_domains ~num_of_spawners scheduler_module report;;
 
 

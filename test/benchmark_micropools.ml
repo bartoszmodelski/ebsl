@@ -73,8 +73,8 @@ let accept ~start_time () =
           Pools.sched_time (fun () -> 
             let end_time = get_time () in 
             let diff = end_time-start_time in 
-            let hist = Schedulr.Histogram.Per_thread.get_hist () in 
-            Schedulr.Histogram.log_val hist (diff + 1);
+            let hist = Reporting.Histogram.Per_thread.get_hist () in 
+            Reporting.Histogram.log_val hist (diff + 1);
             Atomic.incr _done))));;
 
 
@@ -101,7 +101,7 @@ let bench () =
 
 
 let () =
-  Schedulr.Histogram.Per_thread.init ~size:48 55;
+  Reporting.Histogram.Per_thread.init ~size:48 55;
   let usage_msg = "benchmark -mode (pools|single)" in 
   let mode = ref "" in
   let speclist =
@@ -117,10 +117,10 @@ let () =
   Pools.set_mode mode;
   bench (); 
   (*Schedulr.Histogram.Per_thread.dump_each ();*)
-  let merged = Schedulr.Histogram.Per_thread.all () in 
-  Schedulr.Histogram.dump merged;
+  let merged = Reporting.Histogram.Per_thread.all () in 
+  Reporting.Histogram.dump merged;
   let f v = 
-    Schedulr.Histogram.quantile ~quantile:v merged
+    Reporting.Histogram.quantile ~quantile:v merged
   in
   Printf.printf ".5: %d, .99: %d, .999: %d, 9995: %d\n" 
     (f 0.5) (f 0.99) (f 0.999) (f 0.9995);;

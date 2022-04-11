@@ -9,4 +9,4 @@ let parse_sched v =
   | s -> failwith ("unknown scheduler type " ^ s)
 
 
-  let anon_fun _ = failwith "no anon parameters expected";;
+let anon_fun _ = failwith "no anon parameters expected";;
