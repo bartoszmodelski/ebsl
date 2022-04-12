@@ -1,4 +1,4 @@
-let get_time () = (Fast_clock.now () |> Core.Int63.to_int_exn)
+let get_time () = (Reporting.Fast_clock.now () |> Core.Int63.to_int_exn)
 
 
 let total_wait = Atomic.make 0
@@ -73,8 +73,8 @@ let accept ~start_time () =
           Pools.sched_time (fun () -> 
             let end_time = get_time () in 
             let diff = end_time-start_time in 
-            let hist = Reporting.Histogram.Per_thread.get_hist () in 
-            Reporting.Histogram.log_val hist (diff + 1);
+            let hist = Reporting.Histogram.Per_thread.local_get_hist () in 
+            Reporting.Histogram.add_val_log hist (diff + 1);
             Atomic.incr _done))));;
 
 

@@ -1,6 +1,3 @@
-
-let _ = Printexc.record_backtrace true
-
 let premade_buffers =
   let buffers = 
     List.init 10 (fun _ -> 
@@ -39,3 +36,8 @@ let get_by_index n ~copy_out =
   else 
     source;;
   
+let get_rand () = 
+  let source = List.nth premade_buffers 
+    (Random.int (List.length premade_buffers)) 
+  in 
+  Buffer.to_bytes source

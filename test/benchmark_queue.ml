@@ -29,10 +29,10 @@ let bench ~num_of_domains ~item_count (module Queue : Datastructures.Queue_intf.
   let times = ref [] in 
   while (Atomic.get current_round)+1 < total_rounds do 
     Unix.sleepf 0.001;
-    let before = Fast_clock.now () in 
+    let before = Reporting.Fast_clock.now () in 
     Atomic.incr current_round; 
     while Atomic.get _done < num_of_domains do () done; 
-    let after = Fast_clock.now () in
+    let after = Reporting.Fast_clock.now () in
     Atomic.set _done 0;
     let diff =  Base.Int63.(to_int64(after-before)) in 
     times := diff :: !times

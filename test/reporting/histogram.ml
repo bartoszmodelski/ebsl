@@ -2,9 +2,9 @@ type t = int Array.t
 
 let init ?(size=32) () = Array.init size (fun _ -> 0)
 
-let log_val t value =
-  if value < 1 then 
-    () 
+let add_val_log t value =
+  if value < 1 
+  then () 
   else 
     (let size = (Array.length t - 1) in
     let index = min (Core.Int.floor_log2 value) size in
@@ -55,13 +55,13 @@ let quantile ~quantile t =
 
 let test = 
   let t1 = init () in
-  log_val t1 1;
-  log_val t1 3; 
+  add_val_log t1 1;
+  add_val_log t1 3; 
   let t2 = init () in
-  log_val t2 3;
-  log_val t2 9; 
+  add_val_log t2 3;
+  add_val_log t2 9; 
   let t3 = init () in
-  log_val t3 3;
+  add_val_log t3 3;
   let final = merge [t1; t2; t3] in  
   let nth = Array.get final in 
   assert (nth 0 = 1); 
@@ -100,14 +100,18 @@ module Per_thread = struct
     if index >= (Array.length !array) 
     then 
       (Printf.printf "hist index exceeded initializaiton\n"; 
-      Stdlib.flush_all ());
+      Stdlib.flush_all ();
+      assert false);
     index);;
 
-  let get_hist () = 
+  let local_get_hist () = 
     Array.get !array (Domain.DLS.get key);;
 
   let all () =
     Array.to_list !array |> merge;;
+
+  let zero_out () = 
+    Array.iter zero_out !array;;
 
   let dump_each () = 
     Array.iter dump !array 

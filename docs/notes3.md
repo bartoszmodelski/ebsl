@@ -1,0 +1,1 @@
+Scheduling can be defined as an exploration of infinite DAG. Response time is the time between discovery and finishing some finite sequence of nodes. Minimization of latency corresponds to minimization of response time of a (potentially infinite) set of these sequences. 

@@ -1,51 +1,41 @@
 
 let _ = Printexc.record_backtrace true
 
+
+let finished = Atomic.make 0
+
+let wait_exp () = 
+  let exponential () = log (Random.float 1.) *. -1. in
+  Unix.sleepf (exponential () /. 1_000_000.);;
+
 let log s = 
   Printf.printf "%s\n" s;
   Stdlib.(flush stdout);;
 
-let finished = Atomic.make 0
-
-let run_processor ~copy_out ~n () =
-  for i = 1 to n do 
-    Schedulr.Scheduler.schedule (fun () ->
-      let packet = Mock_packet.get_by_index n ~copy_out in 
-        Schedulr.Scheduler.schedule (fun () ->
-          Buffer.add_int64_be packet (Random.int64 Int64.max_int);
-          Schedulr.Scheduler.schedule (fun () ->
-            Buffer.add_int64_be packet (Random.int64 Int64.max_int);
-            Schedulr.Scheduler.schedule (fun () -> 
-            let len = Buffer.length packet in 
-            let f from to_ = 
-              Mock_packet.find_spaces packet from to_ [] 
-              |> Sys.opaque_identity 
-              |> ignore
-            in  
-            f 0 len; 
-            Atomic.incr finished) 
-            |> ignore)
-          |> ignore) 
-        |> ignore) 
+let run_processor ~n () =
+  for _ = 1 to n do 
+    Schedulr.Scheduler.schedule (fun () -> 
+      let packet = Mock_packet.get_rand () in 
+      Digestif.SHA1.digest_bytes packet 
+      |> Digestif.SHA1.to_hex
+      |> Sys.opaque_identity
       |> ignore;
-    if i mod 10 == 0
-    then Schedulr.Scheduler.yield ()
+      wait_exp ();
+      Atomic.incr finished) 
+    |> ignore;
+   (* wait_exp (); *)
   done;;
-let items_total = 100_000
+let items_total = 1_000
 
 let workload ~num_of_spawners () =
   let items_per_worker = items_total / num_of_spawners in 
   Atomic.set finished 0;
   let time_start = Core.Time_ns.now () in 
-  let _ = 
-    for _ = 1 to num_of_spawners do 
-      Schedulr.Scheduler.schedule (run_processor ~copy_out:true ~n:items_per_worker)
+  for _ = 1 to num_of_spawners do 
+      Schedulr.Scheduler.schedule (run_processor ~n:items_per_worker)
       |> ignore
     done;
-    while Atomic.get finished < num_of_spawners * items_per_worker do 
-      Schedulr.Scheduler.yield ()
-    done; 
-  in
+  while Atomic.get finished < num_of_spawners * items_per_worker do () done; 
   let time_end = Core.Time_ns.now () in 
   let difference = Core.Time_ns.diff time_end time_start 
     |> Core.Time_ns.Span.to_int_ns in 
@@ -59,6 +49,7 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
     Sched.scheduler_name
     num_of_spawners
     num_of_domains;
+  Reporting.With_latency.init (num_of_domains+1);
   Sched.init (num_of_domains-1) ~f:(fun () ->
     for i = 1 to iterations do 
       Printf.printf "iteration:%d\n" i;
@@ -76,7 +67,7 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
 (* cmd *)
 
 let () =
-  let usage_msg = "benchmark -scheduler (FIFO|LIFO)" in 
+  let usage_msg = "benchmark <flags>" in 
   let anon_fun _ = failwith "no anon parameters expected" in
   let scheduler = ref "" in
   let num_of_domains = ref 0 in 

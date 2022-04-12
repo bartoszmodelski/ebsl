@@ -24,8 +24,10 @@ let benchmark () =
   let per_call = (Int.to_float diff) /. (Int.to_float total_iters) in 
   Printf.printf "total %dns, per call %fns\n" diff per_call;
   if per_call > 50. 
-  then Printf.printf "timer seems slow :( check if handled by vdso\n" 
-  else Printf.printf "looks ok?\n";
+  then 
+    Printf.printf "timer seems slow :( check if handled by vdso\n" 
+  else 
+    Printf.printf "looks ok?\n";
   Stdlib.flush_all ();
   ();;
 
