@@ -3,13 +3,15 @@ type t = int Array.t
 let init ?(size=32) () = Array.init size (fun _ -> 0)
 
 let add_val_log t value =
-  if value < 1 
-  then () 
-  else 
-    (let size = (Array.length t - 1) in
-    let index = min (Core.Int.floor_log2 value) size in
-    let current_value = Array.get t index in
-    Array.set t index (current_value + 1));;
+  let value = 
+    if value < 1
+    then 1 
+    else value 
+  in
+  (let size = (Array.length t - 1) in
+  let index = min (Core.Int.floor_log2 value) size in
+  let current_value = Array.get t index in
+  Array.set t index (current_value + 1));;
 
 
 let add_val t value =

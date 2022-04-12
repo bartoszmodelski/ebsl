@@ -1,8 +1,14 @@
 open EffectHandlers
 open EffectHandlers.Deep 
 
-(* module Custom_queue = Datastructures.Multi_mpmc_queue.Make(struct let num_of_queues = 2 end) *)
-module Custom_queue = Datastructures.Lock_queue
+(*module Custom_queue = Datastructures.Multi_mpmc_queue.Make(struct 
+  let num_of_queues = 1
+end) 
+*)
+
+module Custom_queue = Datastructures.Mpmc_queue
+
+(* module Custom_queue = Datastructures.Lock_queue *)
 
 let _ = Printexc.record_backtrace true
 
@@ -244,7 +250,7 @@ module Make (DS : DataStructure) = struct
       continue task ());
     run_domain ();;
 
-  let setup_domain context = 
+  let setup_domain context () = 
     Domain.DLS.set domain_key (Some context); 
     let ds =
       let ({processor; _} : Context.t) = context in 
@@ -261,7 +267,7 @@ module Make (DS : DataStructure) = struct
         Stdlib.flush_all ();
         Stdlib.exit 1;;
 
-  let init ?(afterwards=`join_the_pool) ?size_exponent ~(f : unit -> unit) n =
+  let init ?(afterwards=`join_the_pool) ?overflow_size_exponent ?size_exponent ~(f : unit -> unit) n =
     assert (n > -1);
     let num_of_processors = 
       match afterwards with 
@@ -274,7 +280,7 @@ module Make (DS : DataStructure) = struct
         (fun id -> Processor.init ?size_exponent requesting_queue id) 
       |> Array.of_list 
     in
-    let global_queue = Custom_queue.init () in 
+    let global_queue = Custom_queue.init ?size_exponent:overflow_size_exponent () in 
     Custom_queue.enqueue global_queue (Task.new_task f);
     List.init n (fun index -> 
       let processor = Array.get all_processors index in  
@@ -293,7 +299,7 @@ module Make (DS : DataStructure) = struct
       let context = 
         ({processor; all_processors; global_queue; requesting_queue} : Context.t) 
       in 
-      setup_domain context;;
+      notify_user (setup_domain context) ();;
 
   let pending_tasks () = 
     with_context (fun ({all_processors; _} : Context.t) -> 
@@ -321,6 +327,7 @@ module type S = sig
   type t
 
   val init : ?afterwards:[`join_the_pool | `return] 
+    -> ?overflow_size_exponent:int 
     -> ?size_exponent:int 
     -> f:(unit -> unit) 
     -> int 

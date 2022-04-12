@@ -4,7 +4,7 @@ end) : Queue_intf.S = struct
   type 'a t = 'a Mpmc_queue.t Array.t
 
   let init ?size_exponent () = 
-    Array.init M.num_of_queues (fun _ -> Mpmc_queue.init ?size_exponent ())
+    Array.init M.num_of_queues (fun _ -> Mpmc_queue.init ?size_exponent ());;
 
   let enqueue t item = 
     let index = Random.int (Array.length t) in 

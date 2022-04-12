@@ -23,9 +23,7 @@ let enqueue {array; tail; mask; _} element =
   let index = (Atomic.fetch_and_add tail 1) land mask in
   let cell = Array.get array index in 
   while not (Atomic.compare_and_set cell None (Some element)) do
-    while Option.is_some (Atomic.get cell) do 
-      Domain.cpu_relax () 
-    done     
+    while Option.is_some (Atomic.get cell) do () done     
   done;;
 
 
@@ -42,7 +40,9 @@ let dequeue queue =
       let value = Atomic.get cell in 
       if Option.is_some value &&
         Atomic.compare_and_set cell value None 
-      then value 
+      then 
+        (assert (Option.is_some value);
+        value) 
       else if 
         (Atomic.get tail) <= old_head && 
         Atomic.compare_and_set head (old_head + 1) old_head 

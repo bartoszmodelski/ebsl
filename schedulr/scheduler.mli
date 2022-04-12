@@ -5,6 +5,7 @@ val yield : unit -> unit
 module type S = sig
   type t 
   val init : ?afterwards:[`join_the_pool | `return] 
+    -> ?overflow_size_exponent:int 
     -> ?size_exponent:int 
     -> f:(unit -> unit) 
     -> int 
