@@ -39,10 +39,11 @@ Quartiles: .5: 20, .99: 21, .999: 22, 9995: 23
 ```
 
 
-# Criticism of work-stealing - work-shedding 
+# Criticism of work-stealing - work-shedding TODO 
 
-* Different approach: try to fix work-stealing.
-* Work-stealing is silly but how about work-shedding? 
+Different approach: try to fix work-stealing. Work-stealing is necessary in a non-preemptive scheduler, but it should not be the primary mean of distributing load. Only of saving latency for stuck cpus. 
+
+How about work-shedding? And not a naive (that is, still heavily randomized) one like mcclure, but one where the load is shedded via a scalable queue. 
   
 
 # Resizing - horizontal or vertical?
