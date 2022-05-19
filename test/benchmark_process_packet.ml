@@ -20,10 +20,10 @@ let run_processor ~copy_out ~n () =
       f 0 len; 
       Atomic.incr finished) 
     |> ignore;
-    if _i mod 100 == 0
-    then Schedulr.Scheduler.yield () 
+    (* if _i mod 100 == 0
+    then Schedulr.Scheduler.yield () *)
   done;;
-let items_total = 100_000 
+let items_total = 1_0_000 
 
 let workload ~num_of_spawners () =
   let items_per_worker = items_total / num_of_spawners in 
@@ -88,7 +88,10 @@ let () =
   let num_of_spawners = !num_of_spawners in 
   let report = 
     let module M = (val scheduler_module : Schedulr.Scheduler.S) in 
-    let params = Printf.sprintf "scheduler:%s,domains:%d,spawners:%d" M.scheduler_name num_of_domains num_of_spawners in 
+    let params = 
+      Printf.sprintf "scheduler:%s,domains:%d,spawners:%d" 
+        M.scheduler_name num_of_domains num_of_spawners 
+    in 
     Reporting.Report.init ~name:"process-packet" ~params
   in
   benchmark ~num_of_domains ~num_of_spawners scheduler_module report;;

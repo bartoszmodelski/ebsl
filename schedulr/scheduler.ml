@@ -282,14 +282,18 @@ module Make (DS : DataStructure) = struct
     in
     let global_queue = Custom_queue.init ?size_exponent:overflow_size_exponent () in 
     Custom_queue.enqueue global_queue (Task.new_task f);
+    let counter = Atomic.make 0 in 
     List.init n (fun index -> 
       let processor = Array.get all_processors index in  
       let context = 
         ({processor; all_processors; global_queue; requesting_queue} : Context.t) 
       in 
       Domain.spawn (fun () -> 
-        notify_user (setup_domain context) ()) |> ignore) 
+        notify_user (fun () -> 
+          Atomic.incr counter;
+          setup_domain context ()) ()) |> ignore) 
       |> ignore;
+    while Atomic.get counter < n do () done;
     (* run f from within the pool *)
     match afterwards with
     | `return -> 
