@@ -39,16 +39,16 @@ Quartiles: .5: 20, .99: 21, .999: 22, 9995: 23
 ```
 
 
-# Criticism of work-stealing - work-shedding TODO 
+# Criticism of work-stealing - work-shedding 
 
 Different approach: try to fix work-stealing. Work-stealing is necessary in a non-preemptive scheduler, but it should not be the primary mean of distributing load. Only of saving latency for stuck cpus. 
 
-How about work-shedding? And not a naive (that is, still heavily randomized) one like mcclure, but one where the load is shedded via a scalable queue. 
+How about work-shedding? And not a naive one like mcclure (that is, still heavily randomized), but one where the load is shedded via a scalable queue. 
   
 
 # Resizing - horizontal or vertical?
 
-Resizable runqueues are implemented. There is an interesting novelty to try though: instead of scaling up runqueue 2x, we could create another queue and randomize between them. It will have marginal effect locally but will make work-stealing far more efficient, as N thief can act simultaneously.
+Resizable runqueues are implemented. There is an interesting novelty to try though: instead of scaling up runqueue 2x, we could create another queue and randomize between them. It will have marginal effect locally but will make work-sharing far more efficient, as N thief can act simultaneously.
 
 Arguably, contention is an unlikely problem with pure work-stealing, since thiefs will rarely contend on the same victim. Work-shedding OTOH is likely to have all free CPUs try to steal from a single spawner and that's a good thing, as long as the thiefs can be served. 
 
