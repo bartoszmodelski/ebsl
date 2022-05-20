@@ -1,17 +1,15 @@
 type t = int Array.t 
 
-let init ?(size=32) () = Array.init size (fun _ -> 0)
+let init ?(size=128) () = Array.init size (fun _ -> 0)
 
 let add_val_log t value =
-  let value = 
-    if value < 1
-    then 1 
-    else value 
-  in
-  (let size = (Array.length t - 1) in
-  let index = min (Core.Int.floor_log2 value) size in
+  let change_base = log 1.2 in 
+  let value = Float.of_int (value+1) in 
+  let log_val = (log value) /. change_base in 
+  let size = (Array.length t - 1) in
+  let index = min (Int.of_float (floor log_val)) size in
   let current_value = Array.get t index in
-  Array.set t index (current_value + 1));;
+  Array.set t index (current_value + 1);;
 
 
 let add_val t value =
@@ -54,7 +52,7 @@ let quantile ~quantile t =
   done;
   !array_index - 1
 ;;
-
+(* 
 let test = 
   let t1 = init () in
   add_val_log t1 1;
@@ -89,7 +87,7 @@ let test_quantile_2 =
   done;
   add_val t 10;
   assert (quantile ~quantile:0.99 t == 10);; 
-
+*)
 module Per_thread = struct 
   let current_index = Atomic.make 0
   let array = ref (Array.make 0 (init ()));; 

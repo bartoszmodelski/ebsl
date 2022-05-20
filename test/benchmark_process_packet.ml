@@ -21,12 +21,15 @@ let run_processor ~copy_out ~n () =
       in  
       f 0 len; 
       let difference = 
+        let difference_ns = 
         let end_time = Core.Time_ns.now () in 
         Core.Time_ns.diff end_time start_time 
         |> Core.Time_ns.Span.to_int_ns 
+        in
+        difference_ns / 1000
       in 
-      Reporting.Histogram.(add_val_log (Per_thread.local_get_hist ()) difference);
-      Atomic.incr finished) 
+      Reporting.Success.local_incr ();
+      Reporting.Histogram.(add_val_log (Per_thread.local_get_hist ()) (difference))) 
     |> ignore;
     (* if _i mod 100 == 0
     then Schedulr.Scheduler.yield () *)
@@ -42,9 +45,10 @@ let workload ~num_of_spawners () =
       Schedulr.Scheduler.schedule (run_processor ~copy_out:true ~n:items_per_worker)
       |> ignore
     done;
-    while Atomic.get finished < num_of_spawners * items_per_worker do 
+    while Reporting.Success.unsafe_sum () < num_of_spawners * items_per_worker do 
       (* Schedulr.Scheduler.yield () *) ()
     done; 
+    Reporting.Success.unsafe_zero_out ()
   in
   let time_end = Core.Time_ns.now () in 
   let difference = Core.Time_ns.diff time_end time_start 
@@ -53,15 +57,16 @@ let workload ~num_of_spawners () =
   Stdlib.flush_all ();
   difference;;
 
-let iterations = 11
+let iterations = ref 11
 
 let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Scheduler.S) =
-  Printf.printf "{\"sched\":\"%s\",\"spawners\":\"%d\",\"domains\":\"%d\",\"data\":[\n"
+  Printf.printf "{\"sched\":\"%s\",\"spawners\":\"%d\",\"domains\":\"%d\",\"items_total\":%d,\"data\":[\n"
     Sched.scheduler_name
     num_of_spawners
-    num_of_domains;
+    num_of_domains
+    !items_total;
   Sched.init (num_of_domains-1) ~f:(fun () ->
-    for i = 1 to iterations do 
+    for i = 1 to !iterations do 
       Printf.printf "{\"iteration\":%d,\n" i;
       Unix.sleepf 0.1;
       let _ = workload ~num_of_spawners () in 
@@ -74,13 +79,13 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
         let open Reporting.Histogram in 
         let hist = Per_thread.all () in 
         (dump hist);
-        Printf.printf "\"median\":%d,\n\"three_nine\":%d\n" 
+        Printf.printf "\"latency_median\":%d,\n\"latency_three_nine\":%d\n" 
           (quantile ~quantile:0.5 hist)
           (quantile ~quantile:0.999 hist);
         Reporting.Histogram.Per_thread.zero_out ();
       in
       Printf.printf "}";
-      if i < iterations 
+      if i < !iterations 
       then Printf.printf ",\n"; 
     done; 
     Printf.printf "]}\n"; 
@@ -99,12 +104,15 @@ let () =
     [("-scheduler", Arg.Set_string scheduler, "set scheduler algo");
     ("-num-of-domains", Arg.Set_int num_of_domains, "set num of domains");
     ("-items-total", Arg.Set_int items_total, "set total items");
-    ("-num-of-spawners", Arg.Set_int num_of_spawners, "set num of spawners")] 
+    ("-num-of-spawners", Arg.Set_int num_of_spawners, "set num of spawners");
+    ("-iterations", Arg.Set_int iterations, "set num of iterations")] 
   in 
   Arg.parse speclist anon_fun usage_msg;
   let scheduler_module = Flags.parse_sched scheduler in 
   assert (0 < !num_of_domains && !num_of_domains < 512);
   assert (0 < !num_of_spawners && !num_of_spawners < 512);
+  assert (0 < !iterations);
+  assert (0 < !items_total);
   let num_of_domains = !num_of_domains in
   let num_of_spawners = !num_of_spawners in 
   let _report = 
@@ -116,6 +124,7 @@ let () =
     Reporting.Report.init ~name:"process-packet" ~params
   in
   Reporting.Histogram.Per_thread.init 128; 
+  Reporting.Success.init 128; 
   benchmark ~num_of_domains ~num_of_spawners scheduler_module;;
 
 
