@@ -9,6 +9,7 @@ let finished = Atomic.make 0
 
 let run_processor ~copy_out ~n () =
   for _i = 1 to n do 
+    let start_time = Core.Time_ns.now () in 
     Schedulr.Scheduler.schedule (fun () ->
       let packet = Mock_packet.get_by_index n ~copy_out in
       let len = Buffer.length packet in 
@@ -19,6 +20,12 @@ let run_processor ~copy_out ~n () =
         |> ignore
       in  
       f 0 len; 
+      let difference = 
+        let end_time = Core.Time_ns.now () in 
+        Core.Time_ns.diff end_time start_time 
+        |> Core.Time_ns.Span.to_int_ns 
+      in 
+      Reporting.Histogram.(add_val_log (Per_thread.local_get_hist ()) difference);
       Atomic.incr finished) 
     |> ignore;
     (* if _i mod 100 == 0
@@ -42,30 +49,41 @@ let workload ~num_of_spawners () =
   let time_end = Core.Time_ns.now () in 
   let difference = Core.Time_ns.diff time_end time_start 
     |> Core.Time_ns.Span.to_int_ns in 
-  Printf.printf "time:%d\n" (difference/1000_000);
+  Printf.printf "\"time\":%d,\n" (difference/1000_000);
   Stdlib.flush_all ();
   difference;;
 
 let iterations = 11
 
-let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Scheduler.S) report =
-  Printf.printf "start(sched:%s,spawners:%d,domains:%d)\n"
+let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Scheduler.S) =
+  Printf.printf "{\"sched\":\"%s\",\"spawners\":\"%d\",\"domains\":\"%d\",\"data\":[\n"
     Sched.scheduler_name
     num_of_spawners
     num_of_domains;
   Sched.init (num_of_domains-1) ~f:(fun () ->
     for i = 1 to iterations do 
-      Printf.printf "iteration:%d\n" i;
+      Printf.printf "{\"iteration\":%d,\n" i;
       Unix.sleepf 0.1;
-      let time = workload ~num_of_spawners () in 
-      Reporting.Report.log_execution report time;
+      let _ = workload ~num_of_spawners () in 
       Unix.sleepf 0.1;
       if Sched.pending_tasks () != 0  
       then assert false; 
       Sched.Stats.unsafe_print_waited_for_space_on_enque ();
       Sched.Stats.unsafe_print_executed_tasks ();
+      let () = 
+        let open Reporting.Histogram in 
+        let hist = Per_thread.all () in 
+        (dump hist);
+        Printf.printf "\"median\":%d,\n\"three_nine\":%d\n" 
+          (quantile ~quantile:0.5 hist)
+          (quantile ~quantile:0.999 hist);
+        Reporting.Histogram.Per_thread.zero_out ();
+      in
+      Printf.printf "}";
+      if i < iterations 
+      then Printf.printf ",\n"; 
     done; 
-    Printf.printf "done\n"; 
+    Printf.printf "]}\n"; 
     Stdlib.flush_all ();
     Stdlib.exit 0) |> ignore;;
 
@@ -89,7 +107,7 @@ let () =
   assert (0 < !num_of_spawners && !num_of_spawners < 512);
   let num_of_domains = !num_of_domains in
   let num_of_spawners = !num_of_spawners in 
-  let report = 
+  let _report = 
     let module M = (val scheduler_module : Schedulr.Scheduler.S) in 
     let params = 
       Printf.sprintf "scheduler:%s,domains:%d,spawners:%d" 
@@ -97,6 +115,7 @@ let () =
     in 
     Reporting.Report.init ~name:"process-packet" ~params
   in
-  benchmark ~num_of_domains ~num_of_spawners scheduler_module report;;
+  Reporting.Histogram.Per_thread.init 128; 
+  benchmark ~num_of_domains ~num_of_spawners scheduler_module;;
 
 

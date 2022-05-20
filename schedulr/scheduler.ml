@@ -338,7 +338,7 @@ module Make (DS : DataStructure) = struct
         |> Array.to_list
         |> List.map Int.to_string
         |> String.concat ","
-        |> Printf.printf "executed-tasks:[%s]\n");;
+        |> Printf.printf "\"executed-tasks\":[%s],\n");;
 
     let unsafe_print_waited_for_space_on_enque () =
       with_context (fun {all_processors; _} -> 
@@ -350,7 +350,7 @@ module Make (DS : DataStructure) = struct
         |> Array.to_list
         |> List.fold_left (+) 0
         |> Int.to_string
-        |> Printf.printf "waited-for-space-on-enque:[%s]\n");;
+        |> Printf.printf "\"waited-for-space-on-enque\":%s,\n");;
   end
 end
 

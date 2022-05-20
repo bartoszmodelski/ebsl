@@ -36,7 +36,7 @@ let dump t =
   Array.to_list t 
   |> List.map (Printf.sprintf "%6d")
   |> String.concat ","
-  |> Printf.printf "latency:[%s]\n"
+  |> Printf.printf "\"latency\":[%s],\n"
 
 let quantile ~quantile t = 
   let total = 

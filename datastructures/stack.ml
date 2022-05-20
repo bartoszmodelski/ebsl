@@ -126,17 +126,19 @@ let rec steal ?(auto_retry=false) ?(steal_size_limit=Int.max_int) ~from
       while !stolen < available_steal && not !finished do 
         let index = (old_bottom_val + !stolen) land mask in
         let cell = Array.get array index in 
-        let value = Atomic.exchange cell None in 
-        match value with 
-        | Some value -> 
-          (assert (local_push to_local value);
-          stolen := !stolen + 1)
-        | None -> 
-          if Atomic.compare_and_set bottom 
+        if Option.is_some (Atomic.get cell) then
+          (let value = Atomic.exchange cell None in 
+          match value with 
+          | Some value -> 
+            (assert (local_push to_local value);
+            stolen := !stolen + 1)
+          | None -> ())
+        else 
+          (if Atomic.compare_and_set bottom 
             (bottom_val + available_steal)
             (old_bottom_val + !stolen) 
           then 
-            (finished := true);
+            (finished := true));
       done;
       !stolen));;
 
