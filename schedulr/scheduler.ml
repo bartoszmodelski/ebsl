@@ -6,9 +6,9 @@ open EffectHandlers.Deep
 end) 
 *)
 
-module Custom_queue = Datastructures.Mpmc_queue
+(* module Custom_queue = Datastructures.Mpmc_queue *)
 
-(* module Custom_queue = Datastructures.Lock_queue *)
+module Custom_queue = Datastructures.Lock_queue
 
 let _ = Printexc.record_backtrace true
 
@@ -45,6 +45,7 @@ module Make (DS : DataStructure) = struct
       id : int; 
       executed_tasks : int ref;
       steal_attempts : int ref; 
+      waited_for_space_on_enque : int ref;
       local_requesting_queue : Task.t Datastructures.Queue_of_queues.Local.t;
       suggest_steal : int option Atomic.t; 
     }
@@ -55,6 +56,7 @@ module Make (DS : DataStructure) = struct
         id; 
         executed_tasks = ref 0;
         steal_attempts = ref 0;
+        waited_for_space_on_enque = ref 0;
         local_requesting_queue = Datastructures.Queue_of_queues.Local.init requesting_queue;
         suggest_steal = Atomic.make None;
       }
@@ -70,11 +72,20 @@ module Make (DS : DataStructure) = struct
     let zero_executed_tasks {executed_tasks; _} =
       executed_tasks := 0
 
-    let take_from {steal_attempts; suggest_steal; _} = 
+    let incr_waited_for_space_on_enque {waited_for_space_on_enque; _} =
+      waited_for_space_on_enque := !waited_for_space_on_enque + 1;;
+
+    let waited_for_space_on_enque {waited_for_space_on_enque; _ } =
+      !waited_for_space_on_enque;;
+    
+    let zero_waited_for_space_on_enque {waited_for_space_on_enque; _} = 
+      waited_for_space_on_enque := 0;;
+
+    let take_from {steal_attempts; suggest_steal = _; _} = 
       steal_attempts := !steal_attempts + 1;
-      if !steal_attempts mod 4 = 0 then 
+      if !steal_attempts mod 500 = 0 then 
         `Global_queue 
-      else 
+      else (* 
         (let kind = 
           match Atomic.get suggest_steal with 
           | None -> None 
@@ -82,7 +93,10 @@ module Make (DS : DataStructure) = struct
             (Atomic.set suggest_steal None;
             Some id)
         in 
-        `Steal kind);;
+        `Steal kind)
+      *)
+        `Steal None      
+      ;;
 
     let set_suggest_steal {suggest_steal; _} id = 
       Atomic.set suggest_steal (Some id);;
@@ -151,9 +165,10 @@ module Make (DS : DataStructure) = struct
         then DS.local_insert_after_preemption 
         else DS.local_insert
       in
-      let spin_threshold = 30 in 
+      let spin_threshold = 30000000 in 
       let spins = ref 0 in 
       while !spins < spin_threshold && not (insert_f ds task) do 
+        Processor.incr_waited_for_space_on_enque processor;
         spins := !spins + 1
       done;
       if !spins == spin_threshold then 
@@ -324,6 +339,18 @@ module Make (DS : DataStructure) = struct
         |> List.map Int.to_string
         |> String.concat ","
         |> Printf.printf "executed-tasks:[%s]\n");;
+
+    let unsafe_print_waited_for_space_on_enque () =
+      with_context (fun {all_processors; _} -> 
+        let counters = Array.map (fun processor -> 
+          Processor.waited_for_space_on_enque processor) 
+          all_processors in 
+        Array.iter Processor.zero_waited_for_space_on_enque all_processors;
+        counters 
+        |> Array.to_list
+        |> List.fold_left (+) 0
+        |> Int.to_string
+        |> Printf.printf "waited-for-space-on-enque:[%s]\n");;
   end
 end
 
@@ -342,5 +369,6 @@ module type S = sig
   val scheduler_name : String.t
   module Stats : sig 
     val unsafe_print_executed_tasks : unit -> unit
+    val unsafe_print_waited_for_space_on_enque : unit -> unit
   end 
 end 

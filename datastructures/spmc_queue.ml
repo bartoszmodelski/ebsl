@@ -21,7 +21,12 @@ type 'a t = {
   owned_by_id: Domain.id option ref;
 } 
 
-let init ?(size_exponent=10) () =
+let init ?(size_exponent=7) () =
+  let size_exponent = 
+    match Sys.getenv_opt "QUEUE_SIZE" with 
+    | None -> size_exponent 
+    | Some v -> int_of_string v
+  in
   let size = Int.shift_left 1 size_exponent in
   { head = Atomic.make 0;
     tail = Atomic.make 0;

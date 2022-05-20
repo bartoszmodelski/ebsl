@@ -16,7 +16,12 @@ type 'a t = {
   bottom does not guarantee there is empty space under it 
 *)
 
-let init ?(size_exponent=10) () : 'a t =
+let init ?(size_exponent=7) () : 'a t =
+  let size_exponent = 
+    match Sys.getenv_opt "QUEUE_SIZE" with 
+    | None -> size_exponent 
+    | Some v -> int_of_string v
+  in
   let size = 1 lsl size_exponent in
   let array = Array.init size (fun _ -> Atomic.make None) in 
   let mask = size - 1 in
@@ -25,14 +30,13 @@ let init ?(size_exponent=10) () : 'a t =
   { top; bottom; array; mask };;
 
 (* todo: don't incr/decr top atomically *)
-let local_push {top; array; mask; _} element =
+let local_push {top; bottom; array; mask; _} element =
   let top_val = Atomic.get top in 
   let cell = Array.get array (top_val land mask) in
   if Option.is_some (Atomic.get cell) then
     false 
   else 
     (Atomic.set cell (Some element);
-    (* (assert (Atomic.compare_and_set cell None (Some element)); *)    
     Atomic.incr top;
     true);;
 

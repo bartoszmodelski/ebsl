@@ -12,6 +12,7 @@ let run_processor ~copy_out ~n () =
     Schedulr.Scheduler.schedule (fun () ->
       let packet = Mock_packet.get_by_index n ~copy_out in
       let len = Buffer.length packet in 
+      (*Unix.sleepf 0.000001;*)
       let f from to_ = 
         Mock_packet.find_spaces packet from to_ [] 
         |> Sys.opaque_identity 
@@ -23,10 +24,10 @@ let run_processor ~copy_out ~n () =
     (* if _i mod 100 == 0
     then Schedulr.Scheduler.yield () *)
   done;;
-let items_total = 1_0_000 
+let items_total = ref 1_000_000 
 
 let workload ~num_of_spawners () =
-  let items_per_worker = items_total / num_of_spawners in 
+  let items_per_worker = !items_total / num_of_spawners in 
   Atomic.set finished 0;
   let time_start = Core.Time_ns.now () in 
   let _ = 
@@ -35,7 +36,7 @@ let workload ~num_of_spawners () =
       |> ignore
     done;
     while Atomic.get finished < num_of_spawners * items_per_worker do 
-      Schedulr.Scheduler.yield ()
+      (* Schedulr.Scheduler.yield () *) ()
     done; 
   in
   let time_end = Core.Time_ns.now () in 
@@ -61,6 +62,7 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
       Unix.sleepf 0.1;
       if Sched.pending_tasks () != 0  
       then assert false; 
+      Sched.Stats.unsafe_print_waited_for_space_on_enque ();
       Sched.Stats.unsafe_print_executed_tasks ();
     done; 
     Printf.printf "done\n"; 
@@ -78,6 +80,7 @@ let () =
   let speclist =
     [("-scheduler", Arg.Set_string scheduler, "set scheduler algo");
     ("-num-of-domains", Arg.Set_int num_of_domains, "set num of domains");
+    ("-items-total", Arg.Set_int items_total, "set total items");
     ("-num-of-spawners", Arg.Set_int num_of_spawners, "set num of spawners")] 
   in 
   Arg.parse speclist anon_fun usage_msg;

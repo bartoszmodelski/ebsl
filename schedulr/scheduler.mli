@@ -16,6 +16,7 @@ module type S = sig
   val scheduler_name : String.t
   module Stats : sig 
     val unsafe_print_executed_tasks : unit -> unit
+    val unsafe_print_waited_for_space_on_enque : unit -> unit
   end 
 end 
 
