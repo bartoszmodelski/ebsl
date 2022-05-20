@@ -165,7 +165,7 @@ module Make (DS : DataStructure) = struct
         then DS.local_insert_after_preemption 
         else DS.local_insert
       in
-      let spin_threshold = 30000000 in 
+      let spin_threshold = 30_000_000_000 in 
       let spins = ref 0 in 
       while !spins < spin_threshold && not (insert_f ds task) do 
         Processor.incr_waited_for_space_on_enque processor;
