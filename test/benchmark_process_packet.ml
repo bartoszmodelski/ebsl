@@ -116,6 +116,9 @@ let () =
     | "steal" -> Some Schedulr.Scheduler.DistributionPolicy.Steal
     | "simple_request" -> Some Steal_and_simple_request
     | "overflow_queue" -> Some Steal_and_overflow_queue
+    | "steal_and_mpmc_overflow" -> Some Steal_and_mpmc_overflow
+    | "steal_and_multi_mpmc_overflow" -> Some Steal_and_multi_mpmc_overflow 
+    | "steal_and_advanced_request" -> Some Steal_and_advanced_request
     | _ -> failwith "unknown dist policy"
   in
   Arg.parse speclist anon_fun usage_msg;

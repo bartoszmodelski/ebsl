@@ -9,7 +9,10 @@ module DistributionPolicy : sig
     | Steal_localized
     | Steal_and_simple_request  
     | Steal_and_sticky_request
-    | Steal_and_overflow_queue 
+    | Steal_and_overflow_queue
+    | Steal_and_mpmc_overflow
+    | Steal_and_multi_mpmc_overflow 
+    | Steal_and_advanced_request
 end
 
 module type S = sig

@@ -44,7 +44,9 @@ module DistributionPolicy = struct
     | Steal_and_simple_request  
     | Steal_and_sticky_request  
     | Steal_and_overflow_queue 
-    (* mpmc, multi-mpmc, adv request  *)
+    | Steal_and_mpmc_overflow
+    | Steal_and_multi_mpmc_overflow
+    | Steal_and_advanced_request
 end
 
 let dist_policy = ref DistributionPolicy.Steal
@@ -98,8 +100,15 @@ module Make (DS : DataStructure) = struct
     let zero_waited_for_space_on_enque {waited_for_space_on_enque; _} = 
       waited_for_space_on_enque := 0;;
 
-    let take_from {steal_attempts; suggest_steal; _} = 
+    let take_from {steal_attempts; suggest_steal; _} global_requesting_queue = 
       let force_use_queue = Random.int 100 < 2 in 
+      let steal_or_f v = 
+        steal_attempts := !steal_attempts + 1;
+        if !steal_attempts mod 4 > 2 then 
+          v 
+        else 
+          `Steal `Random    
+      in
       match !dist_policy with 
       | _ when force_use_queue -> 
         (* necessary to process injected elements *)
@@ -117,11 +126,18 @@ module Make (DS : DataStructure) = struct
         in 
         `Steal kind
       | Steal_and_overflow_queue -> 
-        steal_attempts := !steal_attempts + 1;
-        if !steal_attempts mod 10 > 6 then 
-          `Global_queue 
-        else 
-          `Steal `Random      
+        steal_or_f `Global_queue 
+      | Steal_and_mpmc_overflow -> 
+        steal_or_f `Global_mpmc_queue 
+      | Steal_and_multi_mpmc_overflow -> 
+        steal_or_f `Global_multi_queue 
+      | Steal_and_advanced_request -> 
+        let kind = 
+          match Datastructures.Mpmc_queue.dequeue global_requesting_queue with
+          | None -> `Random
+          | Some victim_id -> `Force victim_id
+        in 
+        `Steal kind       
       ;;
 
     let set_suggest_steal {suggest_steal; _} id = 
@@ -134,6 +150,10 @@ module Make (DS : DataStructure) = struct
       processor : Processor.t;
       all_processors : Processor.t Array.t;
       global_queue : Task.t Custom_queue.t;
+      (* extra queue strategies *)
+      global_multi_queue: Task.t Multi_queue_3.t;
+      global_mpmc_queue : Task.t Datastructures.Mpmc_queue.t;
+      global_requesting_queue : int Datastructures.Mpmc_queue.t
     }
   end
 
@@ -194,6 +214,12 @@ module Make (DS : DataStructure) = struct
       let other_processor = Array.get all_processors other_id in 
       Processor.set_suggest_steal other_processor my_id;;
 
+  let ask_for_steal context =
+    let ({processor; global_requesting_queue; _} : Context.t) = context in 
+    let my_id = Processor.id processor in 
+    Datastructures.Mpmc_queue.enqueue global_requesting_queue my_id
+  ;;
+
   let deal_with_lack_of_space_to_enqueue context task ~insert_f =
     match !dist_policy with 
     | Steal | Steal_localized -> 
@@ -204,6 +230,15 @@ module Make (DS : DataStructure) = struct
     | Steal_and_overflow_queue -> 
       let ({global_queue; _} : Context.t) = context in  
       Custom_queue.enqueue global_queue task      
+    | Steal_and_mpmc_overflow -> 
+      let ({global_mpmc_queue; _} : Context.t) = context in 
+      Datastructures.Mpmc_queue.enqueue global_mpmc_queue task
+    | Steal_and_multi_mpmc_overflow -> 
+      let ({global_multi_queue; _} : Context.t) = context in 
+      Multi_queue_3.enqueue global_multi_queue task
+    | Steal_and_advanced_request -> 
+      ask_for_steal context; 
+      while not (insert_f task) do () done;
     ;;
 
   let schedule_internal ~has_yielded task = 
@@ -287,11 +322,31 @@ module Make (DS : DataStructure) = struct
     | Some task -> 
       assert (DS.local_insert ds task)
   ;;
+
+  let take_from_global_mpmc_queue ~context = 
+    let ({processor; global_mpmc_queue; _} : Context.t) = context in 
+    let ds = Processor.ds processor in  
+    match Datastructures.Mpmc_queue.dequeue global_mpmc_queue with 
+    | None -> ()
+    | Some task -> 
+      assert (DS.local_insert ds task)
+  ;;
       
+  let take_from_global_multi_queue ~context = 
+    let ({processor; global_multi_queue; _} : Context.t) = context in 
+    let ds = Processor.ds processor in  
+    match Multi_queue_3.dequeue global_multi_queue with 
+    | None -> ()
+    | Some task -> 
+      assert (DS.local_insert ds task)
+  ;;
+
   let find_work ~context =
-    let ({processor; _}: Context.t) = context in 
-    match Processor.take_from processor with 
+    let ({processor; global_requesting_queue; _}: Context.t) = context in 
+    match Processor.take_from processor global_requesting_queue with 
     | `Global_queue -> take_from_global_queue ~context
+    | `Global_mpmc_queue -> take_from_global_mpmc_queue ~context
+    | `Global_multi_queue -> take_from_global_multi_queue ~context
     | `Steal id_type -> steal ~context ~id_type ;;
 
   let rec run_domain () = 
@@ -352,13 +407,19 @@ module Make (DS : DataStructure) = struct
         (fun id -> Processor.init ?size_exponent id) 
       |> Array.of_list 
     in
+    (* extra distribution strategies *)
+    let global_multi_queue = Multi_queue_3.init () in 
+    let global_mpmc_queue = Datastructures.Mpmc_queue.init () in 
+    let global_requesting_queue =  Datastructures.Mpmc_queue.init () in 
+    (* end extra distribution strategies *)
     let global_queue = Custom_queue.init ?size_exponent:overflow_size_exponent () in 
     Custom_queue.enqueue global_queue (Task.new_task f);
     let counter = Atomic.make 0 in 
     List.init n (fun index -> 
       let processor = Array.get all_processors index in  
       let context = 
-        ({processor; all_processors; global_queue} : Context.t) 
+        ({processor; all_processors; global_queue; global_mpmc_queue;
+        global_multi_queue; global_requesting_queue} : Context.t) 
       in 
       Domain.spawn (fun () -> 
         notify_user (fun () -> 
@@ -373,7 +434,8 @@ module Make (DS : DataStructure) = struct
     | `join_the_pool -> 
       let processor = Array.get all_processors n in 
       let context = 
-        ({processor; all_processors; global_queue} : Context.t) 
+        ({processor; all_processors; global_queue; global_mpmc_queue;
+        global_multi_queue; global_requesting_queue} : Context.t) 
       in 
       notify_user (setup_domain context) ();;
 

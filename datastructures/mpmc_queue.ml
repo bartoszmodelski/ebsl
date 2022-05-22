@@ -11,7 +11,7 @@ type 'a t = {
 }
 
 
-let init ?(size_exponent=10) () : 'a t =
+let init ?(size_exponent=11) () : 'a t =
   let size = 1 lsl size_exponent in
   let array = Array.init size (fun _ -> Atomic.make None) in 
   let mask = size - 1 in
