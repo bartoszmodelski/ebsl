@@ -42,6 +42,7 @@ module DistributionPolicy = struct
     | Steal 
     | Steal_localized
     | Steal_and_simple_request  
+    | Steal_and_sticky_request  
     | Steal_and_overflow_queue 
     (* mpmc, multi-mpmc, adv request  *)
 end
@@ -105,12 +106,13 @@ module Make (DS : DataStructure) = struct
         `Global_queue
       | Steal -> `Steal `Random 
       | Steal_localized -> `Steal `Random_localized
-      | Steal_and_simple_request -> 
+      | (Steal_and_simple_request | Steal_and_sticky_request) as v -> 
         let kind = 
           match Atomic.get suggest_steal with 
           | None -> `Random
           | Some id -> 
-            (Atomic.set suggest_steal None;
+            (if v == Steal_and_simple_request 
+            then Atomic.set suggest_steal None;
             `Force id)
         in 
         `Steal kind
@@ -196,7 +198,7 @@ module Make (DS : DataStructure) = struct
     match !dist_policy with 
     | Steal | Steal_localized -> 
       while not (insert_f task) do () done;
-    | Steal_and_simple_request -> 
+    | Steal_and_simple_request | Steal_and_sticky_request -> 
       request_steal context; 
       while not (insert_f task) do () done;
     | Steal_and_overflow_queue -> 

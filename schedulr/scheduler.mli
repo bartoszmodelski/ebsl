@@ -8,6 +8,7 @@ module DistributionPolicy : sig
     | Steal 
     | Steal_localized
     | Steal_and_simple_request  
+    | Steal_and_sticky_request
     | Steal_and_overflow_queue 
 end
 
