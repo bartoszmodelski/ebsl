@@ -13,7 +13,6 @@ let run_processor ~copy_out ~n () =
     Schedulr.Scheduler.schedule (fun () ->
       let packet = Mock_packet.get_by_index n ~copy_out in
       let len = Buffer.length packet in 
-      (*Unix.sleepf 0.000001;*)
       let f from to_ = 
         Mock_packet.find_spaces packet from to_ [] 
         |> Sys.opaque_identity 
@@ -69,7 +68,9 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
     for i = 1 to !iterations do 
       Printf.printf "{\"iteration\":%d,\n" i;
       Unix.sleepf 0.1;
+      Sched.Stats.unsafe_zero_steal_attempts ();
       let _ = workload ~num_of_spawners () in 
+      Sched.Stats.unsafe_print_steal_attempts ();
       Unix.sleepf 0.1;
       if Sched.pending_tasks () != 0  
       then assert false; 

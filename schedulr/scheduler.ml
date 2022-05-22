@@ -72,6 +72,12 @@ module Make (DS : DataStructure) = struct
     let zero_executed_tasks {executed_tasks; _} =
       executed_tasks := 0
 
+    let zero_steal_attempts {steal_attempts; _} =
+      steal_attempts := 0
+
+    let steal_attempts {steal_attempts; _} = 
+      !steal_attempts
+      
     let incr_waited_for_space_on_enque {waited_for_space_on_enque; _} =
       waited_for_space_on_enque := !waited_for_space_on_enque + 1;;
 
@@ -145,7 +151,20 @@ module Make (DS : DataStructure) = struct
         if r == my_id then
           r + 1 
         else 
-          r);;
+          r);; 
+
+  let _random_id ({processor; all_processors; _} : Context.t) =
+    let num_of_processors = Array.length all_processors in 
+    if num_of_processors < 2
+    then None 
+    else
+       (let my_id = Processor.id processor in
+        let reachable = min (num_of_processors) 20 in 
+        let r = num_of_processors + my_id + (Random.int reachable) - (reachable / 2) in 
+        let r = r mod num_of_processors in 
+        if r == my_id 
+        then None
+        else Some r);;
 
   let task_pressure context =
     let ({all_processors; processor; _} : Context.t) = context in 
@@ -351,6 +370,22 @@ module Make (DS : DataStructure) = struct
         |> List.fold_left (+) 0
         |> Int.to_string
         |> Printf.printf "\"waited-for-space-on-enque\":%s,\n");;
+    
+    let unsafe_print_steal_attempts () =
+      with_context (fun {all_processors; _} -> 
+        let counters = Array.map (fun processor -> 
+          Processor.steal_attempts processor) 
+          all_processors in 
+        counters 
+        |> Array.to_list
+        |> List.fold_left (+) 0
+        |> Int.to_string
+        |> Printf.printf "\"steal-attempts\":%s,\n");;
+    
+    let unsafe_zero_steal_attempts () =
+      with_context (fun {all_processors; _} -> 
+        Array.iter Processor.zero_steal_attempts all_processors);;
+
   end
 end
 
@@ -370,5 +405,7 @@ module type S = sig
   module Stats : sig 
     val unsafe_print_executed_tasks : unit -> unit
     val unsafe_print_waited_for_space_on_enque : unit -> unit
+    val unsafe_print_steal_attempts : unit -> unit 
+    val unsafe_zero_steal_attempts : unit -> unit
   end 
 end 

@@ -168,8 +168,8 @@ let local_is_empty queue =
   else local_is_empty_thorough queue
   
 let steal ~from ~to_local =
-  let {owned_by_id; mask = target_mask; _} = to_local in 
-  assert_domain_id "stl" owned_by_id;
+  let {owned_by_id = _; mask = target_mask; _} = to_local in 
+  (* assert_domain_id "stl" owned_by_id; *)
   let target_size = Atomic.get target_mask + 1 in
   let ({head; tail; mask; array; _} : 'a t) = from in
   let (mask,array) = Atomic.(get mask, get array) in 

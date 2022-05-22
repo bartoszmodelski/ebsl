@@ -17,6 +17,8 @@ module type S = sig
   module Stats : sig 
     val unsafe_print_executed_tasks : unit -> unit
     val unsafe_print_waited_for_space_on_enque : unit -> unit
+    val unsafe_print_steal_attempts : unit -> unit 
+    val unsafe_zero_steal_attempts : unit -> unit
   end 
 end 
 
