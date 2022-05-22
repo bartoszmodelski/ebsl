@@ -2,14 +2,25 @@ val await : 'a Promise.t -> 'a
 val schedule : (unit -> 'a) -> 'a Promise.t
 val yield : unit -> unit
 
+
+module DistributionPolicy : sig 
+  type t = 
+    | Steal 
+    | Steal_localized
+    | Steal_and_simple_request  
+    | Steal_and_overflow_queue 
+end
+
 module type S = sig
   type t 
   val init : ?afterwards:[`join_the_pool | `return] 
     -> ?overflow_size_exponent:int 
     -> ?size_exponent:int 
+    -> ?work_distribution_strategy:DistributionPolicy.t
     -> f:(unit -> unit) 
     -> int 
     -> t
+
   val inject_task : t -> (unit -> unit) -> unit
 
   val pending_tasks : unit -> int

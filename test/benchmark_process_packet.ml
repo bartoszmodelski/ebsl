@@ -58,13 +58,13 @@ let workload ~num_of_spawners () =
 
 let iterations = ref 11
 
-let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Scheduler.S) =
+let benchmark ~num_of_domains ~num_of_spawners ~dist_policy (module Sched : Schedulr.Scheduler.S) =
   Printf.printf "{\"sched\":\"%s\",\"spawners\":\"%d\",\"domains\":\"%d\",\"items_total\":%d,\"data\":[\n"
     Sched.scheduler_name
     num_of_spawners
     num_of_domains
     !items_total;
-  Sched.init (num_of_domains-1) ~f:(fun () ->
+  Sched.init (num_of_domains-1) ?work_distribution_strategy:dist_policy ~f:(fun () ->
     for i = 1 to !iterations do 
       Printf.printf "{\"iteration\":%d,\n" i;
       Unix.sleepf 0.1;
@@ -101,13 +101,23 @@ let () =
   let scheduler = ref "" in
   let num_of_domains = ref 0 in 
   let num_of_spawners = ref 0 in 
+  let dist_policy = ref "" in 
   let speclist =
     [("-scheduler", Arg.Set_string scheduler, "set scheduler algo");
     ("-num-of-domains", Arg.Set_int num_of_domains, "set num of domains");
     ("-items-total", Arg.Set_int items_total, "set total items");
     ("-num-of-spawners", Arg.Set_int num_of_spawners, "set num of spawners");
-    ("-iterations", Arg.Set_int iterations, "set num of iterations")] 
+    ("-iterations", Arg.Set_int iterations, "set num of iterations");
+    ("-dist-policy", Arg.Set_string dist_policy, "set distribution policy")] 
   in 
+  let dist_policy = 
+    match !dist_policy with 
+    | "" -> None
+    | "steal" -> Some Schedulr.Scheduler.DistributionPolicy.Steal
+    | "simple_request" -> Some Steal_and_simple_request
+    | "overflow_queue" -> Some Steal_and_overflow_queue
+    | _ -> failwith "unknown dist policy"
+  in
   Arg.parse speclist anon_fun usage_msg;
   let scheduler_module = Flags.parse_sched scheduler in 
   assert (0 < !num_of_domains && !num_of_domains < 512);
@@ -126,6 +136,6 @@ let () =
   in
   Reporting.Histogram.Per_thread.init 128; 
   Reporting.Success.init 128; 
-  benchmark ~num_of_domains ~num_of_spawners scheduler_module;;
+  benchmark ~num_of_domains ~num_of_spawners ~dist_policy scheduler_module;;
 
 

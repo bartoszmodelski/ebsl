@@ -1,10 +1,11 @@
 open EffectHandlers
 open EffectHandlers.Deep 
 
-(*module Custom_queue = Datastructures.Multi_mpmc_queue.Make(struct 
-  let num_of_queues = 1
+module Multi_queue_3 = Datastructures.Multi_mpmc_queue.Make(struct 
+  let num_of_queues = 3
 end) 
-*)
+
+
 
 (* module Custom_queue = Datastructures.Mpmc_queue *)
 
@@ -35,6 +36,17 @@ module type DataStructure = sig
 
   val name : String.t
 end;;
+
+module DistributionPolicy = struct 
+  type t = 
+    | Steal 
+    | Steal_localized
+    | Steal_and_simple_request  
+    | Steal_and_overflow_queue 
+    (* mpmc, multi-mpmc, adv request  *)
+end
+
+let dist_policy = ref DistributionPolicy.Steal
 
 module Make (DS : DataStructure) = struct   
   let scheduler_name = DS.name;;
@@ -87,21 +99,29 @@ module Make (DS : DataStructure) = struct
     let zero_waited_for_space_on_enque {waited_for_space_on_enque; _} = 
       waited_for_space_on_enque := 0;;
 
-    let take_from {steal_attempts; suggest_steal = _; _} = 
-      steal_attempts := !steal_attempts + 1;
-      if !steal_attempts mod 500 = 0 then 
-        `Global_queue 
-      else (* 
-        (let kind = 
+    let take_from {steal_attempts; suggest_steal; _} = 
+      let force_use_queue = Random.int 100 < 2 in 
+      match !dist_policy with 
+      | _ when force_use_queue -> 
+        (* necessary to process injected elements *)
+        `Global_queue
+      | Steal -> `Steal `Random 
+      | Steal_localized -> `Steal `Random_localized
+      | Steal_and_simple_request -> 
+        let kind = 
           match Atomic.get suggest_steal with 
-          | None -> None 
+          | None -> `Random
           | Some id -> 
             (Atomic.set suggest_steal None;
-            Some id)
+            `Force id)
         in 
-        `Steal kind)
-      *)
-        `Steal None      
+        `Steal kind
+      | Steal_and_overflow_queue -> 
+        steal_attempts := !steal_attempts + 1;
+        if !steal_attempts mod 10 > 6 then 
+          `Global_queue 
+        else 
+          `Steal `Random      
       ;;
 
     let set_suggest_steal {suggest_steal; _} id = 
@@ -153,7 +173,7 @@ module Make (DS : DataStructure) = struct
         else 
           r);; 
 
-  let _random_id ({processor; all_processors; _} : Context.t) =
+  let localized_random_id ({processor; all_processors; _} : Context.t) =
     let num_of_processors = Array.length all_processors in 
     if num_of_processors < 2
     then None 
@@ -166,7 +186,7 @@ module Make (DS : DataStructure) = struct
         then None
         else Some r);;
 
-  let task_pressure context =
+  let request_steal context =
     let ({all_processors; processor; _} : Context.t) = context in 
     match random_id context with 
     | None -> () 
@@ -175,25 +195,35 @@ module Make (DS : DataStructure) = struct
       let other_processor = Array.get all_processors other_id in 
       Processor.set_suggest_steal other_processor my_id;;
 
+  let deal_with_lack_of_space_to_enqueue context task ~insert_f =
+    match !dist_policy with 
+    | Steal | Steal_localized -> 
+      while not (insert_f task) do () done;
+    | Steal_and_simple_request -> 
+      request_steal context; 
+      while not (insert_f task) do () done;
+    | Steal_and_overflow_queue -> 
+      let ({global_queue; _} : Context.t) = context in  
+      Custom_queue.enqueue global_queue task      
+    ;;
+
   let schedule_internal ~has_yielded task = 
     with_context (fun context ->
-      let ({processor; global_queue; _} : Context.t) = context in 
-      let ds = Processor.ds processor in 
+      let ({processor; _} : Context.t) = context in 
       let insert_f = 
+        let ds = Processor.ds processor in 
         if has_yielded 
-        then DS.local_insert_after_preemption 
-        else DS.local_insert
+        then DS.local_insert_after_preemption ds
+        else DS.local_insert ds
       in
-      let spin_threshold = 30_000_000_000 in 
+      let spin_threshold = 50 in 
       let spins = ref 0 in 
-      while !spins < spin_threshold && not (insert_f ds task) do 
+      while !spins < spin_threshold && not (insert_f task) do 
         Processor.incr_waited_for_space_on_enque processor;
         spins := !spins + 1
       done;
       if !spins == spin_threshold then 
-        (task_pressure context;
-        (* chuck into the global queue *)
-        Custom_queue.enqueue global_queue task));;
+        deal_with_lack_of_space_to_enqueue context task ~insert_f);;
 
   let schedule_awaiting to_run result = 
     match to_run with 
@@ -233,12 +263,17 @@ module Make (DS : DataStructure) = struct
           | `Already_done returned -> continue k returned)
       | _ -> None}
 
-  let steal ~context ~force_id = 
+  let steal ~context ~id_type = 
     let ({processor; all_processors; _} : Context.t) = context in 
-    match force_id, random_id context with 
-    | None, None -> () 
-    | (Some other_queue_id, (Some _ | None)) 
-    | (None, Some other_queue_id) ->
+    let id = 
+      match id_type with 
+      | `Random -> random_id context 
+      | `Force id -> Some id 
+      | `Random_localized -> localized_random_id context 
+    in 
+    match id with 
+    | None -> () 
+    | Some other_queue_id -> 
       (let other_processor = Array.get all_processors other_queue_id in
       let other_ds = Processor.ds other_processor in 
       let my_ds = Processor.ds processor in 
@@ -258,7 +293,7 @@ module Make (DS : DataStructure) = struct
     let ({processor; _}: Context.t) = context in 
     match Processor.take_from processor with 
     | `Global_queue -> take_from_global_queue ~context
-    | `Steal id -> steal ~context ~force_id:id ;;
+    | `Steal id_type -> steal ~context ~id_type ;;
 
   let rec run_domain () = 
     let scheduled = 
@@ -301,8 +336,13 @@ module Make (DS : DataStructure) = struct
         Stdlib.flush_all ();
         Stdlib.exit 1;;
 
-  let init ?(afterwards=`join_the_pool) ?overflow_size_exponent ?size_exponent ~(f : unit -> unit) n =
+  let init ?(afterwards=`join_the_pool) ?overflow_size_exponent ?size_exponent 
+      ?work_distribution_strategy ~(f : unit -> unit) n =
     assert (n > -1);
+    (match work_distribution_strategy with 
+    | None -> () 
+    | Some v -> 
+      dist_policy := v);
     let num_of_processors = 
       match afterwards with 
       | `join_the_pool -> n+1 
@@ -395,6 +435,7 @@ module type S = sig
   val init : ?afterwards:[`join_the_pool | `return] 
     -> ?overflow_size_exponent:int 
     -> ?size_exponent:int 
+    -> ?work_distribution_strategy:DistributionPolicy.t
     -> f:(unit -> unit) 
     -> int 
     -> t
