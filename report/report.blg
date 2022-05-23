@@ -1,0 +1,70 @@
+This is BibTeX, Version 0.99d (TeX Live 2022/dev/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: report.aux
+The style file: abbrvnat.bst
+Database file #1: refs.bib
+Warning--to sort, need author or key in POWER4Wi47:online
+Warning--to sort, need author or key in AMDAnnou13:online
+Warning--to sort, need author or key in 2ndGenAM1:online
+Warning--to sort, need author or key in golang
+Warning--to sort, need author or key in Howwebbr64:online
+Warning--to sort, need author or key in gorout_vs_os_thread
+Warning--to sort, need author or key in linux_cfs
+Warning--to sort, need author or key in OCamllib90:online
+Warning--to sort, need author or key in memoryor11:online
+Warning--to sort, need author or key in rfc793
+Warning--to sort, need author or key in async_kernel
+Warning--empty year in 2ndGenAM1:online
+Warning--empty year in AMDAnnou13:online
+Warning--empty year in Howwebbr64:online
+Warning--empty year in OCamllib90:online
+Warning--empty year in POWER4Wi47:online
+Warning--empty year in async_kernel
+Warning--empty year in golang
+Warning--empty year in gorout_vs_os_thread
+Warning--empty year in linux_cfs
+Warning--empty year in memoryor11:online
+Warning--empty journal in voip-latency
+Warning--empty journal in fad-cas-speed
+You've used 49 entries,
+            2773 wiz_defined-function locations,
+            963 strings with 15918 characters,
+and the built_in function-call counts, 23828 in all, are:
+= -- 2195
+> -- 1424
+< -- 23
++ -- 491
+- -- 442
+* -- 2034
+:= -- 3552
+add.period$ -- 221
+call.type$ -- 49
+change.case$ -- 291
+chr.to.int$ -- 49
+cite$ -- 132
+duplicate$ -- 1038
+empty$ -- 1918
+format.name$ -- 494
+if$ -- 5083
+int.to.chr$ -- 1
+int.to.str$ -- 1
+missing$ -- 40
+newline$ -- 315
+num.names$ -- 154
+pop$ -- 657
+preamble$ -- 1
+purify$ -- 244
+quote$ -- 0
+skip$ -- 766
+stack$ -- 0
+substring$ -- 617
+swap$ -- 130
+text.length$ -- 7
+text.prefix$ -- 0
+top$ -- 0
+type$ -- 524
+warning$ -- 23
+while$ -- 164
+width$ -- 0
+write$ -- 748
+(There were 23 warnings)

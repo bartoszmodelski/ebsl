@@ -1,0 +1,388 @@
+\begin{thebibliography}{49}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[2nd()]{2ndGenAM1:online}
+2nd gen amd epyc™ 7702 | server processor | amd.
+\newblock \url{https://www.amd.com/en/products/cpu/amd-epyc-7702}.
+\newblock (Accessed on 05/17/2022).
+
+\bibitem[AMD()]{AMDAnnou13:online}
+Amd announces industry's first x86 dual-core processor.
+\newblock
+  \url{https://phys.org/news/2004-08-amd-industry-x86-dual-core-processor.html}.
+\newblock (Accessed on 05/17/2022).
+
+\bibitem[How()]{Howwebbr64:online}
+How web browsers use processes and threads | by jeewantha lahiru | level up
+  coding.
+\newblock
+  \url{https://levelup.gitconnected.com/how-web-browsers-use-processes-and-threads-9f8f8fa23371}.
+\newblock (Accessed on 05/17/2022).
+
+\bibitem[OCa()]{OCamllib90:online}
+Ocaml library : List.
+\newblock \url{https://v2.ocaml.org/api/List.html}.
+\newblock (Accessed on 05/18/2022).
+
+\bibitem[POW()]{POWER4Wi47:online}
+Power4 - wikipedia.
+\newblock \url{https://en.wikipedia.org/wiki/POWER4#cite_ref-stallings_2-0}.
+\newblock (Accessed on 05/17/2022).
+
+\bibitem[asy()]{async_kernel}
+Opam documentation.
+\newblock URL
+  \url{https://ocaml.janestreet.com/ocaml-core/111.28.00/doc/async_kernel/#Pipe}.
+
+\bibitem[gol()]{golang}
+The {Go} {Programming} {Language}.
+\newblock URL \url{https://go.dev/}.
+
+\bibitem[gor()]{gorout_vs_os_thread}
+Goroutines vs os threads.
+\newblock URL
+  \url{https://groups.google.com/g/golang-nuts/c/j51G7ieoKh4/m/wxNaKkFEfvcJ}.
+
+\bibitem[lin()]{linux_cfs}
+{LKML}: {Steve} {Sistare}: [{PATCH} v3 00/10] steal tasks to improve {CPU}
+  utilization.
+\newblock URL \url{https://lkml.org/lkml/2018/11/9/1173}.
+
+\bibitem[mem()]{memoryor11:online}
+memory\_order - cppreference.com.
+\newblock \url{https://en.cppreference.com/w/c/atomic/memory_order}.
+\newblock (Accessed on 05/18/2022).
+
+\bibitem[rfc(1981)]{rfc793}
+{Transmission Control Protocol}.
+\newblock RFC 793, Sept. 1981.
+\newblock URL \url{https://www.rfc-editor.org/info/rfc793}.
+
+\bibitem[Agastya et~al.(2009)Agastya, Mechanic, and Kothari]{voip-latency}
+C.~Agastya, D.~Mechanic, and N.~Kothari.
+\newblock Mouth-to-ear latency in popular voip clients.
+\newblock 2009.
+\newblock \doi{10.7916/D80Z794V}.
+\newblock URL \url{https://academiccommons.columbia.edu/doi/10.7916/D80Z794V}.
+
+\bibitem[Amin et~al.(2013)Amin, Jackson, Gilbert, Martin, and Shaw]{Amin2013}
+R.~Amin, F.~Jackson, J.~E. Gilbert, J.~Martin, and T.~Shaw.
+\newblock Assessing the impact of latency and jitter on the perceived quality
+  of call of duty modern warfare 2.
+\newblock In \emph{Human-Computer Interaction. Users and Contexts of Use},
+  pages 97--106. Springer Berlin Heidelberg, 2013.
+\newblock \doi{10.1007/978-3-642-39265-8_11}.
+\newblock URL \url{https://doi.org/10.1007/978-3-642-39265-8_11}.
+
+\bibitem[Blumofe and Leiserson(1999)]{Blumofe1999}
+R.~D. Blumofe and C.~E. Leiserson.
+\newblock Scheduling multithreaded computations by work stealing.
+\newblock \emph{Journal of the {ACM}}, 46\penalty0 (5):\penalty0 720--748,
+  Sept. 1999.
+\newblock \doi{10.1145/324133.324234}.
+\newblock URL \url{https://doi.org/10.1145/324133.324234}.
+
+\bibitem[Blumofe et~al.(1995)Blumofe, Joerg, Kuszmaul, Leiserson, Randall, and
+  Zhou]{Blumofe1995}
+R.~D. Blumofe, C.~F. Joerg, B.~C. Kuszmaul, C.~E. Leiserson, K.~H. Randall, and
+  Y.~Zhou.
+\newblock Cilk.
+\newblock In \emph{Proceedings of the fifth {ACM} {SIGPLAN} symposium on
+  Principles and practice of parallel programming - {PPOPP}
+  {\textquotesingle}95}. {ACM} Press, 1995.
+\newblock \doi{10.1145/209936.209958}.
+\newblock URL \url{https://doi.org/10.1145/209936.209958}.
+
+\bibitem[Bohr(2007)]{Bohr2007}
+M.~Bohr.
+\newblock A 30 year retrospective on dennard{\textquotesingle}s {MOSFET}
+  scaling paper.
+\newblock \emph{{IEEE} Solid-State Circuits Newsletter}, 12\penalty0
+  (1):\penalty0 11--13, 2007.
+\newblock \doi{10.1109/n-ssc.2007.4785534}.
+\newblock URL \url{https://doi.org/10.1109/n-ssc.2007.4785534}.
+
+\bibitem[Brachth\"{a}user et~al.(2020)Brachth\"{a}user, Schuster, and
+  Ostermann]{Brachthuser2020}
+J.~I. Brachth\"{a}user, P.~Schuster, and K.~Ostermann.
+\newblock Effects as capabilities: effect handlers and lightweight effect
+  polymorphism.
+\newblock \emph{Proceedings of the {ACM} on Programming Languages}, 4\penalty0
+  ({OOPSLA}):\penalty0 1--30, Nov. 2020.
+\newblock \doi{10.1145/3428194}.
+\newblock URL \url{https://doi.org/10.1145/3428194}.
+
+\bibitem[Castello et~al.(2016)Castello, Pena, Seo, Mayo, Balaji, and
+  Quintana-Orti]{Castello2016}
+A.~Castello, A.~J. Pena, S.~Seo, R.~Mayo, P.~Balaji, and E.~S. Quintana-Orti.
+\newblock A review of lightweight thread approaches for high performance
+  computing.
+\newblock In \emph{2016 {IEEE} International Conference on Cluster Computing
+  ({CLUSTER})}. {IEEE}, Sept. 2016.
+\newblock \doi{10.1109/cluster.2016.12}.
+\newblock URL \url{https://doi.org/10.1109/cluster.2016.12}.
+
+\bibitem[Chase and Lev(2005)]{Chase2005}
+D.~Chase and Y.~Lev.
+\newblock Dynamic circular work-stealing deque.
+\newblock In \emph{Proceedings of the 17th annual {ACM} symposium on
+  Parallelism in algorithms and architectures - {SPAA}{\textquotesingle}05}.
+  {ACM} Press, 2005.
+\newblock \doi{10.1145/1073970.1073974}.
+\newblock URL \url{https://doi.org/10.1145/1073970.1073974}.
+
+\bibitem[Cheng et~al.(2017)Cheng, Chen, Zhou, Gmach, and Milojicic]{8057206}
+D.~Cheng, Y.~Chen, X.~Zhou, D.~Gmach, and D.~Milojicic.
+\newblock Adaptive scheduling of parallel jobs in spark streaming.
+\newblock In \emph{IEEE INFOCOM 2017 - IEEE Conference on Computer
+  Communications}, pages 1--9, 2017.
+\newblock \doi{10.1109/INFOCOM.2017.8057206}.
+
+\bibitem[Drebes et~al.(2016)Drebes, Pop, Heydemann, Drach, and
+  Cohen]{Drebes2016}
+A.~Drebes, A.~Pop, K.~Heydemann, N.~Drach, and A.~Cohen.
+\newblock {NUMA}-aware scheduling and memory allocation for data-flow
+  task-parallel applications.
+\newblock In \emph{Proceedings of the 21st {ACM} {SIGPLAN} Symposium on
+  Principles and Practice of Parallel Programming}. {ACM}, Feb. 2016.
+\newblock \doi{10.1145/2851141.2851193}.
+\newblock URL \url{https://doi.org/10.1145/2851141.2851193}.
+
+\bibitem[Esmaeilzadeh et~al.(2011)Esmaeilzadeh, Blem, Amant, Sankaralingam, and
+  Burger]{6307773}
+H.~Esmaeilzadeh, E.~Blem, R.~S. Amant, K.~Sankaralingam, and D.~Burger.
+\newblock Dark silicon and the end of multicore scaling.
+\newblock In \emph{2011 38th Annual International Symposium on Computer
+  Architecture (ISCA)}, pages 365--376, 2011.
+
+\bibitem[Esmaeilzadeh et~al.(2013)Esmaeilzadeh, Blem, Amant, Sankaralingam, and
+  Burger]{mooremulti}
+H.~Esmaeilzadeh, E.~Blem, R.~S. Amant, K.~Sankaralingam, and D.~Burger.
+\newblock Power challenges may end the multicore era.
+\newblock \emph{Commun. ACM}, 56\penalty0 (2):\penalty0 93–102, feb 2013.
+\newblock ISSN 0001-0782.
+\newblock \doi{10.1145/2408776.2408797}.
+\newblock URL \url{https://doi.org/10.1145/2408776.2408797}.
+
+\bibitem[Faverge and Ramet(2009)]{faverge:inria-00416502}
+M.~Faverge and P.~Ramet.
+\newblock {A NUMA Aware Scheduler for a Parallel Sparse Direct Solver}.
+\newblock In \emph{{Workshop on Massively Multiprocessor and Multicore
+  Computers}}, page 5p., Rocquencourt, France, Feb. 2009. {INRIA}.
+\newblock URL \url{https://hal.inria.fr/inria-00416502}.
+
+\bibitem[Geer(2005)]{Geer2005}
+D.~Geer.
+\newblock Chip makers turn to multicore processors.
+\newblock \emph{Computer}, 38\penalty0 (5):\penalty0 11--13, May 2005.
+\newblock \doi{10.1109/mc.2005.160}.
+\newblock URL \url{https://doi.org/10.1109/mc.2005.160}.
+
+\bibitem[Herlihy et~al.(2021)Herlihy, Shavit, Luchangco, and
+  Spear]{art_of_mult}
+M.~Herlihy, N.~Shavit, V.~Luchangco, and M.~Spear.
+\newblock Chapter 1 - introduction.
+\newblock In M.~Herlihy, N.~Shavit, V.~Luchangco, and M.~Spear, editors,
+  \emph{The Art of Multiprocessor Programming (Second Edition)}, pages 1--18.
+  Morgan Kaufmann, Boston, second edition edition, 2021.
+\newblock ISBN 978-0-12-415950-1.
+\newblock \doi{https://doi.org/10.1016/B978-0-12-415950-1.00009-4}.
+\newblock URL
+  \url{https://www.sciencedirect.com/science/article/pii/B9780124159501000094}.
+
+\bibitem[Ho and Pepyne(2002)]{Ho2002}
+Y.~Ho and D.~Pepyne.
+\newblock Simple explanation of the no-free-lunch theorem and its implications.
+\newblock \emph{Journal of Optimization Theory and Applications}, 115\penalty0
+  (3):\penalty0 549--570, Dec. 2002.
+\newblock \doi{10.1023/a:1021251113462}.
+\newblock URL \url{https://doi.org/10.1023/a:1021251113462}.
+
+\bibitem[Igel and Toussaint(2005)]{Igel2005}
+C.~Igel and M.~Toussaint.
+\newblock A no-free-lunch theorem for non-uniform distributions of target
+  functions.
+\newblock \emph{Journal of Mathematical Modelling and Algorithms}, 3\penalty0
+  (4):\penalty0 313--322, Jan. 2005.
+\newblock \doi{10.1007/s10852-005-2586-y}.
+\newblock URL \url{https://doi.org/10.1007/s10852-005-2586-y}.
+
+\bibitem[Karmani et~al.(2011)Karmani, Agha, Squillante, Seiferas, Brezina, Hu,
+  Tuminaro, Sanders, Tr\"{a}ffe, Geijn, Tr\"{a}ff, Geijn, Sander, Gustafson,
+  Dror, Young, Shaw, Lin, Lee, Chang, Kuan, Kollias, Grama, Li, Whaley, and
+  Vuduc]{amdahl}
+R.~K. Karmani, G.~Agha, M.~S. Squillante, J.~Seiferas, M.~Brezina, J.~Hu,
+  R.~Tuminaro, P.~Sanders, J.~L. Tr\"{a}ffe, R.~A. Geijn, J.~L. Tr\"{a}ff,
+  R.~A. Geijn, M.~B. Sander, J.~L. Gustafson, R.~O. Dror, C.~Young, D.~E. Shaw,
+  C.~Lin, J.-K. Lee, R.-G. Chang, C.-B. Kuan, G.~Kollias, A.~Y. Grama, Z.~Li,
+  R.~C. Whaley, and R.~W. Vuduc.
+\newblock Amdahl's law.
+\newblock In \emph{Encyclopedia of Parallel Computing}, pages 53--60. Springer
+  {US}, 2011.
+\newblock \doi{10.1007/978-0-387-09766-4_77}.
+\newblock URL \url{https://doi.org/10.1007/978-0-387-09766-4_77}.
+
+\bibitem[Khan et~al.(2018)Khan, Hounshell, and Fuchs]{Khan2018}
+H.~N. Khan, D.~A. Hounshell, and E.~R.~H. Fuchs.
+\newblock Science and research policy at the end of moore's law.
+\newblock \emph{Nature Electronics}, 1\penalty0 (1):\penalty0 14--21, Jan.
+  2018.
+\newblock \doi{10.1038/s41928-017-0005-9}.
+\newblock URL \url{https://doi.org/10.1038/s41928-017-0005-9}.
+
+\bibitem[Kirsch et~al.(2013)Kirsch, Lippautz, and Payer]{Kirsch2013}
+C.~M. Kirsch, M.~Lippautz, and H.~Payer.
+\newblock Fast and scalable, lock-free k-{FIFO} queues.
+\newblock In \emph{Lecture Notes in Computer Science}, pages 208--223. Springer
+  Berlin Heidelberg, 2013.
+\newblock \doi{10.1007/978-3-642-39958-9_18}.
+\newblock URL \url{https://doi.org/10.1007/978-3-642-39958-9_18}.
+
+\bibitem[Kleppmann(2017)]{Kleppmann2017-en}
+M.~Kleppmann.
+\newblock \emph{Designing data-intensive applications}.
+\newblock O'Reilly Media, Sebastopol, CA, Mar. 2017.
+
+\bibitem[Maruzzelli(2017)]{Maruzzelli2017-ou}
+G.~Maruzzelli.
+\newblock \emph{{FreeSWITCH} 1.8}.
+\newblock Packt Publishing, Birmingham, England, July 2017.
+
+\bibitem[Miller(1968)]{Miller1968}
+R.~B. Miller.
+\newblock Response time in man-computer conversational transactions.
+\newblock In \emph{Proceedings of the December 9-11, 1968, fall joint computer
+  conference, part I on - {AFIPS} {\textquotesingle}68 (Fall, part I)}. {ACM}
+  Press, 1968.
+\newblock \doi{10.1145/1476589.1476628}.
+\newblock URL \url{https://doi.org/10.1145/1476589.1476628}.
+
+\bibitem[Moore(2006)]{Moore2006}
+G.~E. Moore.
+\newblock Cramming more components onto integrated circuits, reprinted from
+  electronics, volume 38, number 8, april 19, 1965, pp.114 ff.
+\newblock \emph{{IEEE} Solid-State Circuits Society Newsletter}, 11\penalty0
+  (3):\penalty0 33--35, Sept. 2006.
+\newblock \doi{10.1109/n-ssc.2006.4785860}.
+\newblock URL \url{https://doi.org/10.1109/n-ssc.2006.4785860}.
+
+\bibitem[Norris and Demsky(2013)]{Norris2013}
+B.~Norris and B.~Demsky.
+\newblock {CDSchecker}.
+\newblock \emph{{ACM} {SIGPLAN} Notices}, 48\penalty0 (10):\penalty0 131--150,
+  Nov. 2013.
+\newblock \doi{10.1145/2544173.2509514}.
+\newblock URL \url{https://doi.org/10.1145/2544173.2509514}.
+
+\bibitem[Pinedo(2012)]{Pinedo2012}
+M.~L. Pinedo.
+\newblock \emph{Scheduling}.
+\newblock Springer {US}, 2012.
+\newblock \doi{10.1007/978-1-4614-2361-4}.
+\newblock URL \url{https://doi.org/10.1007/978-1-4614-2361-4}.
+
+\bibitem[Postnikova et~al.(2022)Postnikova, Koval, Nadiradze, and
+  Alistarh]{Postnikova2022}
+A.~Postnikova, N.~Koval, G.~Nadiradze, and D.~Alistarh.
+\newblock Multi-queues can be state-of-the-art priority schedulers.
+\newblock In \emph{Proceedings of the 27th {ACM} {SIGPLAN} Symposium on
+  Principles and Practice of Parallel Programming}. {ACM}, Mar. 2022.
+\newblock \doi{10.1145/3503221.3508432}.
+\newblock URL \url{https://doi.org/10.1145/3503221.3508432}.
+
+\bibitem[Pretnar(2015)]{Pretnar2015}
+M.~Pretnar.
+\newblock An introduction to algebraic effects and handlers. invited tutorial
+  paper.
+\newblock \emph{Electronic Notes in Theoretical Computer Science},
+  319:\penalty0 19--35, Dec. 2015.
+\newblock \doi{10.1016/j.entcs.2015.12.003}.
+\newblock URL \url{https://doi.org/10.1016/j.entcs.2015.12.003}.
+
+\bibitem[Schweizer et~al.(2020)Schweizer, Besta, and Hoefler]{fad-cas-speed}
+H.~Schweizer, M.~Besta, and T.~Hoefler.
+\newblock Evaluating the cost of atomic operations on modern architectures.
+\newblock 2020.
+\newblock \doi{10.48550/ARXIV.2010.09852}.
+\newblock URL \url{https://arxiv.org/abs/2010.09852}.
+
+\bibitem[Sivaramakrishnan et~al.(2020)Sivaramakrishnan, Dolan, White, Jaffer,
+  Kelly, Sahoo, Parimala, Dhiman, and Madhavapeddy]{Sivaramakrishnan2020}
+K.~Sivaramakrishnan, S.~Dolan, L.~White, S.~Jaffer, T.~Kelly, A.~Sahoo,
+  S.~Parimala, A.~Dhiman, and A.~Madhavapeddy.
+\newblock Retrofitting parallelism onto {OCaml}.
+\newblock \emph{Proceedings of the {ACM} on Programming Languages}, 4\penalty0
+  ({ICFP}):\penalty0 1--30, Aug. 2020.
+\newblock \doi{10.1145/3408995}.
+\newblock URL \url{https://doi.org/10.1145/3408995}.
+
+\bibitem[Sivaramakrishnan et~al.(2021)Sivaramakrishnan, Dolan, White, Kelly,
+  Jaffer, and Madhavapeddy]{Sivaramakrishnan2021}
+K.~Sivaramakrishnan, S.~Dolan, L.~White, T.~Kelly, S.~Jaffer, and
+  A.~Madhavapeddy.
+\newblock Retrofitting effect handlers onto {OCaml}.
+\newblock In \emph{Proceedings of the 42nd {ACM} {SIGPLAN} International
+  Conference on Programming Language Design and Implementation}. {ACM}, June
+  2021.
+\newblock \doi{10.1145/3453483.3454039}.
+\newblock URL \url{https://doi.org/10.1145/3453483.3454039}.
+
+\bibitem[Stephen et~al.(2015)Stephen, Leo, KC, Jeremy, and
+  Anil]{stephen_effective_nodate}
+D.~Stephen, W.~Leo, S.~KC, Y.~Jeremy, and M.~Anil.
+\newblock Effective {Concurrency} through {Algebraic} {Effects}, 2015.
+
+\bibitem[Sun et~al.(2021)Sun, He, Yan, Gao, Liu, and Zheng]{Sun2021}
+D.~Sun, H.~He, H.~Yan, S.~Gao, X.~Liu, and X.~Zheng.
+\newblock Lr-stream: Using latency and resource aware scheduling to improve
+  latency and throughput for streaming applications.
+\newblock \emph{Future Generation Computer Systems}, 114:\penalty0 243--258,
+  Jan. 2021.
+\newblock \doi{10.1016/j.future.2020.08.003}.
+\newblock URL \url{https://doi.org/10.1016/j.future.2020.08.003}.
+
+\bibitem[Swalens et~al.(2014)Swalens, Marr, Koster, and Cutsem]{Swalens2014}
+J.~Swalens, S.~Marr, J.~D. Koster, and T.~V. Cutsem.
+\newblock Towards composable concurrency abstractions.
+\newblock \emph{Electronic Proceedings in Theoretical Computer Science},
+  155:\penalty0 54--60, June 2014.
+\newblock \doi{10.4204/eptcs.155.8}.
+\newblock URL \url{https://doi.org/10.4204/eptcs.155.8}.
+
+\bibitem[Tennenhouse(1989)]{Tennenhouse89layeredmultiplexing}
+D.~L. Tennenhouse.
+\newblock Layered multiplexing considered harmful.
+\newblock In \emph{In First International Workshop on High Speed Networking},
+  1989.
+
+\bibitem[Welsh et~al.(2001)Welsh, Culler, and Brewer]{Welsh2001}
+M.~Welsh, D.~Culler, and E.~Brewer.
+\newblock {SEDA}.
+\newblock \emph{{ACM} {SIGOPS} Operating Systems Review}, 35\penalty0
+  (5):\penalty0 230--243, Dec. 2001.
+\newblock \doi{10.1145/502059.502057}.
+\newblock URL \url{https://doi.org/10.1145/502059.502057}.
+
+\bibitem[Wolpert and Macready(1997)]{Wolpert1997}
+D.~Wolpert and W.~Macready.
+\newblock No free lunch theorems for optimization.
+\newblock \emph{{IEEE} Transactions on Evolutionary Computation}, 1\penalty0
+  (1):\penalty0 67--82, Apr. 1997.
+\newblock \doi{10.1109/4235.585893}.
+\newblock URL \url{https://doi.org/10.1109/4235.585893}.
+
+\bibitem[Zhang et~al.(2014)Zhang, Feng, Wang, and Xie]{latthrough}
+Q.~Zhang, D.~Feng, F.~Wang, and Y.~Xie.
+\newblock An interposed i/o scheduling framework for latency and throughput
+  guarantees.
+\newblock \emph{Journal of Applied Science and Engineering}, 17:\penalty0
+  193--202, June 2014.
+\newblock ISSN 1560-6686.
+\newblock \doi{10.6180/jase.2014.17.2.10}.
+\newblock URL \url{https://doi.org/10.6180/jase.2014.17.2.10}.
+
+\end{thebibliography}

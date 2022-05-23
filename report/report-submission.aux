@@ -1,0 +1,473 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\bibstyle{abbrvnat}
+\citation{POWER4Wi47:online}
+\citation{AMDAnnou13:online}
+\citation{mooremulti}
+\citation{Bohr2007}
+\citation{2ndGenAM1:online}
+\citation{Norris2013}
+\citation{Khan2018}
+\@writefile{toc}{\contentsline {chapter}{\numberline {1}Introduction}{8}{chapter.1}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{firstcontentpage}{{1}{8}{Introduction}{chapter.1}{}}
+\newlabel{section:introduction}{{1}{8}{Introduction}{chapter.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {1.1}Thesis}{8}{section.1.1}\protected@file@percent }
+\newlabel{section:thesis}{{1.1}{8}{Thesis}{section.1.1}{}}
+\citation{Ho2002}
+\citation{Wolpert1997}
+\citation{Igel2005}
+\citation{Moore2006}
+\citation{Geer2005}
+\citation{6307773}
+\citation{mooremulti}
+\citation{Castello2016}
+\citation{Drebes2016}
+\citation{faverge:inria-00416502}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1.1}Parallelism}{9}{subsection.1.1.1}\protected@file@percent }
+\newlabel{section:intr_hardware_par}{{1.1.1}{9}{Parallelism}{subsection.1.1.1}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ create figure}{9}{section*.3}\protected@file@percent }
+\pgfsyspdfmark {pgfid1}{11359205}{16726433}
+\pgfsyspdfmark {pgfid4}{37920833}{16741178}
+\pgfsyspdfmark {pgfid5}{40689729}{16472481}
+\citation{Kleppmann2017-en}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.1.2}Concurrency}{10}{subsection.1.1.2}\protected@file@percent }
+\newlabel{section:intr_software_conc}{{1.1.2}{10}{Concurrency}{subsection.1.1.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {1.2}Tools}{10}{section.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2.1}System}{10}{subsection.1.2.1}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref to methods}{10}{section*.4}\protected@file@percent }
+\pgfsyspdfmark {pgfid6}{27430672}{8530864}
+\pgfsyspdfmark {pgfid7}{1204675}{8545609}
+\pgfsyspdfmark {pgfid8}{3973571}{8276912}
+\@writefile{toc}{\contentsline {subsection}{\numberline {1.2.2}OCaml Multicore}{10}{subsection.1.2.2}\protected@file@percent }
+\newlabel{section:intr_ocaml-multicore}{{1.2.2}{10}{OCaml Multicore}{subsection.1.2.2}{}}
+\citation{golang}
+\citation{Tennenhouse89layeredmultiplexing}
+\@writefile{toc}{\contentsline {section}{\numberline {1.3}Findings}{11}{section.1.3}\protected@file@percent }
+\newlabel{section:findings}{{1.3}{11}{Findings}{section.1.3}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ fill in}{11}{section*.5}\protected@file@percent }
+\pgfsyspdfmark {pgfid11}{4661699}{9382751}
+\pgfsyspdfmark {pgfid14}{37920833}{9397496}
+\pgfsyspdfmark {pgfid15}{40689729}{9128799}
+\citation{Pinedo2012}
+\citation{Howwebbr64:online}
+\@writefile{toc}{\contentsline {chapter}{\numberline {2}Background}{12}{chapter.2}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {2.1}Scheduling}{12}{section.2.1}\protected@file@percent }
+\newlabel{section:background_schedulers}{{2.1}{12}{Scheduling}{section.2.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.1}System Threads}{12}{subsection.2.1.1}\protected@file@percent }
+\citation{gorout_vs_os_thread}
+\citation{Sivaramakrishnan2021}
+\citation{gorout_vs_os_thread}
+\@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces A simplified graph of fine-grained tasks, which scheduler attempts to traverse in order to terminate. Green box represents executed task, blue boxes are currently enqueued tasks. The orange boxes are tasks that are going to be scheduled once their parent execute. They are not visible to the scheduler at the moment. This graph shows how little is actually known about the tasks, and scheduler-traps in the shape of infinite-depth subgraphs, which are prone to cause starvation.}}{13}{figure.2.1}\protected@file@percent }
+\newlabel{fig:sched-graph}{{2.1}{13}{A simplified graph of fine-grained tasks, which scheduler attempts to traverse in order to terminate. Green box represents executed task, blue boxes are currently enqueued tasks. The orange boxes are tasks that are going to be scheduled once their parent execute. They are not visible to the scheduler at the moment. This graph shows how little is actually known about the tasks, and scheduler-traps in the shape of infinite-depth subgraphs, which are prone to cause starvation}{figure.2.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.2}Lightweight Threads}{13}{subsection.2.1.2}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ could say that there is a philosophical difference as OS learns about long-lived threads. tasks are small and done quickly.}{13}{section*.6}\protected@file@percent }
+\pgfsyspdfmark {pgfid16}{4661699}{10750215}
+\pgfsyspdfmark {pgfid19}{37920833}{10764960}
+\pgfsyspdfmark {pgfid20}{40689729}{10496263}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.3}Preemption}{13}{subsection.2.1.3}\protected@file@percent }
+\newlabel{section:preemption}{{2.1.3}{13}{Preemption}{subsection.2.1.3}{}}
+\citation{Blumofe1999}
+\citation{linux_cfs}
+\citation{Blumofe1995}
+\citation{golang}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.4}Work-stealing}{14}{subsection.2.1.4}\protected@file@percent }
+\citation{Chase2005}
+\citation{stephen_effective_nodate}
+\citation{Sivaramakrishnan2020}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ mention deque}{15}{section*.7}\protected@file@percent }
+\pgfsyspdfmark {pgfid21}{4661699}{43439464}
+\pgfsyspdfmark {pgfid24}{37920833}{43454209}
+\pgfsyspdfmark {pgfid25}{40689729}{43185512}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.5}Summary}{15}{subsection.2.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {2.2}OCaml}{15}{section.2.2}\protected@file@percent }
+\newlabel{section:background_ocaml}{{2.2}{15}{OCaml}{section.2.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}Threading}{15}{subsection.2.2.1}\protected@file@percent }
+\newlabel{section:fibers}{{2.2.1}{15}{Threading}{subsection.2.2.1}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ citation}{15}{section*.8}\protected@file@percent }
+\pgfsyspdfmark {pgfid26}{20800657}{11662998}
+\pgfsyspdfmark {pgfid29}{37920833}{11677743}
+\pgfsyspdfmark {pgfid30}{40689729}{11409046}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ concurrency section}{15}{section*.9}\protected@file@percent }
+\pgfsyspdfmark {pgfid31}{25783094}{5162596}
+\pgfsyspdfmark {pgfid34}{37920833}{5177341}
+\pgfsyspdfmark {pgfid35}{40689729}{4908644}
+\citation{Sivaramakrishnan2021}
+\citation{Pretnar2015}
+\citation{Brachthuser2020}
+\citation{Sivaramakrishnan2021}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}Effects}{16}{subsection.2.2.2}\protected@file@percent }
+\citation{OCamllib90:online}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.3}Memory model}{17}{subsection.2.2.3}\protected@file@percent }
+\newlabel{section:memory_model}{{2.2.3}{17}{Memory model}{subsection.2.2.3}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ fill in}{17}{section*.10}\protected@file@percent }
+\pgfsyspdfmark {pgfid36}{4661699}{38763229}
+\pgfsyspdfmark {pgfid39}{37920833}{38777974}
+\pgfsyspdfmark {pgfid40}{40689729}{38509277}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2.4}Garbage Collection}{17}{subsection.2.2.4}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ fill in}{17}{section*.11}\protected@file@percent }
+\pgfsyspdfmark {pgfid41}{4661699}{34093150}
+\pgfsyspdfmark {pgfid44}{37920833}{34107895}
+\pgfsyspdfmark {pgfid45}{40689729}{33839198}
+\@writefile{toc}{\contentsline {section}{\numberline {2.3}Multiprocessing}{17}{section.2.3}\protected@file@percent }
+\newlabel{section:background_multiprocessing}{{2.3}{17}{Multiprocessing}{section.2.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.1}Amdahl's law}{17}{subsection.2.3.1}\protected@file@percent }
+\citation{art_of_mult}
+\citation{art_of_mult}
+\citation{fad-cas-speed}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.2}Lock-free algorithms}{18}{subsection.2.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.3}Atomic operations}{18}{subsection.2.3.3}\protected@file@percent }
+\citation{memoryor11:online}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.4}Linearizability}{19}{subsection.2.3.4}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ figure}{19}{section*.12}\protected@file@percent }
+\pgfsyspdfmark {pgfid46}{26956190}{19907472}
+\pgfsyspdfmark {pgfid49}{37920833}{19922217}
+\pgfsyspdfmark {pgfid50}{40689729}{19653520}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.5}LF queue}{19}{subsection.2.3.5}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ maybe fill in or leave for impl. details}{19}{section*.13}\protected@file@percent }
+\pgfsyspdfmark {pgfid51}{4661699}{16104029}
+\pgfsyspdfmark {pgfid54}{37920833}{16118774}
+\pgfsyspdfmark {pgfid55}{40689729}{15850077}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.6}MultiQ}{19}{subsection.2.3.6}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ maybe fill in}{19}{section*.14}\protected@file@percent }
+\pgfsyspdfmark {pgfid56}{4661699}{13479871}
+\pgfsyspdfmark {pgfid59}{37920833}{12000879}
+\pgfsyspdfmark {pgfid60}{40689729}{11732182}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.3.7}DSCheck}{19}{subsection.2.3.7}\protected@file@percent }
+\citation{Miller1968}
+\citation{Amin2013}
+\citation{voip-latency}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ fill in}{20}{section*.15}\protected@file@percent }
+\pgfsyspdfmark {pgfid61}{4661699}{49418357}
+\pgfsyspdfmark {pgfid62}{1204675}{49433102}
+\pgfsyspdfmark {pgfid63}{3973571}{49164405}
+\@writefile{toc}{\contentsline {section}{\numberline {2.4}Benchmarks}{20}{section.2.4}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ describe distributions?}{20}{section*.16}\protected@file@percent }
+\pgfsyspdfmark {pgfid66}{4661699}{46042953}
+\pgfsyspdfmark {pgfid67}{1204675}{46057698}
+\pgfsyspdfmark {pgfid68}{3973571}{45789001}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.1}Packet Processing}{20}{subsection.2.4.1}\protected@file@percent }
+\newlabel{section:background_packet-processing}{{2.4.1}{20}{Packet Processing}{subsection.2.4.1}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ could add a little more background on why this is important, previous work or just details}{20}{section*.17}\protected@file@percent }
+\pgfsyspdfmark {pgfid71}{4661699}{21214523}
+\pgfsyspdfmark {pgfid72}{1204675}{21229268}
+\pgfsyspdfmark {pgfid73}{3973571}{20960571}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.2}Audio Mixer}{20}{subsection.2.4.2}\protected@file@percent }
+\newlabel{section:bench-audio-mixer}{{2.4.2}{20}{Audio Mixer}{subsection.2.4.2}{}}
+\citation{Maruzzelli2017-ou}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.4.3}Option Pricing}{21}{subsection.2.4.3}\protected@file@percent }
+\newlabel{section:bench-option-pricing}{{2.4.3}{21}{Option Pricing}{subsection.2.4.3}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {3}Related work}{22}{chapter.3}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.0.1}Related work: Go}{22}{subsection.3.0.1}\protected@file@percent }
+\newlabel{section:rel-work-go}{{3.0.1}{22}{Related work: Go}{subsection.3.0.1}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ Add more on:}{23}{section*.18}\protected@file@percent }
+\pgfsyspdfmark {pgfid76}{4661699}{45926875}
+\pgfsyspdfmark {pgfid79}{37920833}{45941620}
+\pgfsyspdfmark {pgfid80}{40689729}{45672923}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ Nice graphic with processors, workers and tasks.}{23}{section*.19}\protected@file@percent }
+\pgfsyspdfmark {pgfid81}{4661699}{39309191}
+\pgfsyspdfmark {pgfid84}{37920833}{39323936}
+\pgfsyspdfmark {pgfid85}{40689729}{39055239}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.0.2}Related work: Rust}{23}{subsection.3.0.2}\protected@file@percent }
+\newlabel{section:rel-work-rust}{{3.0.2}{23}{Related work: Rust}{subsection.3.0.2}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ Touch on:}{23}{section*.20}\protected@file@percent }
+\pgfsyspdfmark {pgfid86}{4661699}{14059486}
+\pgfsyspdfmark {pgfid89}{37920833}{14074231}
+\pgfsyspdfmark {pgfid90}{40689729}{13805534}
+\citation{Kleppmann2017-en}
+\citation{8057206}
+\citation{latthrough}
+\citation{Sun2021}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Design}{24}{chapter.4}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Objectives}{24}{section.4.1}\protected@file@percent }
+\newlabel{section:objectives}{{4.1}{24}{Objectives}{section.4.1}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref to ocaml sec in background}{25}{section*.21}\protected@file@percent }
+\pgfsyspdfmark {pgfid91}{13221996}{48760581}
+\pgfsyspdfmark {pgfid94}{37920833}{48775326}
+\pgfsyspdfmark {pgfid95}{40689729}{48506629}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref to staged}{25}{section*.22}\protected@file@percent }
+\pgfsyspdfmark {pgfid96}{11686020}{46402011}
+\pgfsyspdfmark {pgfid99}{37920833}{44684422}
+\pgfsyspdfmark {pgfid100}{40689729}{44415725}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Approaches}{25}{section.4.2}\protected@file@percent }
+\newlabel{section:approaches}{{4.2}{25}{Approaches}{section.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}FIFO and LIFO}{25}{subsection.4.2.1}\protected@file@percent }
+\newlabel{section:ordering}{{4.2.1}{25}{FIFO and LIFO}{subsection.4.2.1}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref}{25}{section*.23}\protected@file@percent }
+\pgfsyspdfmark {pgfid101}{25838532}{34360528}
+\pgfsyspdfmark {pgfid104}{37920833}{34375273}
+\pgfsyspdfmark {pgfid105}{40689729}{34106576}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Hybrid}{25}{subsection.4.2.2}\protected@file@percent }
+\citation{amdahl}
+\citation{Postnikova2022}
+\citation{Kirsch2013}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ could try doing adaptable, based on the oldest element in the queue, if have time.}{26}{section*.24}\protected@file@percent }
+\pgfsyspdfmark {pgfid106}{4661699}{42961264}
+\pgfsyspdfmark {pgfid107}{1204675}{42976009}
+\pgfsyspdfmark {pgfid108}{3973571}{42707312}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ lifo slot?}{26}{section*.25}\protected@file@percent }
+\pgfsyspdfmark {pgfid111}{4661699}{42961264}
+\pgfsyspdfmark {pgfid112}{1204675}{35500167}
+\pgfsyspdfmark {pgfid113}{3973571}{35231470}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Contention and locality}{26}{section.4.3}\protected@file@percent }
+\newlabel{section:global_local}{{4.3}{26}{Contention and locality}{section.4.3}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ queue scalability figure}{26}{section*.26}\protected@file@percent }
+\pgfsyspdfmark {pgfid116}{17453624}{36645084}
+\pgfsyspdfmark {pgfid117}{1204675}{33716296}
+\pgfsyspdfmark {pgfid118}{3973571}{33447599}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Core Structure Distribution}{26}{subsection.4.3.1}\protected@file@percent }
+\newlabel{section:core_struct_dist}{{4.3.1}{26}{Core Structure Distribution}{subsection.4.3.1}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref to implementation}{26}{section*.27}\protected@file@percent }
+\pgfsyspdfmark {pgfid121}{6402096}{13958680}
+\pgfsyspdfmark {pgfid122}{1204675}{13973425}
+\pgfsyspdfmark {pgfid123}{3973571}{13704728}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref to background}{26}{section*.28}\protected@file@percent }
+\pgfsyspdfmark {pgfid126}{21509569}{11059021}
+\pgfsyspdfmark {pgfid127}{1204675}{11073766}
+\pgfsyspdfmark {pgfid128}{3973571}{10805069}
+\citation{Kleppmann2017-en}
+\citation{Welsh2001}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Staged}{27}{subsection.4.3.2}\protected@file@percent }
+\newlabel{section:design-staged}{{4.3.2}{27}{Staged}{subsection.4.3.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Other design choices}{28}{section.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}Work distribution}{28}{subsection.4.4.1}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ staged ref}{28}{section*.29}\protected@file@percent }
+\pgfsyspdfmark {pgfid131}{28449444}{22289428}
+\pgfsyspdfmark {pgfid132}{1204675}{22304173}
+\pgfsyspdfmark {pgfid133}{3973571}{22035476}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ todo}{28}{section*.30}\protected@file@percent }
+\pgfsyspdfmark {pgfid136}{4661699}{12260066}
+\pgfsyspdfmark {pgfid137}{1204675}{12274811}
+\pgfsyspdfmark {pgfid138}{3973571}{12006114}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\  In the case of staged architecture this is not a problem.}{28}{section*.31}\protected@file@percent }
+\pgfsyspdfmark {pgfid141}{4661699}{3983311}
+\pgfsyspdfmark {pgfid142}{1204675}{3998056}
+\pgfsyspdfmark {pgfid143}{3973571}{3729359}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}Resizing}{29}{subsection.4.4.2}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ link to background}{29}{section*.32}\protected@file@percent }
+\pgfsyspdfmark {pgfid146}{34282677}{45825767}
+\pgfsyspdfmark {pgfid149}{37920833}{45840512}
+\pgfsyspdfmark {pgfid150}{40689729}{45571815}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ some graph of task-creation here?}{29}{section*.33}\protected@file@percent }
+\pgfsyspdfmark {pgfid151}{4661699}{35784076}
+\pgfsyspdfmark {pgfid154}{37920833}{35798821}
+\pgfsyspdfmark {pgfid155}{40689729}{35530124}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}Blocking operations}{29}{subsection.4.4.3}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ refs}{29}{section*.34}\protected@file@percent }
+\pgfsyspdfmark {pgfid156}{17587026}{28156457}
+\pgfsyspdfmark {pgfid159}{37920833}{28171202}
+\pgfsyspdfmark {pgfid160}{40689729}{27902505}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ cite}{29}{section*.35}\protected@file@percent }
+\pgfsyspdfmark {pgfid161}{13071974}{12182804}
+\pgfsyspdfmark {pgfid164}{37920833}{12197549}
+\pgfsyspdfmark {pgfid165}{40689729}{11928852}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.4}Yield}{29}{subsection.4.4.4}\protected@file@percent }
+\newlabel{section:yield}{{4.4.4}{29}{Yield}{subsection.4.4.4}{}}
+\citation{Swalens2014}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref}{30}{section*.36}\protected@file@percent }
+\pgfsyspdfmark {pgfid166}{30085261}{40599615}
+\pgfsyspdfmark {pgfid167}{1204675}{40614360}
+\pgfsyspdfmark {pgfid168}{3973571}{40345663}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ could be smarter about yielding and use this information to identify spawners}{30}{section*.37}\protected@file@percent }
+\pgfsyspdfmark {pgfid171}{4661699}{20645800}
+\pgfsyspdfmark {pgfid172}{1204675}{20660545}
+\pgfsyspdfmark {pgfid173}{3973571}{20391848}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.5}Promise}{30}{subsection.4.4.5}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref to repo}{30}{section*.38}\protected@file@percent }
+\pgfsyspdfmark {pgfid176}{7572337}{6341881}
+\pgfsyspdfmark {pgfid177}{1204675}{6356626}
+\pgfsyspdfmark {pgfid178}{3973571}{6087929}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ code listing}{30}{section*.39}\protected@file@percent }
+\pgfsyspdfmark {pgfid181}{4661699}{3983311}
+\pgfsyspdfmark {pgfid182}{1204675}{3998056}
+\pgfsyspdfmark {pgfid183}{3973571}{3729359}
+\citation{rfc793}
+\citation{async_kernel}
+\citation{async_kernel}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.6}Staged architecture revisited}{31}{subsection.4.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.7}Backpressure}{31}{subsection.4.4.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.8}Cancellations}{31}{subsection.4.4.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Implementation}{32}{chapter.5}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}Core data structure}{32}{section.5.1}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ PAPER A}{32}{section*.40}\protected@file@percent }
+\pgfsyspdfmark {pgfid186}{26225028}{10499878}
+\pgfsyspdfmark {pgfid187}{1204675}{10514623}
+\pgfsyspdfmark {pgfid188}{3973571}{10245926}
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}MPMC Queue Blocking}{33}{section.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}Relaxation to SPMC Queue}{33}{section.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.4}SPMC Queue with stealing}{33}{section.5.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.5}SPMC Stack with FIFO stealing}{33}{section.5.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.6}Sharded Queue}{33}{section.5.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.7}Overflow avoidance}{33}{section.5.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.8}False sharing}{33}{section.5.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.9}Limitations}{33}{section.5.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {6}Methods}{34}{chapter.6}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {6.1}Hardware}{34}{section.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.2}System}{34}{section.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.3}Procedures}{34}{section.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.4}Statistical Methods}{34}{section.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6.5}Probe Effect}{34}{section.6.5}\protected@file@percent }
+\citation{amdahl}
+\@writefile{toc}{\contentsline {chapter}{\numberline {7}Evaluation}{35}{chapter.7}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {7.1}Server benchmark}{35}{section.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1.1}General Case}{35}{subsection.7.1.1}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref to justify queue size - generally, don't want too much waiting bc memory pressure, fiber recycling}{35}{section*.41}\protected@file@percent }
+\pgfsyspdfmark {pgfid191}{18582311}{10393994}
+\pgfsyspdfmark {pgfid194}{37920833}{10408739}
+\pgfsyspdfmark {pgfid195}{40689729}{10140042}
+\@writefile{lof}{\contentsline {figure}{\numberline {7.1}{\ignorespaces 50k.}}{36}{figure.7.1}\protected@file@percent }
+\newlabel{fig:packet-50k}{{7.1}{36}{50k}{figure.7.1}{}}
+\citation{amdahl}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ link to the code in the repo}{37}{section*.42}\protected@file@percent }
+\pgfsyspdfmark {pgfid196}{4661699}{34665942}
+\pgfsyspdfmark {pgfid199}{37920833}{34680687}
+\pgfsyspdfmark {pgfid200}{40689729}{34411990}
+\@writefile{toc}{\contentsline {subsubsection}{Degradation}{37}{section*.43}\protected@file@percent }
+\newlabel{section:degradation}{{7.1.1}{37}{Degradation}{section*.43}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref to hash chain example}{37}{section*.44}\protected@file@percent }
+\pgfsyspdfmark {pgfid201}{22854560}{15158128}
+\pgfsyspdfmark {pgfid204}{37920833}{15172873}
+\pgfsyspdfmark {pgfid205}{40689729}{14904176}
+\@writefile{lof}{\contentsline {figure}{\numberline {7.2}{\ignorespaces The throughput achieved on 50k tasks over varying number of domains.}}{38}{figure.7.2}\protected@file@percent }
+\newlabel{fig:packet-with-steal-counts}{{7.2}{38}{The throughput achieved on 50k tasks over varying number of domains}{figure.7.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7.3}{\ignorespaces The throughput achieved on 50k tasks over varying number of domains.}}{38}{figure.7.3}\protected@file@percent }
+\newlabel{fig:packet-counters}{{7.3}{38}{The throughput achieved on 50k tasks over varying number of domains}{figure.7.3}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ MESI link}{38}{section*.45}\protected@file@percent }
+\pgfsyspdfmark {pgfid206}{24248019}{25179869}
+\pgfsyspdfmark {pgfid207}{1204675}{25194614}
+\pgfsyspdfmark {pgfid208}{3973571}{24925917}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ rethink this paragraph}{38}{section*.46}\protected@file@percent }
+\pgfsyspdfmark {pgfid211}{30543599}{21642014}
+\pgfsyspdfmark {pgfid212}{1204675}{21656759}
+\pgfsyspdfmark {pgfid213}{3973571}{21388062}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ Could show a diagram of \% of tasks processed by each core.}{38}{section*.47}\protected@file@percent }
+\pgfsyspdfmark {pgfid216}{4661699}{21642014}
+\pgfsyspdfmark {pgfid217}{1204675}{18745141}
+\pgfsyspdfmark {pgfid218}{3973571}{18476444}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref to implementation}{38}{section*.48}\protected@file@percent }
+\pgfsyspdfmark {pgfid221}{18757209}{17529802}
+\pgfsyspdfmark {pgfid222}{1204675}{12349362}
+\pgfsyspdfmark {pgfid223}{3973571}{12080665}
+\@writefile{lof}{\contentsline {figure}{\numberline {7.4}{\ignorespaces The throughput achieved on 10 million tasks over varying number of domains.}}{39}{figure.7.4}\protected@file@percent }
+\newlabel{fig:packet-10m-throughput}{{7.4}{39}{The throughput achieved on 10 million tasks over varying number of domains}{figure.7.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7.5}{\ignorespaces The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}}{39}{figure.7.5}\protected@file@percent }
+\newlabel{fig:packet-slowed}{{7.5}{39}{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait}{figure.7.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7.6}{\ignorespaces The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case.}}{39}{figure.7.6}\protected@file@percent }
+\newlabel{fig:packet-4spawners}{{7.6}{39}{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case}{figure.7.6}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ say long-running, which is unusual in e.g. http traffic}{40}{section*.49}\protected@file@percent }
+\pgfsyspdfmark {pgfid226}{17615483}{43527637}
+\pgfsyspdfmark {pgfid227}{1204675}{43542382}
+\pgfsyspdfmark {pgfid228}{3973571}{43273685}
+\@writefile{toc}{\contentsline {subsubsection}{Extensions}{40}{section*.50}\protected@file@percent }
+\newlabel{section:extensions}{{7.1.1}{40}{Extensions}{section*.50}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7.7}{\ignorespaces The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}}{41}{figure.7.7}\protected@file@percent }
+\newlabel{fig:packet-extenstions}{{7.7}{41}{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait}{figure.7.7}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ cite}{41}{section*.51}\protected@file@percent }
+\pgfsyspdfmark {pgfid231}{20737287}{11819670}
+\pgfsyspdfmark {pgfid234}{37920833}{11834415}
+\pgfsyspdfmark {pgfid235}{40689729}{11565718}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ Important to state; such modifications do add overheads for the coarse-grained case.}{41}{section*.52}\protected@file@percent }
+\pgfsyspdfmark {pgfid236}{4661699}{6612260}
+\pgfsyspdfmark {pgfid239}{37920833}{6627005}
+\pgfsyspdfmark {pgfid240}{40689729}{6358308}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1.2}Server benchmark with cache effects}{41}{subsection.7.1.2}\protected@file@percent }
+\newlabel{section:server-bench-with-cache-effects}{{7.1.2}{41}{Server benchmark with cache effects}{subsection.7.1.2}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ Shows that LIFO is better. Of course, we don't just parse a packet and throw it away. Create a little chain of processing jobs to expose the difference latency/throughput trade-off between FIFO and LIFO.}{41}{section*.53}\protected@file@percent }
+\pgfsyspdfmark {pgfid241}{4661699}{3983311}
+\pgfsyspdfmark {pgfid244}{37920833}{-2051167}
+\pgfsyspdfmark {pgfid245}{40689729}{-2319864}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1.3}Server benchmark with multi-modal processing latency}{42}{subsection.7.1.3}\protected@file@percent }
+\newlabel{section:server-bench-with-multi-modal}{{7.1.3}{42}{Server benchmark with multi-modal processing latency}{subsection.7.1.3}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ Show that FIFO is better. Say, query needs to be handled internally or routed externally}{42}{section*.54}\protected@file@percent }
+\pgfsyspdfmark {pgfid246}{4661699}{51086383}
+\pgfsyspdfmark {pgfid247}{1204675}{51101128}
+\pgfsyspdfmark {pgfid248}{3973571}{50832431}
+\bibdata{refs}
+\@writefile{toc}{\contentsline {chapter}{\numberline {8}Summary and conclusions}{43}{chapter.8}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\newlabel{lastcontentpage}{{8}{43}{Summary and conclusions}{chapter.8}{}}
+\bibcite{2ndGenAM1:online}{{1}{}{{2nd}}{{}}}
+\bibcite{AMDAnnou13:online}{{2}{}{{AMD}}{{}}}
+\bibcite{Howwebbr64:online}{{3}{}{{How}}{{}}}
+\bibcite{OCamllib90:online}{{4}{}{{OCa}}{{}}}
+\bibcite{POWER4Wi47:online}{{5}{}{{POW}}{{}}}
+\bibcite{async_kernel}{{6}{}{{asy}}{{}}}
+\bibcite{golang}{{7}{}{{gol}}{{}}}
+\bibcite{gorout_vs_os_thread}{{8}{}{{gor}}{{}}}
+\bibcite{linux_cfs}{{9}{}{{lin}}{{}}}
+\bibcite{memoryor11:online}{{10}{}{{mem}}{{}}}
+\bibcite{rfc793}{{11}{1981}{{rfc}}{{}}}
+\bibcite{voip-latency}{{12}{2009}{{Agastya et~al.}}{{Agastya, Mechanic, and Kothari}}}
+\bibcite{Amin2013}{{13}{2013}{{Amin et~al.}}{{Amin, Jackson, Gilbert, Martin, and Shaw}}}
+\bibcite{Blumofe1999}{{14}{1999}{{Blumofe and Leiserson}}{{}}}
+\bibcite{Blumofe1995}{{15}{1995}{{Blumofe et~al.}}{{Blumofe, Joerg, Kuszmaul, Leiserson, Randall, and Zhou}}}
+\bibcite{Bohr2007}{{16}{2007}{{Bohr}}{{}}}
+\bibcite{Brachthuser2020}{{17}{2020}{{Brachth\"{a}user et~al.}}{{Brachth\"{a}user, Schuster, and Ostermann}}}
+\bibcite{Castello2016}{{18}{2016}{{Castello et~al.}}{{Castello, Pena, Seo, Mayo, Balaji, and Quintana-Orti}}}
+\bibcite{Chase2005}{{19}{2005}{{Chase and Lev}}{{}}}
+\bibcite{8057206}{{20}{2017}{{Cheng et~al.}}{{Cheng, Chen, Zhou, Gmach, and Milojicic}}}
+\bibcite{Drebes2016}{{21}{2016}{{Drebes et~al.}}{{Drebes, Pop, Heydemann, Drach, and Cohen}}}
+\bibcite{6307773}{{22}{2011}{{Esmaeilzadeh et~al.}}{{Esmaeilzadeh, Blem, Amant, Sankaralingam, and Burger}}}
+\bibcite{mooremulti}{{23}{2013}{{Esmaeilzadeh et~al.}}{{Esmaeilzadeh, Blem, Amant, Sankaralingam, and Burger}}}
+\bibcite{faverge:inria-00416502}{{24}{2009}{{Faverge and Ramet}}{{}}}
+\bibcite{Geer2005}{{25}{2005}{{Geer}}{{}}}
+\bibcite{art_of_mult}{{26}{2021}{{Herlihy et~al.}}{{Herlihy, Shavit, Luchangco, and Spear}}}
+\bibcite{Ho2002}{{27}{2002}{{Ho and Pepyne}}{{}}}
+\bibcite{Igel2005}{{28}{2005}{{Igel and Toussaint}}{{}}}
+\bibcite{amdahl}{{29}{2011}{{Karmani et~al.}}{{Karmani, Agha, Squillante, Seiferas, Brezina, Hu, Tuminaro, Sanders, Tr\"{a}ffe, Geijn, Tr\"{a}ff, Geijn, Sander, Gustafson, Dror, Young, Shaw, Lin, Lee, Chang, Kuan, Kollias, Grama, Li, Whaley, and Vuduc}}}
+\bibcite{Khan2018}{{30}{2018}{{Khan et~al.}}{{Khan, Hounshell, and Fuchs}}}
+\bibcite{Kirsch2013}{{31}{2013}{{Kirsch et~al.}}{{Kirsch, Lippautz, and Payer}}}
+\bibcite{Kleppmann2017-en}{{32}{2017}{{Kleppmann}}{{}}}
+\bibcite{Maruzzelli2017-ou}{{33}{2017}{{Maruzzelli}}{{}}}
+\bibcite{Miller1968}{{34}{1968}{{Miller}}{{}}}
+\bibcite{Moore2006}{{35}{2006}{{Moore}}{{}}}
+\bibcite{Norris2013}{{36}{2013}{{Norris and Demsky}}{{}}}
+\bibcite{Pinedo2012}{{37}{2012}{{Pinedo}}{{}}}
+\bibcite{Postnikova2022}{{38}{2022}{{Postnikova et~al.}}{{Postnikova, Koval, Nadiradze, and Alistarh}}}
+\bibcite{Pretnar2015}{{39}{2015}{{Pretnar}}{{}}}
+\bibcite{fad-cas-speed}{{40}{2020}{{Schweizer et~al.}}{{Schweizer, Besta, and Hoefler}}}
+\bibcite{Sivaramakrishnan2020}{{41}{2020}{{Sivaramakrishnan et~al.}}{{Sivaramakrishnan, Dolan, White, Jaffer, Kelly, Sahoo, Parimala, Dhiman, and Madhavapeddy}}}
+\bibcite{Sivaramakrishnan2021}{{42}{2021}{{Sivaramakrishnan et~al.}}{{Sivaramakrishnan, Dolan, White, Kelly, Jaffer, and Madhavapeddy}}}
+\bibcite{stephen_effective_nodate}{{43}{2015}{{Stephen et~al.}}{{Stephen, Leo, KC, Jeremy, and Anil}}}
+\bibcite{Sun2021}{{44}{2021}{{Sun et~al.}}{{Sun, He, Yan, Gao, Liu, and Zheng}}}
+\bibcite{Swalens2014}{{45}{2014}{{Swalens et~al.}}{{Swalens, Marr, Koster, and Cutsem}}}
+\bibcite{Tennenhouse89layeredmultiplexing}{{46}{1989}{{Tennenhouse}}{{}}}
+\bibcite{Welsh2001}{{47}{2001}{{Welsh et~al.}}{{Welsh, Culler, and Brewer}}}
+\bibcite{Wolpert1997}{{48}{1997}{{Wolpert and Macready}}{{}}}
+\bibcite{latthrough}{{49}{2014}{{Zhang et~al.}}{{Zhang, Feng, Wang, and Xie}}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{49}{appendix.A}\protected@file@percent }
+\@writefile{lof}{\addvspace {10\p@ }}
+\@writefile{lot}{\addvspace {10\p@ }}
+\@writefile{toc}{\contentsline {section}{\numberline {A.1}Lorem ipsum}{49}{section.A.1}\protected@file@percent }
+\newlabel{lastpage}{{A.1}{49}{Lorem ipsum}{section.A.1}{}}
+\gdef \@abspage@last{49}
