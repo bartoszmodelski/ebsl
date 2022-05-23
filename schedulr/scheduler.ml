@@ -2,7 +2,7 @@ open EffectHandlers
 open EffectHandlers.Deep 
 
 module Multi_queue_3 = Datastructures.Multi_mpmc_queue.Make(struct 
-  let num_of_queues = 3
+  let num_of_queues = 5
 end) 
 
 
@@ -41,6 +41,8 @@ module DistributionPolicy = struct
   type t = 
     | Steal 
     | Steal_localized
+    | Steal_localized_small
+    | Steal_slowed
     | Steal_and_simple_request  
     | Steal_and_sticky_request  
     | Steal_and_overflow_queue 
@@ -114,7 +116,11 @@ module Make (DS : DataStructure) = struct
         (* necessary to process injected elements *)
         `Global_queue
       | Steal -> `Steal `Random 
+      | Steal_slowed -> 
+        Unix.sleepf 0.000_000_005;
+        `Steal `Random
       | Steal_localized -> `Steal `Random_localized
+      | Steal_localized_small -> `Steal `Random_localized_small
       | (Steal_and_simple_request | Steal_and_sticky_request) as v -> 
         let kind = 
           match Atomic.get suggest_steal with 
@@ -192,13 +198,13 @@ module Make (DS : DataStructure) = struct
         else 
           r);; 
 
-  let localized_random_id ({processor; all_processors; _} : Context.t) =
+  let localized_random_id ({processor; all_processors; _} : Context.t) min_reachable =
     let num_of_processors = Array.length all_processors in 
     if num_of_processors < 2
     then None 
     else
        (let my_id = Processor.id processor in
-        let reachable = min (num_of_processors) 20 in 
+        let reachable = min (num_of_processors) min_reachable in 
         let r = num_of_processors + my_id + (Random.int reachable) - (reachable / 2) in 
         let r = r mod num_of_processors in 
         if r == my_id 
@@ -222,7 +228,7 @@ module Make (DS : DataStructure) = struct
 
   let deal_with_lack_of_space_to_enqueue context task ~insert_f =
     match !dist_policy with 
-    | Steal | Steal_localized -> 
+    | Steal | Steal_localized | Steal_localized_small | Steal_slowed -> 
       while not (insert_f task) do () done;
     | Steal_and_simple_request | Steal_and_sticky_request -> 
       request_steal context; 
@@ -250,7 +256,7 @@ module Make (DS : DataStructure) = struct
         then DS.local_insert_after_preemption ds
         else DS.local_insert ds
       in
-      let spin_threshold = 50 in 
+      let spin_threshold = 20 in 
       let spins = ref 0 in 
       while !spins < spin_threshold && not (insert_f task) do 
         Processor.incr_waited_for_space_on_enque processor;
@@ -303,7 +309,8 @@ module Make (DS : DataStructure) = struct
       match id_type with 
       | `Random -> random_id context 
       | `Force id -> Some id 
-      | `Random_localized -> localized_random_id context 
+      | `Random_localized -> localized_random_id context 20
+      | `Random_localized_small -> localized_random_id context 13
     in 
     match id with 
     | None -> () 
@@ -396,6 +403,7 @@ module Make (DS : DataStructure) = struct
     (match work_distribution_strategy with 
     | None -> () 
     | Some v -> 
+      Stdlib.flush_all ();
       dist_policy := v);
     let num_of_processors = 
       match afterwards with 

@@ -110,18 +110,22 @@ let () =
     ("-iterations", Arg.Set_int iterations, "set num of iterations");
     ("-dist-policy", Arg.Set_string dist_policy, "set distribution policy")] 
   in 
+  Arg.parse speclist anon_fun usage_msg;
   let dist_policy = 
     match !dist_policy with 
     | "" -> None
     | "steal" -> Some Schedulr.Scheduler.DistributionPolicy.Steal
+    | "steal_localized" -> Some Schedulr.Scheduler.DistributionPolicy.Steal_localized
+    | "steal_localized_small" -> Some Schedulr.Scheduler.DistributionPolicy.Steal_localized_small
     | "simple_request" -> Some Steal_and_simple_request
+    | "sticky_request" -> Some Steal_and_sticky_request
     | "overflow_queue" -> Some Steal_and_overflow_queue
     | "steal_and_mpmc_overflow" -> Some Steal_and_mpmc_overflow
     | "steal_and_multi_mpmc_overflow" -> Some Steal_and_multi_mpmc_overflow 
     | "steal_and_advanced_request" -> Some Steal_and_advanced_request
+    | "steal_slowed" -> Some Steal_slowed
     | _ -> failwith "unknown dist policy"
   in
-  Arg.parse speclist anon_fun usage_msg;
   let scheduler_module = Flags.parse_sched scheduler in 
   assert (0 < !num_of_domains && !num_of_domains < 512);
   assert (0 < !num_of_spawners && !num_of_spawners < 512);

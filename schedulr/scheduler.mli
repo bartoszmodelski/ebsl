@@ -7,6 +7,8 @@ module DistributionPolicy : sig
   type t = 
     | Steal 
     | Steal_localized
+    | Steal_localized_small
+    | Steal_slowed
     | Steal_and_simple_request  
     | Steal_and_sticky_request
     | Steal_and_overflow_queue
