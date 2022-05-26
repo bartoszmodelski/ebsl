@@ -4,4 +4,5 @@
   stack_test stack_validation spmc_queue_validate benchmark_time
   scheduler_promises_test test_inject micropools_test benchmark_queue
   benchmark_micropools benchmark_hash benchmark_micropools_bimod)
- (libraries schedulr unix dscheck core oclock micropools datastructures reporting digestif.ocaml digestif))
+ (libraries schedulr unix dscheck core oclock micropools 
+ datastructures reporting digestif.ocaml digestif checkseum checkseum.ocaml))

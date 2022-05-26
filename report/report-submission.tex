@@ -367,6 +367,7 @@ Both operations have similar latency when applied to the same use case \cite{fad
 Implementations of atomic operations may allow or forbid certain kinds of memory reordering \cite{memoryor11:online}. OCaml atomics only come with sequential consistency, which is the strongest restriction. Sequential consistency forbids any reordering across an atomic operation. Therefore, memory order relaxations are not further considered in this report.
 
 \subsection{Linearizability}
+\label{section:linearizability}
 Linearizability is a property of execution trace, which states that all actions can be recomposed into a correct, sequential history. It is crucial whenever operations execute in parallel, be it in a distributed system or on architectural level. High level concurrency primitives such as locks help to achieve this property trivially; if relevant state is protected by a single lock then then any functions linearize as they are forced into sequential order by the very lock. However, such coarse-grained primitives may leave performance on the table. 
 
 When performance is a priority, a common approach is to try to distribute the state to allow many agents to act in parallel. Here, linearizability is fairly easy to involuntary give up, and becomes a critical property to monitor when verifying correctness. For example, queue allows enqueuer and dequeuer to operate independently on different ends. Thus, a performance can be nearly doubled by using atomic operations to modify \textit{head} and \textit{tail} indices independently. However, suddenly, a simple size function \textit{tail - head} may produce gibberish output as it no longer linearizes. As show in the figure \todo{figure}, independent reads of \textit{head} and \textit{tail} may allow \textit{tail - head} values not indicative of actual queue size.
@@ -627,40 +628,53 @@ Important as cancellations are common in modern workloads with requests with dea
 
 Paper a discusses this explicitely. In this work,
 
+
+
+
+
+\todo{batching would be faster but is generally bad for us!: BQ: A Lock-Free Queue with Batching}
+
+
 \chapter{Implementation}
 
+\section{Implemented Schedulers}
+
+\subsection{LIFO Heuristics}
+\subsection{Work-stealing Extensions}
 
 
 
+\section{Underlying Data Structures}
 
+This section describes the implemented schedulers and, briefly, underlying lock-free structures. 
 
+\subsection{Core Data Structure}
 
-This section describes the implementation details of developed schedulers and, in particular, underlying lock-free algorithms. 
+Lock-free data structures tend to be difficult to use in the real-world. Firstly, all assumptions about their naive counterparts are off once fine-grained concurrency is in place. For example, such a simple method as size() often turns out to be non-trivial to make linearizable \ref{section:linearizability} when size of a linked-list or circular queue changes in multiple places at once. This makes the trade-off space far more complex and points in that space (algorithms) more varied than in the single-thread world.
 
+Secondly, the effort required to add new features increases as a function of current complexity. With a single-threaded code, developer implementing a new function can focus solely on the state before and afters its execution. That alone is enough to examine whether the new function fits with the rest of the codebase. Moreover, if the code has no side effects and illegal states are not representable, even just a type check provides high confidence. Thus, such function is correct as long as its internals follow requirement. This could not be further from the truth with lock-free concurrency. In fact, a new function has to be made safe to execute concurrently with entirety of existing codebase. Even if the function is trivial, it may render some seemingly unrelated portion of the code non-linearizable. 
 
-\section{Core data structure}
+Therefore, this thesis relies on a lock-free structure inspired by \citet{Kappes2021}. The structure is described in detail in the next section. Before that, it is worth touching on the main advantages of such approach. 
 
-Lock-free data structures tend to be difficult to use in the real-world. Firstly, any assumptions about naive data structure are off once it has been modified to use fine-grained concurrency. For example, it might be outright infeasible to implement a size() method for a lock-free linked list. This makes the trade-off space far more complex and points in that space (algorithms) much more varied than those of non-synchronized data structure.
-
-Secondly, the effort required to add new features increases as a function of current complexity. From a theoretical point of view, when working with single-threaded code, developer implementing a new function can focus solely on its output space to determine whether it will fit well with other code. Further, OCaml strives to let user specify types, which are isomorphic to the valid state space. Thus, since invalid states are not representable, the new function is correct and fits well with other code as long as it also follows requirements. This could not be further from the truth in the world of fine-grained concurrency. With lock-free operations, a new function has to be made safe to execute concurrently with entirety of existing codebase. Even if the function is trivial, it could stop some of the existing logic to linearize. 
-
-Therefore, this thesis relies on the lock-free queue described by \todo{PAPER A}, which uses a requires a FAD and a CAS operation per insert and removal. While this algorithm is not as fast as existing FAD-only queues, it has a number of other benefits:
 \begin{itemize}
     \item \textbf{Scalability}. CAS and FAD operations take approximately the same time \textbf{PAPER B}, but traditional CAS-based queues scale poorly due to number of CAS fails growing proportionally with number of threads. Here, despite additional CAS required, all the significant contention is resolved by FAD (\textbf{See result X}.) and thus, this algorithm scales similarly to state-of-the-art FAD queues.
+    \item \textbf{Simplicity}. The base case of this structure takes a little over 10 lines of lines of code. It is unusually concise for a practical multi-producer multi-consumer LF queue. 
     \item \textbf{Flexibility}. As discussed, lock-free implementation can be unwieldy. This posed a particular threat to this thesis, as ultimately, the experiments should aim to evaluate scheduling methodologies rather than just show which underlying data structure can be implemented in the fastest way on existing architecture. CAS+FAD queue has the benefit of being extremely flexible for a LF data structure and was adapted to support LIFO, non-blocking returns on full or empty and single-producer scenarios with relative ease.
 \end{itemize}
 
 
 
-\section{MPMC Queue Blocking}
-\section{Relaxation to SPMC Queue}
-\section{SPMC Queue with stealing}
-\section{SPMC Stack with FIFO stealing}
-\section{Sharded Queue}
-\section{Overflow avoidance}
-\section{False sharing}
 
-\section{Limitations}
+
+\subsection{MPMC Queue Blocking}
+\subsection{Relaxation to SPMC Queue}
+\subsection{SPMC Queue with stealing}
+\subsection{SPMC Stack with FIFO stealing}
+\subsection{Sharded Queue}
+\subsection{Overflow avoidance}
+\subsection{False sharing}
+
+\subsection{Limitations}
 
 Since this project has a limited timescale, the schedulers were optimized in design (for e.g. scalability) but their implementations were not optimized 
 
@@ -711,7 +725,7 @@ and bimodal task processing time (\S\ref{section:server-bench-with-multi-modal})
     \label{fig:packet-50k}
 \end{figure}
 
-The first benchmark mimics a minimal TCP packet processing scenario. The workload relies on a single spawner as it would be the case with a server listening on IP and port tuple. To minimise the noise, actual network is not used. Instead, the \textit{server} thread chooses one out of 10 pre-made packets, copies it and schedules a handler task by performing an appropriate effect. The benchmark focuses on max load scenario and spawns tasks as fast as only possible, until the requested total is reached. Then, it monitors an array of thread-local counters, which are increased by successfully terminating tasks. Notably, the packets are between 2 and 3 KiB, and the spawner thread focuses solely on task creation. Therefore, cache locality does not significantly affect the performance. Likewise, the performance advantage of LIFO stealing does not apply to stealing from the spawner, as spawner never removes elements from its local structure. Local structure sizes are held constant at 128 elements. (\todo{ref to justify queue size - generally, don't want too much waiting bc memory pressure, fiber recycling})
+The first benchmark mimics a minimal TCP packet processing scenario. The workload relies on a single spawner as it would be the case with a server listening on IP and port tuple. To minimise the noise, actual network is not used. Instead, the \textit{server} thread chooses one out of 10 pre-made packets, copies it and schedules a handler task by performing an appropriate effect. The benchmark focuses on max load scenario and spawns tasks as fast as only possible, until the requested total is reached. Then, it monitors an array of thread-local counters, which are increased by successfully terminating tasks. Notably, the packets are between 2 and 3 KiB, and the spawner thread focuses solely on task creation. Therefore, cache locality does not significantly affect the performance. Likewise, the performance advantage of LIFO stealing does not apply to stealing from the spawner, as spawner never removes elements from its local structure. Local structure sizes are held constant at 128 elements. (\todo{ref to justify queue size - generally, don't want too much waiting bc memory pressure, fiber recycling, should only resize when the queue bottoms out})
 
 The results of conducting a test with 50k packets in such a controlled setting are show by figure \ref{fig:packet-50k}. The first panel shows mean processing speed on a logarithmic scale. In the first part of the graph, between 5 and 20 domains, the performance rapidly accelerates with increase in the number of threads. 20 domains witness peak performance by LIFO scheduler and as more threads are added, the performance degrades. At first slowly, then faster beyond 80 domains. FIFO scheduler sees its peak at 80 domains but its performance is also relatively stable between 20 and 80, with a pronounced drop afterwards. This is surprising; adding more resources may not translate to a significant improvement \cite{amdahl} but it should not be detrimental either. Discussed further in \S\ref{section:degradation}. 
 
@@ -822,6 +836,11 @@ Thus, a number of extensions has been implemented and tested.
 
 \todo{Shows that LIFO is better. Of course, we don't just parse a packet and throw it away. Create a little chain of processing jobs to expose the difference latency/throughput trade-off between FIFO and LIFO.}
 
+
+LIFO can actually be better! 
+
+Finally, extra care is required to replicate this result on modern architecture. For example, simply iterating over the whole packet in consecutive task hides the slowness due to automatic memory prefetching - after a few first cache fails, the rest of the packet is going to be loaded into cache before its accessed. This effect naturally breaks down with more complex memory patterns, that microarchitecture cannot predict.   
+
 \subsection{Server benchmark with multi-modal processing latency}
 \label{section:server-bench-with-multi-modal}
 
@@ -852,28 +871,11 @@ potential future work.
 
 \chapter{Technical details, proofs, etc.}
 
-Appendices are for optional materials that is not essential to
-understanding the work, and that the examiners are not expected to
-read, but that will be of value to readers interested in additional,
-in-depth technical detail.
-
 \section{Lorem ipsum}
 
 % Some traditional fake Latin prose for calibrating words/page
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat,
-sed diam voluptua. At vero eos et accusam et justo duo dolores et ea
-rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem
-ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur
-sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
-dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam
-et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea
-takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit
-amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor
-invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.
-At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
-kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit
-amet.
+
 
 \label{lastpage}
 \end{document}

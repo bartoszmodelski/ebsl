@@ -1,17 +1,16 @@
 let premade_buffers =
-  let buffers = 
-    List.init 10 (fun _ -> 
-      Buffer.create 0)
-  in 
-  List.iteri (fun buff_i buffer -> 
-    List.init (2000 + buff_i * 30) (fun i -> 
+  List.init 100 (fun buff_i ->
+    let len = 1000 + buff_i * 1 in 
+    let buffer = Buffer.create len in 
+    for i = 0 to len do
       let c = 
         if i mod (20 + buff_i) = 0 && 0 < i && i < 300 
         then '\n' else '-'
       in
-      Buffer.add_char buffer c) |> ignore) 
-      buffers;
-  buffers;;
+      Buffer.add_char buffer c;
+    done;
+    buffer) 
+  ;;
 let rec find_spaces buffer index bound already_found =
   let index = index + 1 in 
   if index >= bound 
@@ -34,7 +33,7 @@ let get_by_index n ~copy_out =
     Buffer.add_buffer b source;
     b)
   else 
-    source;;
+    Sys.opaque_identity source;;
   
 let get_rand () = 
   let source = List.nth premade_buffers 

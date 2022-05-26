@@ -7,28 +7,64 @@ let log s =
 
 let finished = Atomic.make 0
 
+let do_work packet = 
+  if Random.int 10 < 0
+  then       
+    Digestif.MD5.digest_bytes (Buffer.to_bytes packet) 
+    (* Checkseum.Crc32.digest_bytes (Buffer.to_bytes packet) *)
+    |> Sys.opaque_identity
+    |> ignore  
+  else 
+    for _ = 0 to 20 do
+    let pos = Random.int (Buffer.length packet) in
+    Buffer.nth packet pos
+    |> Sys.opaque_identity
+    |> ignore 
+  done
+;;
+
+
 let run_processor ~copy_out ~n () =
   for _i = 1 to n do 
     let start_time = Core.Time_ns.now () in 
-    Schedulr.Scheduler.schedule (fun () ->
+    Schedulr.Scheduler.schedule (fun () -> 
       let packet = Mock_packet.get_by_index n ~copy_out in
-      let len = Buffer.length packet in 
-      let f from to_ = 
-        Mock_packet.find_spaces packet from to_ [] 
-        |> Sys.opaque_identity 
-        |> ignore
-      in  
-      f 0 len; 
-      let difference = 
-        let difference_ns = 
-        let end_time = Core.Time_ns.now () in 
-        Core.Time_ns.diff end_time start_time 
-        |> Core.Time_ns.Span.to_int_ns 
-        in
-        difference_ns / 1000
-      in 
-      Reporting.Success.local_incr ();
-      Reporting.Histogram.(add_val_log (Per_thread.local_get_hist ()) (difference))) 
+      Schedulr.Scheduler.schedule (fun () ->
+        do_work packet;
+        Schedulr.Scheduler.schedule (fun () ->
+          do_work packet;
+          Schedulr.Scheduler.schedule (fun () ->
+            do_work packet;
+            Schedulr.Scheduler.schedule (fun () ->
+              do_work packet;
+              Schedulr.Scheduler.schedule (fun () ->
+                do_work packet;
+                Schedulr.Scheduler.schedule (fun () ->
+                  do_work packet;
+                  Schedulr.Scheduler.schedule (fun () ->
+                    do_work packet;
+                    Schedulr.Scheduler.schedule (fun () ->
+                      do_work packet;
+                Schedulr.Scheduler.schedule (fun () ->
+                  do_work packet;
+            (* Schedulr.Scheduler.schedule (fun () ->
+              if Random.int 10 > 3 then 
+                ignore (Sys.opaque_identity 
+                  (Digestif.MD5.digest_bytes (Buffer.to_bytes packet))))
+                  |> ignore;  *)
+              Schedulr.Scheduler.schedule (fun () ->
+                do_work packet;
+                let difference = 
+                  let difference_ns = 
+                  let end_time = Core.Time_ns.now () in   
+                  Core.Time_ns.diff end_time start_time 
+                  |> Core.Time_ns.Span.to_int_ns 
+                  in
+                  difference_ns / 1000
+                in 
+                Reporting.Success.local_incr ();
+                Reporting.Histogram.(add_val_log 
+                  (Per_thread.local_get_hist ()) (difference)))))))))))))
     |> ignore;
     (* if _i mod 100 == 0
     then Schedulr.Scheduler.yield () *)
