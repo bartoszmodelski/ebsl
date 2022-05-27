@@ -57,7 +57,7 @@ module Hybrid_random = Scheduler.Make(struct
   include Stack_ext
   
   let local_remove t = 
-    if Random.bool () then
+    if Random.int 10 > 8 then
     steal ~auto_retry:true ~steal_size_limit:1 ~from:t ~to_local:t () |> ignore; 
     local_pop t;;
 
@@ -85,7 +85,7 @@ end)
 module Hybrid_reverse_every_n = Scheduler.Make(struct 
   include Stack_ext
   
-  let threshold = 200
+  let threshold = 512
   let curr_n = ref 0 
   let to_steal = ref 0 
 
