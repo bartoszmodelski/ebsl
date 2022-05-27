@@ -51,15 +51,19 @@
 \contentsline {subsection}{\numberline {4.4.7}Backpressure}{31}{subsection.4.4.7}%
 \contentsline {subsection}{\numberline {4.4.8}Cancellations}{31}{subsection.4.4.8}%
 \contentsline {chapter}{\numberline {5}Implementation}{32}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Core data structure}{32}{section.5.1}%
-\contentsline {section}{\numberline {5.2}MPMC Queue Blocking}{33}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Relaxation to SPMC Queue}{33}{section.5.3}%
-\contentsline {section}{\numberline {5.4}SPMC Queue with stealing}{33}{section.5.4}%
-\contentsline {section}{\numberline {5.5}SPMC Stack with FIFO stealing}{33}{section.5.5}%
-\contentsline {section}{\numberline {5.6}Sharded Queue}{33}{section.5.6}%
-\contentsline {section}{\numberline {5.7}Overflow avoidance}{33}{section.5.7}%
-\contentsline {section}{\numberline {5.8}False sharing}{33}{section.5.8}%
-\contentsline {section}{\numberline {5.9}Limitations}{33}{section.5.9}%
+\contentsline {section}{\numberline {5.1}Implemented Schedulers}{32}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}LIFO Heuristics}{32}{subsection.5.1.1}%
+\contentsline {subsection}{\numberline {5.1.2}Work-stealing Extensions}{32}{subsection.5.1.2}%
+\contentsline {section}{\numberline {5.2}Underlying Data Structures}{32}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Core Data Structure}{32}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}MPMC Queue Blocking}{33}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Relaxation to SPMC Queue}{33}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}SPMC Queue with stealing}{33}{subsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.2.5}SPMC Stack with FIFO stealing}{33}{subsection.5.2.5}%
+\contentsline {subsection}{\numberline {5.2.6}Sharded Queue}{33}{subsection.5.2.6}%
+\contentsline {subsection}{\numberline {5.2.7}Overflow avoidance}{33}{subsection.5.2.7}%
+\contentsline {subsection}{\numberline {5.2.8}False sharing}{33}{subsection.5.2.8}%
+\contentsline {subsection}{\numberline {5.2.9}Limitations}{33}{subsection.5.2.9}%
 \contentsline {chapter}{\numberline {6}Methods}{34}{chapter.6}%
 \contentsline {section}{\numberline {6.1}Hardware}{34}{section.6.1}%
 \contentsline {section}{\numberline {6.2}System}{34}{section.6.2}%
@@ -69,10 +73,10 @@
 \contentsline {chapter}{\numberline {7}Evaluation}{35}{chapter.7}%
 \contentsline {section}{\numberline {7.1}Server benchmark}{35}{section.7.1}%
 \contentsline {subsection}{\numberline {7.1.1}General Case}{35}{subsection.7.1.1}%
-\contentsline {subsubsection}{Degradation}{37}{section*.44}%
-\contentsline {subsubsection}{Extensions}{40}{section*.51}%
+\contentsline {subsubsection}{Degradation}{37}{section*.47}%
+\contentsline {subsubsection}{Extensions}{40}{section*.54}%
 \contentsline {subsection}{\numberline {7.1.2}Server benchmark with cache effects}{41}{subsection.7.1.2}%
-\contentsline {subsection}{\numberline {7.1.3}Server benchmark with multi-modal processing latency}{42}{subsection.7.1.3}%
-\contentsline {chapter}{\numberline {8}Summary and conclusions}{43}{chapter.8}%
-\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{49}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Lorem ipsum}{49}{section.A.1}%
+\contentsline {subsection}{\numberline {7.1.3}Server benchmark with multi-modal processing latency}{43}{subsection.7.1.3}%
+\contentsline {chapter}{\numberline {8}Summary and conclusions}{44}{chapter.8}%
+\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{50}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Lorem ipsum}{50}{section.A.1}%

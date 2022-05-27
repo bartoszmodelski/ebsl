@@ -73,10 +73,10 @@
 \contentsline {chapter}{\numberline {7}Evaluation}{35}{chapter.7}%
 \contentsline {section}{\numberline {7.1}Server benchmark}{35}{section.7.1}%
 \contentsline {subsection}{\numberline {7.1.1}General Case}{35}{subsection.7.1.1}%
-\contentsline {subsubsection}{Degradation}{37}{section*.43}%
-\contentsline {subsubsection}{Extensions}{40}{section*.50}%
+\contentsline {subsubsection}{Degradation}{37}{section*.46}%
+\contentsline {subsubsection}{Extensions}{40}{section*.53}%
 \contentsline {subsection}{\numberline {7.1.2}Server benchmark with cache effects}{41}{subsection.7.1.2}%
-\contentsline {subsection}{\numberline {7.1.3}Server benchmark with multi-modal processing latency}{42}{subsection.7.1.3}%
-\contentsline {chapter}{\numberline {8}Summary and conclusions}{43}{chapter.8}%
-\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{49}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Lorem ipsum}{49}{section.A.1}%
+\contentsline {subsection}{\numberline {7.1.3}Server benchmark with multi-modal processing latency}{43}{subsection.7.1.3}%
+\contentsline {chapter}{\numberline {8}Summary and conclusions}{44}{chapter.8}%
+\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{50}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Lorem ipsum}{50}{section.A.1}%

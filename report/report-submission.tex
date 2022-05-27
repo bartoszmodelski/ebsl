@@ -498,6 +498,12 @@ Last in, first out regime takes the opposite approach and always attempts to sch
 
 These two fundamental strategies highlight the common trade-off between throughput and latency in scheduling (\ref{section:objectives}), which stems directly from policy on the lowest level: prioritising either oldest task (for latency) or newest (for locality). 
 
+\todo{actually LIFO can be better for latency too! depends on hte shape of the tree}
+\todo{LIFO is fair between subtrees while FIFO is fair between tasks. And we treat a task as a unit of work.}
+
+Fairness is defined here alittle differently than e.g. fairness between long-lived processes.
+
+
 \subsection{Hybrid}
 As discussed in the previous section (\ref{section:ordering}), FIFO and LIFO regimes prioritize fundamentally different metrics. A natural next step is an attempt at amalgamation of the two approaches to identify new points in the trade-off plane and, perhaps, generalize or move towards an adaptable policy. The following heuristic were chosen for evaluation: 
 
@@ -663,7 +669,7 @@ Therefore, this thesis relies on a lock-free structure inspired by \citet{Kappes
 \end{itemize}
 
 
-
+\todo{describe fast local queue}
 
 
 \subsection{MPMC Queue Blocking}
@@ -837,6 +843,25 @@ Thus, a number of extensions has been implemented and tested.
 \todo{Shows that LIFO is better. Of course, we don't just parse a packet and throw it away. Create a little chain of processing jobs to expose the difference latency/throughput trade-off between FIFO and LIFO.}
 
 
+
+\begin{figure} 
+    \centering 
+    \includegraphics[width=0.85\textwidth]{eval/packet-basic-lifo-better.png}
+    \caption{The throughput achieved on packet processing benchmark with 500k packets and 10 spawners. The benchmark was modified to have a non-trivial cache effect. Once the task was processed as in the original benchmark, it would spawn a chain of 10 tasks. Each task reads 20 with each reading 20 random bytes from the packet buffer, what simulates picking out different parts of the received data at different stages. LIFO offers a very clear throughput advantage (shown in the figure) and median-tail latency improvement.}
+   \label{fig:packet-lifo-better}
+\end{figure}
+
+Naturally, 
+
+\begin{figure} 
+    \centering 
+    \includegraphics[width=0.85\textwidth]{eval/packet-basic-fifo-better.png}
+    \caption{The throughput achieved on packet processing benchmark with 100k packets and 10 spawners. The benchmark has a weaker cache effect than \ref{fig:packet-lifo-better} but still significant enough for LIFO to have a better throughput. However, there is a 0.1\% chance that packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO clearly offers a much better tail latency for most domain-counts in such a scenario. For example, at 115 domains LIFO saves over 30\% of tail latency.}
+   \label{fig:packet-fifo-better}
+\end{figure}
+
+
+
 LIFO can actually be better! 
 
 Finally, extra care is required to replicate this result on modern architecture. For example, simply iterating over the whole packet in consecutive task hides the slowness due to automatic memory prefetching - after a few first cache fails, the rest of the packet is going to be loaded into cache before its accessed. This effect naturally breaks down with more complex memory patterns, that microarchitecture cannot predict.   
@@ -847,7 +872,8 @@ Finally, extra care is required to replicate this result on modern architecture.
 \todo{Show that FIFO is better. Say, query needs to be handled internally or routed externally}.
 
 
-
+\todo{show heuristics at 120 cores!}
+\todo{show staged at 120 cores!}
 
 
 
