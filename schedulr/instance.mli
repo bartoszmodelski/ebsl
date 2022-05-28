@@ -22,3 +22,7 @@ end
 module Hybrid_reverse_every_n : sig
   include Scheduler.S
 end
+
+module FIFO_with_slot : sig  
+  include Scheduler.S 
+end

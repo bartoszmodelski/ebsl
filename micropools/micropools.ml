@@ -1,4 +1,4 @@
-module Scheduler = Schedulr.Instance.FIFO
+module Scheduler = Schedulr.Instance.LIFO
 
 let pools = Atomic.make (Hashtbl.create 10 : (String.t, Scheduler.t) Hashtbl.t)
 
@@ -16,7 +16,7 @@ let schedule ?(pool_size=1) ?pool_name f =
         Mutex.lock creator_mtx; 
         let copied_pools = Hashtbl.copy (Atomic.get pools) in 
         let pool = 
-          Printf.printf "starting micropool %s (sz:%d)\n" pool_name pool_size;
+          (* Printf.printf "starting micropool %s (sz:%d)\n" pool_name pool_size;*)
           Stdlib.(flush stdout);
           Scheduler.init ~afterwards:`return ~f:(fun () -> ()) pool_size
         in

@@ -56,9 +56,9 @@ end)
 module Hybrid_random = Scheduler.Make(struct 
   include Stack_ext
   
-  let local_remove t = 
-    if Random.int 10 > 8 then
-    steal ~auto_retry:true ~steal_size_limit:1 ~from:t ~to_local:t () |> ignore; 
+  let local_remove t =  
+    if Random.int 20 > 9 then
+    steal ~from:t ~steal_size_limit:1 ~to_local:t () |> ignore; 
     local_pop t;;
 
   let name = "Hybrid_random"
@@ -85,7 +85,7 @@ end)
 module Hybrid_reverse_every_n = Scheduler.Make(struct 
   include Stack_ext
   
-  let threshold = 512
+  let threshold = 128
   let curr_n = ref 0 
   let to_steal = ref 0 
 
@@ -104,4 +104,31 @@ module Hybrid_reverse_every_n = Scheduler.Make(struct
     local_pop t;;
 
   let name = "Hybrid_reverse_every_n"
+end)
+
+
+module FIFO_with_slot = Scheduler.Make(struct 
+  include Datastructures.Spmc_queue
+  
+  let local_insert queue item = 
+    match get_slot queue with 
+    | None -> 
+      (set_slot queue (Some item);
+      true)
+    | Some old_item -> 
+      if local_enqueue queue old_item then 
+      (set_slot queue (Some item); true)
+      else false;;
+
+  let local_remove queue = 
+    match get_slot queue with 
+    | None -> local_dequeue queue 
+    | Some item -> 
+      (set_slot queue None;
+      Some item);;
+
+  let local_insert_after_preemption = local_enqueue  
+
+  let global_steal = steal
+  let name = "FIFO_with_slot"
 end)

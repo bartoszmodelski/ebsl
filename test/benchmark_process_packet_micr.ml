@@ -36,34 +36,30 @@ let finish start_time =
 let run_processor ~copy_out ~n () =
   for _i = 1 to n do 
     let start_time = Core.Time_ns.now () in 
-    Schedulr.Scheduler.schedule (fun () -> 
+    Micropools.schedule (fun () -> 
       let packet = Mock_packet.get_by_index n ~copy_out in
-      Schedulr.Scheduler.schedule (fun () ->
+      Micropools.schedule (fun () ->
         do_work packet;
-        Schedulr.Scheduler.schedule (fun () ->
+        Micropools.schedule (fun () ->
           do_work packet;
-
-                        Schedulr.Scheduler.schedule (fun () ->
-                        if Random.int 1000 > 1
-                        then   
-        
-                          (do_work packet;
-                          finish start_time) 
-                        else 
-                          Schedulr.Scheduler.schedule (fun () -> 
-                            do_heavy_work packet;
-                            Schedulr.Scheduler.schedule (fun () -> 
-                              do_heavy_work packet;
-                              finish start_time) 
-                            ) |> ignore;
-                            ) |> ignore
+            Micropools.schedule (fun () ->
+            if Random.int 1000 > 1
+            then   
+              (do_work packet;
+              finish start_time) 
+            else 
+              Micropools.schedule ~pool_name:"side" (fun () -> 
+                do_heavy_work packet;
+                Micropools.schedule (fun () -> 
+                  do_heavy_work packet;
+                  finish start_time)) 
+                |> ignore;
+              ) |> ignore
                           
     ) |> ignore ) |> ignore) |> ignore
     (* if _i mod 100 == 0
-    then Schedulr.Scheduler.yield () *)
-  done;
-  Schedulr.Scheduler.schedule (fun () -> ())
-;;
+    then Micropools.yield () *)
+  done;;
 let items_total = ref 1_000_000 
 
 let workload ~num_of_spawners () =
@@ -72,12 +68,11 @@ let workload ~num_of_spawners () =
   let time_start = Core.Time_ns.now () in 
   let _ = 
     for _ = 1 to num_of_spawners do 
-      Schedulr.Scheduler.schedule (run_processor ~copy_out:true ~n:items_per_worker)
+      Micropools.schedule (run_processor ~copy_out:true ~n:items_per_worker)
       |> ignore
     done;
-    Schedulr.Scheduler.schedule (fun () -> ()) |> ignore;
     while Reporting.Success.unsafe_sum () < num_of_spawners * items_per_worker do 
-      (* Schedulr.Scheduler.yield () *) ()
+      (* Micropools.yield () *) ()
     done; 
     Reporting.Success.unsafe_zero_out ()
   in
@@ -90,40 +85,49 @@ let workload ~num_of_spawners () =
 
 let iterations = ref 11
 
-let benchmark ~num_of_domains ~num_of_spawners ~dist_policy (module Sched : Schedulr.Scheduler.S) =
+let benchmark ~num_of_domains ~num_of_spawners ~dist_policy:_ (module Sched : Schedulr.Scheduler.S) =
   Printf.printf "{\"sched\":\"%s\",\"spawners\":\"%d\",\"domains\":\"%d\",\"items_total\":%d,\"data\":[\n"
     Sched.scheduler_name
     num_of_spawners
     num_of_domains
     !items_total;
-  Sched.init (num_of_domains-1) ?work_distribution_strategy:dist_policy ~f:(fun () ->
-    for i = 1 to !iterations do 
-      Printf.printf "{\"iteration\":%d,\n" i;
-      Unix.sleepf 0.1;
-      Sched.Stats.unsafe_zero_steal_attempts ();
-      let _ = workload ~num_of_spawners () in 
-      Sched.Stats.unsafe_print_steal_attempts ();
-      Unix.sleepf 0.1;
-      if Sched.pending_tasks () != 0  
-      then assert false; 
-      Sched.Stats.unsafe_print_waited_for_space_on_enque ();
-      Sched.Stats.unsafe_print_executed_tasks ();
-      let () = 
-        let open Reporting.Histogram in 
-        let hist = Per_thread.all () in 
-        (dump hist);
-        Printf.printf "\"latency_median\":%d,\n\"latency_three_nine\":%d\n" 
-          (quantile ~quantile:0.5 hist)
-          (quantile ~quantile:0.999 hist);
-        Reporting.Histogram.Per_thread.zero_out ();
-      in
-      Printf.printf "}";
-      if i < !iterations 
-      then Printf.printf ",\n"; 
-    done; 
-    Printf.printf "]}\n"; 
-    Stdlib.flush_all ();
-    Stdlib.exit 0) |> ignore;;
+    let main_size = num_of_domains in 
+    let side_size = 115 - main_size in
+    Micropools.schedule ~pool_size:main_size ~pool_name:"main" (fun () -> ());
+    Micropools.schedule ~pool_size:side_size ~pool_name:"side" (fun () -> ());
+    Unix.sleepf 0.01;
+    let finished = Atomic.make false in 
+    (* Sched.init ~afterwards:`return ~f:(fun () -> ()) 1 |> ignore; *)
+    Micropools.schedule ~pool_name:"main" (fun () ->
+      for i = 1 to !iterations do 
+        Printf.printf "{\"iteration\":%d,\n" i;
+        Unix.sleepf 0.3;
+        Sched.Stats.unsafe_zero_steal_attempts ();
+        let _ = workload ~num_of_spawners () in 
+        Sched.Stats.unsafe_print_steal_attempts ();
+        Sched.Stats.unsafe_print_waited_for_space_on_enque ();
+        Sched.Stats.unsafe_print_executed_tasks ();
+        let () = 
+          let open Reporting.Histogram in 
+          let hist = Per_thread.all () in 
+          (dump hist);
+          Printf.printf "\"latency_median\":%d,\n\"latency_three_nine\":%d\n" 
+            (quantile ~quantile:0.5 hist)
+            (quantile ~quantile:0.999 hist);
+          Reporting.Histogram.Per_thread.zero_out ();
+        in
+        Printf.printf "}";
+        if i < !iterations 
+        then Printf.printf ",\n"; 
+      done; 
+      Printf.printf "]}\n"; 
+      Stdlib.flush_all ();
+      Atomic.set finished true;
+      Stdlib.exit 0) |> ignore;
+    while not (Atomic.get finished) do 
+      Unix.sleep 1;
+    done;
+    ;;
 
 (* cmd *)
 
@@ -136,7 +140,7 @@ let () =
   let dist_policy = ref "" in 
   let speclist =
     [("-scheduler", Arg.Set_string scheduler, "set scheduler algo");
-    ("-num-of-domains", Arg.Set_int num_of_domains, "set num of domains");
+    ("-num-of-domains", Arg.Set_int num_of_domains, "set num of domains in the main pool");
     ("-items-total", Arg.Set_int items_total, "set total items");
     ("-num-of-spawners", Arg.Set_int num_of_spawners, "set num of spawners");
     ("-iterations", Arg.Set_int iterations, "set num of iterations");

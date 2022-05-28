@@ -19,7 +19,12 @@ type 'a t = {
   mask : int Atomic.t;
   array : 'a option Atomic.t Array.t Atomic.t;
   owned_by_id: Domain.id option ref;
+  slot: 'a option ref;
 } 
+
+let get_slot {slot; _ } = !slot;;
+let set_slot {slot; _} new_item = 
+  slot := new_item;;
 
 let init ?(size_exponent=7) () =
   let size_exponent = 
@@ -32,7 +37,8 @@ let init ?(size_exponent=7) () =
     tail = Atomic.make 0;
     mask = Atomic.make (size - 1);
     array = Atomic.make (Array.init size (fun _ -> Atomic.make None));
-    owned_by_id = ref None}
+    owned_by_id = ref None;
+    slot = ref None}
 
 (* Cautionary check because debugging broken 'local' invariant 
   is hard. *)
@@ -122,7 +128,7 @@ let rec local_enqueue_with_resize t element =
     then local_resize t;
     local_enqueue_with_resize t element;;
 
-let local_dequeue {head; tail; mask; array; owned_by_id} : 'a option =
+let local_dequeue {head; tail; mask; array; owned_by_id; _} : 'a option =
   assert_domain_id "deq" owned_by_id;
   let (mask,array) = Atomic.(get mask, get array) in 
   (* local deque is optimistic because it can fix its mistake if needed *)
