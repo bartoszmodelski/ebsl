@@ -740,6 +740,8 @@ mention thread limit in ocaml
 reject first sample lazy loading and caches
 
 how many times executed
+
+performance sensitive data was collected on thread-local counters
 \section{Statistical Methods}
 
 look for extra variance
@@ -790,8 +792,6 @@ Overall, it shows that both implementation are fairly balanced and a good founda
 \label{section:degradation}
 In line with Amdahl's law \cite{amdahl}, it is generally expected that an application may not perform better with more resources. After all, scalability is something to explicitely design for and even then, may not always be possible \todo{ref to hash chain example}. However, there is no justification for more workers actually causing harm to the performance. Such a characteristic is highly undesirable in such a foundational system as scheduler. However, why would it arise in such a battle-tested idea as work stealing? 
 
-
-
 \begin{figure} 
      \centering
      \includegraphics[width=0.85\textwidth]{eval/packet-basic-with-steal-counts2.png}
@@ -810,7 +810,7 @@ In the LIFO case, as shown by \ref{fig:packet-with-steal-counts}, the scheduler 
     \label{fig:packet-counters}
 \end{figure}
 
-In the FIFO case, the problem also relates to work distribution. Generally, FIFO is not able to steal as much as LIFO because all steals compete with local dequeues, and, by design, those steals tend to lose the race \todo{ref to implementation}. Therefore, while stealing alone is not maxed out, it significantly affects the rest of the logic. As shown by figure \ref{fig:packet-counters}, FIFO reaches over 2.5 stalls per instruction beyond 80 domains and this number keeps raising. The effect is also visible for LIFO  but its pressure on the entire caching subsystem is much subtler.
+In the FIFO case, the problem also relates to work distribution. Generally, FIFO is not able to steal as much as LIFO because all steals compete with local dequeues, and, by design, those steals tend to lose the race \todo{ref to implementation}. Therefore, while stealing alone is not maxed out, it significantly affects the rest of the logic. As shown by figure \ref{fig:packet-counters}, FIFO reaches over 2.5 stalls per instruction beyond 80 domains and this number keeps raising. The effect is also visible for LIFO but its pressure on the entire caching subsystem is much subtler.
 
 
 Finally, it is worth stating that this result should not be interpreted as work stealing being generally inappropriate for saturating 100 cores. Packet benchmark creates a short burst of 50k items, which reaches a throughput of over 1.5m items per second. Each task has its own logic and requires allocations but it does constitute a very fine-grained concurrency. That puts a high pressure on the scheduler and exposes its inefficiencies. Further, there is an unusual amount of distribution required. It is far easier to distribute tasks onto 10 threads than 100 due to e.g. atomic operations taking constant time and load information is being less dispersed. If the workload is simplified just a little, the scalability improves. 
@@ -877,7 +877,7 @@ Finally, scalable overflow structures (lock-free queue, multi-queue) and advance
    \label{fig:packet-lifo-better}
 \end{figure}
 
-This section presents results of a slightly more complicated workload, wherein once the packet is parsed, its contents are passed to the business logic. Namely, each packet from the general case benchmark (\S\ref{section:benchmark-general-case}) also spawns a 10-sequence of consecutive tasks. Each reads 20 random locations in the packet or does a simple computation (checksum), and spawns its child. That's until the depth of 10 is reached. The results are shown by figure \ref{fig:packet-lifo-better}. Such a workload naturally favours LIFO, which can make a much better use of hierarchical memory and reduce cache misses. Thus, achieved throughput is far superior with LIFO ordering. Further, in line with the mechanics described in \S\ref{section:fairness-revisited}, using LIFO also significantly improves tail latencies.
+This section presents results of a more complicated workload, wherein once the packet is parsed, its contents are passed to the business logic. Namely, each packet from the general case benchmark (\S\ref{section:benchmark-general-case}) also spawns a 10-sequence of consecutive tasks. Each reads 20 random locations in the packet or does a simple computation (checksum), and spawns its child. That's until the depth of 10 is reached. Moreover, there are 5 spawners instead of 1, and individual queue sizes have been increased to 1024 to accommodate that. The results are shown by figure \ref{fig:packet-lifo-better}. Such a workload naturally favours LIFO, which can make a much better use of hierarchical memory and reduce cache misses. Thus, achieved throughput is far superior with LIFO ordering. Further, in line with the mechanics described in \S\ref{section:fairness-revisited}, using LIFO also significantly improves tail latencies.
 
 Notably, extra care is required to replicate this result on modern architecture. For example, simple iteration over the packet in consecutive task does not experience memory inefficiencies due automatic memory prefetching. After a few first cache fails, the rest of the packet is going to be loaded into cache preemptively. This effect breaks down with any more complex memory patterns, which microarchitecture cannot predict.   
 
@@ -904,14 +904,22 @@ that strongly favours FIFO. Notably, the workload is still locality-sensitive bu
 \begin{figure} 
     \centering 
     \includegraphics[width=0.85\textwidth]{eval/packet-basic-base-hybrids.png}
-    \caption{todo!!!.}
+    \caption{The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits.}
    \label{fig:packet-hybrids}
 \end{figure}
 
 Finally, a number of other approaches described in \S\ref{section:impl-schedulers} has been tested. See figure \ref{fig:packet-hybrids}. Staged architecture was the only one to offer a useful point in the trade-off space, in the form of significantly superior tail latency at the cost of throughput. This gain stems from having a pool of threads dedicated directly to processing the lightweight tasks. The fall in throughput is difficult to avoid in a workload that work stealing is able to scale efficiently. Nonetheless, if the final task was lighter, it is possible for staged architecture to improve on both metrics, as observed with artifical benchmarks. 
 
 \section{Mixer benchmark}
+yielding, promises, overflow queue, short-lived tasks, long-lived tasks, lots of tasks at any given point in time
 
+very concurrent - queue size important 
+
+not perfectly optimized, mostly a convenient implementation using available primivites
+
+
+
+Details would vary over time, e.g. number of calls, numbre of calls in a mixer (conference), length of calls, ratio of codecs, amount of signalling, traffic routed directly between parties (VoIP-to-VoIP) etc. But it would be great to have a robust scheduling baseline! 
 \chapter{Summary and conclusions}
 
 As you might imagine: summarizes the dissertation, and draws any

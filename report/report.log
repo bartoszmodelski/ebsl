@@ -1,6 +1,7 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  28 MAY 2022 16:29
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  28 MAY 2022 17:32
 entering extended mode
  restricted \write18 enabled.
+ file:line:error style messages enabled.
  %&-line parsing enabled.
 **report.tex
 (./report.tex
@@ -791,10 +792,10 @@ Chapter 7.
 File: eval/packet-basic-with-steal-counts2std.png Graphic file (type png)
 <use eval/packet-basic-with-steal-counts2std.png>
 Package pdftex.def Info: eval/packet-basic-with-steal-counts2std.png  used on i
-nput line 772.
+nput line 774.
 (pdftex.def)             Requested size: 386.96027pt x 713.41559pt.
 
-LaTeX Warning: Float too large for page by 9.01306pt on input line 775.
+LaTeX Warning: Float too large for page by 9.01306pt on input line 777.
 
 [39
 
@@ -803,7 +804,7 @@ LaTeX Warning: Float too large for page by 9.01306pt on input line 775.
 File: eval/packet-basic-with-steal-counts2.png Graphic file (type png)
 <use eval/packet-basic-with-steal-counts2.png>
 Package pdftex.def Info: eval/packet-basic-with-steal-counts2.png  used on inpu
-t line 797.
+t line 799.
 (pdftex.def)             Requested size: 386.96027pt x 142.13206pt.
  [41]
 
@@ -812,7 +813,7 @@ LaTeX Warning: Marginpar on page 42 moved.
 <eval/packet-basic-counters.png, id=833, 716.1957pt x 263.0628pt>
 File: eval/packet-basic-counters.png Graphic file (type png)
 <use eval/packet-basic-counters.png>
-Package pdftex.def Info: eval/packet-basic-counters.png  used on input line 808
+Package pdftex.def Info: eval/packet-basic-counters.png  used on input line 810
 .
 (pdftex.def)             Requested size: 386.96027pt x 142.13206pt.
 
@@ -823,14 +824,14 @@ LaTeX Warning: Marginpar on page 42 moved.
 File: eval/packet-basic-10million-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-10million-just-throughput.png>
 Package pdftex.def Info: eval/packet-basic-10million-just-throughput.png  used 
-on input line 820.
+on input line 822.
 (pdftex.def)             Requested size: 386.96027pt x 138.57164pt.
 [42 <./eval/packet-basic-with-steal-counts2.png> <./eval/packet-basic-counters.
 png>]
 <eval/packet-basic-slowed_2.png, id=848, 717.6411pt x 263.0628pt>
 File: eval/packet-basic-slowed_2.png Graphic file (type png)
 <use eval/packet-basic-slowed_2.png>
-Package pdftex.def Info: eval/packet-basic-slowed_2.png  used on input line 828
+Package pdftex.def Info: eval/packet-basic-slowed_2.png  used on input line 830
 .
 (pdftex.def)             Requested size: 386.96027pt x 141.84708pt.
 <eval/packet-basic-4spawners-just-throughput.png, id=849, 717.6411pt x 263.0628
@@ -838,7 +839,7 @@ pt>
 File: eval/packet-basic-4spawners-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-4spawners-just-throughput.png>
 Package pdftex.def Info: eval/packet-basic-4spawners-just-throughput.png  used 
-on input line 836.
+on input line 838.
 (pdftex.def)             Requested size: 386.96027pt x 141.84708pt.
  [43 <./eval/packet-basic-10million-just-throughput.png> <./eval/packet-basic-s
 lowed_2.png> <./eval/packet-basic-4spawners-just-throughput.png>]
@@ -850,27 +851,27 @@ t>
 File: eval/packet-basic-distribution10-granular.png Graphic file (type png)
 <use eval/packet-basic-distribution10-granular.png>
 Package pdftex.def Info: eval/packet-basic-distribution10-granular.png  used on
- input line 858.
+ input line 860.
 (pdftex.def)             Requested size: 386.96027pt x 255.55278pt.
 [44 <./eval/packet-basic-distribution10-granular.png>]
 <eval/packet-basic-lifo-better.png, id=874, 771.1209pt x 286.1892pt>
 File: eval/packet-basic-lifo-better.png Graphic file (type png)
 <use eval/packet-basic-lifo-better.png>
 Package pdftex.def Info: eval/packet-basic-lifo-better.png  used on input line 
-875.
+877.
 (pdftex.def)             Requested size: 386.96027pt x 143.61826pt.
 <eval/packet-basic-fifo-better.png, id=878, 831.46635pt x 251.86095pt>
 File: eval/packet-basic-fifo-better.png Graphic file (type png)
 <use eval/packet-basic-fifo-better.png>
 Package pdftex.def Info: eval/packet-basic-fifo-better.png  used on input line 
-889.
+891.
 (pdftex.def)             Requested size: 386.96027pt x 117.21788pt.
  [45 <./eval/packet-basic-lifo-better.png>]
 <eval/packet-basic-base-hybrids.png, id=889, 823.51665pt x 254.3904pt>
 File: eval/packet-basic-base-hybrids.png Graphic file (type png)
 <use eval/packet-basic-base-hybrids.png>
 Package pdftex.def Info: eval/packet-basic-base-hybrids.png  used on input line
- 906.
+ 908.
 (pdftex.def)             Requested size: 386.96027pt x 119.53632pt.
  [46 <./eval/packet-basic-fifo-better.png> <./eval/packet-basic-base-hybrids.pn
 g>] [47]
@@ -940,7 +941,7 @@ public/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 /amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
 ts/cm/cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmtt12.pfb>
-Output written on report.pdf (54 pages, 1330278 bytes).
+Output written on report.pdf (54 pages, 1330527 bytes).
 PDF statistics:
  1118 PDF objects out of 1200 (max. 8388607)
  997 compressed objects within 10 object streams

@@ -2,16 +2,16 @@ open EffectHandlers
 open EffectHandlers.Deep 
 
 module Multi_queue_3 = Datastructures.Multi_mpmc_queue.Make(struct 
-  let num_of_queues = 10
+  let num_of_queues = 20
 end) 
 
 
 
 (* module Custom_queue = Datastructures.Mpmc_queue *)
+(*  *)
 
+(* module Custom_queue = Datastructures.Lock_queue *)
 module Custom_queue = Multi_queue_3 
-
-(* module Custom_queue = Datastructures.Mpmc_queue *)
 
 let _ = Printexc.record_backtrace true
 
@@ -105,7 +105,7 @@ module Make (DS : DataStructure) = struct
       waited_for_space_on_enque := 0;;
 
     let take_from {steal_attempts; suggest_steal; _} global_requesting_queue = 
-      let force_use_queue = Random.int 100 < 50 in 
+      let force_use_queue = Random.int 100 < 80 in 
       let steal_or_f v = 
         steal_attempts := !steal_attempts + 1;
         if !steal_attempts mod 4 > 2 then 
@@ -167,9 +167,10 @@ module Make (DS : DataStructure) = struct
 
   type t = {
     global_queue : Task.t Custom_queue.t;
+    all_processors : Processor.t Array.t;
   }
 
-  let inject_task {global_queue} f = 
+  let inject_task {global_queue;_} f = 
     Custom_queue.enqueue global_queue (Task.new_task f)
 
   let domain_key = Domain.DLS.new_key 
@@ -440,7 +441,7 @@ module Make (DS : DataStructure) = struct
     (* run f from within the pool *)
     match afterwards with
     | `return -> 
-      {global_queue}
+      {global_queue;all_processors}
     | `join_the_pool -> 
       let processor = Array.get all_processors n in 
       let context = 
@@ -449,12 +450,17 @@ module Make (DS : DataStructure) = struct
       in 
       notify_user (setup_domain context) ();;
 
-  let pending_tasks () = 
-    with_context (fun ({all_processors; _} : Context.t) -> 
+
+  let pending_tasks {all_processors; _} = 
       Array.fold_right 
         (fun processor curr -> 
           (DS.indicative_size (Processor.ds processor)) + curr) 
-      all_processors 0)
+      all_processors 0;;
+
+  let local_pending_tasks () = 
+    with_context (fun ({all_processors; global_queue; _} : Context.t) -> 
+      pending_tasks ({all_processors; global_queue} : t) )
+
 
   module Stats = struct 
     let unsafe_print_executed_tasks () =
@@ -511,7 +517,8 @@ module type S = sig
     -> t
   val inject_task : t -> (unit -> unit) -> unit
 
-  val pending_tasks : unit -> int
+  val local_pending_tasks : unit -> int
+  val pending_tasks : t -> int
   val scheduler_name : String.t
   module Stats : sig 
     val unsafe_print_executed_tasks : unit -> unit

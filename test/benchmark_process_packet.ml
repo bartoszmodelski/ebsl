@@ -104,7 +104,7 @@ let benchmark ~num_of_domains ~num_of_spawners ~dist_policy (module Sched : Sche
       let _ = workload ~num_of_spawners () in 
       Sched.Stats.unsafe_print_steal_attempts ();
       Unix.sleepf 0.1;
-      if Sched.pending_tasks () != 0  
+      if Sched.local_pending_tasks () != 0  
       then assert false; 
       Sched.Stats.unsafe_print_waited_for_space_on_enque ();
       Sched.Stats.unsafe_print_executed_tasks ();

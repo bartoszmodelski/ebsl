@@ -29,7 +29,8 @@ module type S = sig
 
   val inject_task : t -> (unit -> unit) -> unit
 
-  val pending_tasks : unit -> int
+  val local_pending_tasks : unit -> int
+  val pending_tasks : t -> int
   val scheduler_name : String.t
   module Stats : sig 
     val unsafe_print_executed_tasks : unit -> unit

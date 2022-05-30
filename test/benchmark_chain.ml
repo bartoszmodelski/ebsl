@@ -56,7 +56,7 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
       Unix.sleepf 0.1;
       workload ~num_of_spawners (); 
       Unix.sleepf 0.1;
-      if Sched.pending_tasks () != 0  
+      if Sched.local_pending_tasks () != 0  
       then assert false; 
       Sched.Stats.unsafe_print_executed_tasks ();
     done; 

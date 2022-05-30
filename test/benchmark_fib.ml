@@ -66,7 +66,7 @@ let benchmark ~domains ~n_jobs (module Sched : Schedulr.Scheduler.S) =
           (end_minor_words -. start_minor_words)
           (end_major_words -. start_major_words)
       in
-      while Sched.pending_tasks () != 0 do 
+      while Sched.local_pending_tasks () != 0 do 
         Unix.sleepf 0.1;
       done;
       Stdlib.flush_all ();
