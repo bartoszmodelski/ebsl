@@ -1,4 +1,4 @@
-\begin{thebibliography}{49}
+\begin{thebibliography}{51}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -211,6 +211,14 @@ C.~Igel and M.~Toussaint.
 \newblock \doi{10.1007/s10852-005-2586-y}.
 \newblock URL \url{https://doi.org/10.1007/s10852-005-2586-y}.
 
+\bibitem[Kappes and Anastasiadis(2021)]{Kappes2021}
+G.~Kappes and S.~V. Anastasiadis.
+\newblock A lock-free relaxed concurrent queue for fast work distribution.
+\newblock In \emph{Proceedings of the 26th {ACM} {SIGPLAN} Symposium on
+  Principles and Practice of Parallel Programming}. {ACM}, Feb. 2021.
+\newblock \doi{10.1145/3437801.3441583}.
+\newblock URL \url{https://doi.org/10.1145/3437801.3441583}.
+
 \bibitem[Karmani et~al.(2011)Karmani, Agha, Squillante, Seiferas, Brezina, Hu,
   Tuminaro, Sanders, Tr\"{a}ffe, Geijn, Tr\"{a}ff, Geijn, Sander, Gustafson,
   Dror, Young, Shaw, Lin, Lee, Chang, Kuan, Kollias, Grama, Li, Whaley, and
@@ -358,6 +366,12 @@ D.~L. Tennenhouse.
 \newblock Layered multiplexing considered harmful.
 \newblock In \emph{In First International Workshop on High Speed Networking},
   1989.
+
+\bibitem[Twilio()]{Frequent1:online}
+Twilio.
+\newblock Frequently asked questions | twilio.
+\newblock \url{https://www.twilio.com/docs/stun-turn/faq}.
+\newblock (Accessed on 05/30/2022).
 
 \bibitem[Welsh et~al.(2001)Welsh, Culler, and Brewer]{Welsh2001}
 M.~Welsh, D.~Culler, and E.~Brewer.

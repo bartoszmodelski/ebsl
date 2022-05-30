@@ -78,6 +78,7 @@
 \contentsline {subsection}{\numberline {7.1.3}Server benchmark with multi-modal processing latency}{45}{subsection.7.1.3}%
 \contentsline {subsubsection}{Other schedulers}{46}{section*.53}%
 \contentsline {section}{\numberline {7.2}Mixer benchmark}{47}{section.7.2}%
+\contentsline {section}{\numberline {7.3}Option Pricer}{47}{section.7.3}%
 \contentsline {chapter}{\numberline {8}Summary and conclusions}{48}{chapter.8}%
 \contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{54}{appendix.A}%
 \contentsline {section}{\numberline {A.1}Lorem ipsum}{54}{section.A.1}%

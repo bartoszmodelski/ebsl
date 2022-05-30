@@ -116,28 +116,26 @@ let workload ~n_mixers () =
   Array.iter (fun finished -> 
     while not (Atomic.get finished) do () done) indicators;;
 
-
-let schedulers_count = ref 1
-
-let benchmark ~domains:_ ~n_mixers (module Sched : Schedulr.Scheduler.S) = 
+let benchmark ~n_mixers (module Sched : Schedulr.Scheduler.S) = 
   Reporting.Success.init 128;
   Micropools.schedule ~pool_size:30 ~pool_name:"mixers" (fun () -> ());
   Micropools.schedule ~pool_size:20 ~pool_name:"send_legs" (fun () -> ());
   Micropools.schedule ~pool_size:50 ~pool_name:"receive_legs" (fun () -> ());
   Printf.printf "{\"data\":[\n";
+  let skip = 1 in
   for i = 0 to 10 do 
-    if i > 2 then
+    if i > skip then
     Printf.printf "{\"iteration\":%d," i;
     Unix.sleepf 0.1;
     Reporting.Success.unsafe_zero_out ();
     workload ~n_mixers ();
     let breach_count = Reporting.Success.unsafe_sum () in 
     Unix.sleepf 0.1;
-    if i > 0 
+    if i > skip 
     then Printf.printf "\"breaches-rate\":%f}" 
       (Int.to_float (breach_count / n_mixers / n_legs_const) /. 
       (Int.to_float n_packets_const));
-    if 0 < i && i < 10 
+    if skip < i && i < 10 
     then Printf.printf ",\n";
     Stdlib.flush_all ();
   done;
@@ -149,18 +147,13 @@ let () =
   let usage_msg = "benchmark -scheduler (FIFO|LIFO)" in 
   let anon_fun _ = failwith "no anon parameters expected" in
   let scheduler = ref "" in
-  let num_of_domains = ref 0 in 
   let num_of_spawners = ref 0 in 
   let speclist =
     [("-scheduler", Arg.Set_string scheduler, "set scheduler algo");
-    ("-num-of-domains", Arg.Set_int num_of_domains, "set num of domains");
-    ("-num-of-spawners", Arg.Set_int num_of_spawners, "set num of spawners");
-    ("-num-of-scheds", Arg.Set_int schedulers_count, "set num of schedulers")] 
+    ("-num-of-spawners", Arg.Set_int num_of_spawners, "set num of spawners")] 
   in 
   Arg.parse speclist anon_fun usage_msg;
   let scheduler_module = Flags.parse_sched scheduler in 
-  assert (0 < !num_of_domains && !num_of_domains < 512);
   assert (0 < !num_of_spawners);
-  let domains = !num_of_domains in
   let n_mixers = !num_of_spawners in 
-  benchmark ~domains ~n_mixers scheduler_module;;
+  benchmark ~n_mixers scheduler_module;;

@@ -301,6 +301,7 @@
 \citation{async_kernel}
 \citation{async_kernel}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.4.5}Promise}{32}{subsection.4.4.5}\protected@file@percent }
+\newlabel{section:promise}{{4.4.5}{32}{Promise}{subsection.4.4.5}{}}
 \@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ ref to repo}{32}{section*.37}\protected@file@percent }
 \pgfsyspdfmark {pgfid161}{7572337}{41859027}
 \pgfsyspdfmark {pgfid162}{1204675}{41873772}
@@ -422,10 +423,19 @@
 \newlabel{section:server-bench-with-multi-modal}{{7.1.3}{45}{Server benchmark with multi-modal processing latency}{subsection.7.1.3}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {7.9}{\ignorespaces The throughput achieved on packet processing benchmark with 100k packets and 10 spawners. The benchmark has a weaker cache effect than \ref  {fig:packet-lifo-better} but still significant enough for LIFO to have a better throughput. However, there is a 0.1\% chance that packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO clearly offers a much better tail latency for most domain-counts in such a scenario. For example, at 115 domains LIFO saves over 30\% of tail latency.}}{46}{figure.7.9}\protected@file@percent }
 \newlabel{fig:packet-fifo-better}{{7.9}{46}{The throughput achieved on packet processing benchmark with 100k packets and 10 spawners. The benchmark has a weaker cache effect than \ref {fig:packet-lifo-better} but still significant enough for LIFO to have a better throughput. However, there is a 0.1\% chance that packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO clearly offers a much better tail latency for most domain-counts in such a scenario. For example, at 115 domains LIFO saves over 30\% of tail latency}{figure.7.9}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {7.10}{\ignorespaces todo!!!.}}{46}{figure.7.10}\protected@file@percent }
-\newlabel{fig:packet-hybrids}{{7.10}{46}{todo!!!}{figure.7.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7.10}{\ignorespaces The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits.}}{46}{figure.7.10}\protected@file@percent }
+\newlabel{fig:packet-hybrids}{{7.10}{46}{The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits}{figure.7.10}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Other schedulers}{46}{section*.53}\protected@file@percent }
+\citation{Maruzzelli2017-ou}
+\citation{Frequent1:online}
+\@writefile{lof}{\contentsline {figure}{\numberline {7.11}{\ignorespaces The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}}{47}{figure.7.11}\protected@file@percent }
+\newlabel{fig:mixer-bench}{{7.11}{47}{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases}{figure.7.11}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {7.2}Mixer benchmark}{47}{section.7.2}\protected@file@percent }
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ more details}{47}{section*.54}\protected@file@percent }
+\pgfsyspdfmark {pgfid231}{8323667}{28953081}
+\pgfsyspdfmark {pgfid234}{37920833}{28967826}
+\pgfsyspdfmark {pgfid235}{40689729}{28699129}
+\@writefile{toc}{\contentsline {section}{\numberline {7.3}Option Pricer}{47}{section.7.3}\protected@file@percent }
 \bibdata{refs}
 \@writefile{toc}{\contentsline {chapter}{\numberline {8}Summary and conclusions}{48}{chapter.8}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
@@ -459,27 +469,29 @@
 \bibcite{art_of_mult}{{26}{2021}{{Herlihy et~al.}}{{Herlihy, Shavit, Luchangco, and Spear}}}
 \bibcite{Ho2002}{{27}{2002}{{Ho and Pepyne}}{{}}}
 \bibcite{Igel2005}{{28}{2005}{{Igel and Toussaint}}{{}}}
-\bibcite{amdahl}{{29}{2011}{{Karmani et~al.}}{{Karmani, Agha, Squillante, Seiferas, Brezina, Hu, Tuminaro, Sanders, Tr\"{a}ffe, Geijn, Tr\"{a}ff, Geijn, Sander, Gustafson, Dror, Young, Shaw, Lin, Lee, Chang, Kuan, Kollias, Grama, Li, Whaley, and Vuduc}}}
-\bibcite{Khan2018}{{30}{2018}{{Khan et~al.}}{{Khan, Hounshell, and Fuchs}}}
-\bibcite{Kirsch2013}{{31}{2013}{{Kirsch et~al.}}{{Kirsch, Lippautz, and Payer}}}
-\bibcite{Kleppmann2017-en}{{32}{2017}{{Kleppmann}}{{}}}
-\bibcite{Maruzzelli2017-ou}{{33}{2017}{{Maruzzelli}}{{}}}
-\bibcite{Miller1968}{{34}{1968}{{Miller}}{{}}}
-\bibcite{Moore2006}{{35}{2006}{{Moore}}{{}}}
-\bibcite{Norris2013}{{36}{2013}{{Norris and Demsky}}{{}}}
-\bibcite{Pinedo2012}{{37}{2012}{{Pinedo}}{{}}}
-\bibcite{Postnikova2022}{{38}{2022}{{Postnikova et~al.}}{{Postnikova, Koval, Nadiradze, and Alistarh}}}
-\bibcite{Pretnar2015}{{39}{2015}{{Pretnar}}{{}}}
-\bibcite{fad-cas-speed}{{40}{2020}{{Schweizer et~al.}}{{Schweizer, Besta, and Hoefler}}}
-\bibcite{Sivaramakrishnan2020}{{41}{2020}{{Sivaramakrishnan et~al.}}{{Sivaramakrishnan, Dolan, White, Jaffer, Kelly, Sahoo, Parimala, Dhiman, and Madhavapeddy}}}
-\bibcite{Sivaramakrishnan2021}{{42}{2021}{{Sivaramakrishnan et~al.}}{{Sivaramakrishnan, Dolan, White, Kelly, Jaffer, and Madhavapeddy}}}
-\bibcite{stephen_effective_nodate}{{43}{2015}{{Stephen et~al.}}{{Stephen, Leo, KC, Jeremy, and Anil}}}
-\bibcite{Sun2021}{{44}{2021}{{Sun et~al.}}{{Sun, He, Yan, Gao, Liu, and Zheng}}}
-\bibcite{Swalens2014}{{45}{2014}{{Swalens et~al.}}{{Swalens, Marr, Koster, and Cutsem}}}
-\bibcite{Tennenhouse89layeredmultiplexing}{{46}{1989}{{Tennenhouse}}{{}}}
-\bibcite{Welsh2001}{{47}{2001}{{Welsh et~al.}}{{Welsh, Culler, and Brewer}}}
-\bibcite{Wolpert1997}{{48}{1997}{{Wolpert and Macready}}{{}}}
-\bibcite{latthrough}{{49}{2014}{{Zhang et~al.}}{{Zhang, Feng, Wang, and Xie}}}
+\bibcite{Kappes2021}{{29}{2021}{{Kappes and Anastasiadis}}{{}}}
+\bibcite{amdahl}{{30}{2011}{{Karmani et~al.}}{{Karmani, Agha, Squillante, Seiferas, Brezina, Hu, Tuminaro, Sanders, Tr\"{a}ffe, Geijn, Tr\"{a}ff, Geijn, Sander, Gustafson, Dror, Young, Shaw, Lin, Lee, Chang, Kuan, Kollias, Grama, Li, Whaley, and Vuduc}}}
+\bibcite{Khan2018}{{31}{2018}{{Khan et~al.}}{{Khan, Hounshell, and Fuchs}}}
+\bibcite{Kirsch2013}{{32}{2013}{{Kirsch et~al.}}{{Kirsch, Lippautz, and Payer}}}
+\bibcite{Kleppmann2017-en}{{33}{2017}{{Kleppmann}}{{}}}
+\bibcite{Maruzzelli2017-ou}{{34}{2017}{{Maruzzelli}}{{}}}
+\bibcite{Miller1968}{{35}{1968}{{Miller}}{{}}}
+\bibcite{Moore2006}{{36}{2006}{{Moore}}{{}}}
+\bibcite{Norris2013}{{37}{2013}{{Norris and Demsky}}{{}}}
+\bibcite{Pinedo2012}{{38}{2012}{{Pinedo}}{{}}}
+\bibcite{Postnikova2022}{{39}{2022}{{Postnikova et~al.}}{{Postnikova, Koval, Nadiradze, and Alistarh}}}
+\bibcite{Pretnar2015}{{40}{2015}{{Pretnar}}{{}}}
+\bibcite{fad-cas-speed}{{41}{2020}{{Schweizer et~al.}}{{Schweizer, Besta, and Hoefler}}}
+\bibcite{Sivaramakrishnan2020}{{42}{2020}{{Sivaramakrishnan et~al.}}{{Sivaramakrishnan, Dolan, White, Jaffer, Kelly, Sahoo, Parimala, Dhiman, and Madhavapeddy}}}
+\bibcite{Sivaramakrishnan2021}{{43}{2021}{{Sivaramakrishnan et~al.}}{{Sivaramakrishnan, Dolan, White, Kelly, Jaffer, and Madhavapeddy}}}
+\bibcite{stephen_effective_nodate}{{44}{2015}{{Stephen et~al.}}{{Stephen, Leo, KC, Jeremy, and Anil}}}
+\bibcite{Sun2021}{{45}{2021}{{Sun et~al.}}{{Sun, He, Yan, Gao, Liu, and Zheng}}}
+\bibcite{Swalens2014}{{46}{2014}{{Swalens et~al.}}{{Swalens, Marr, Koster, and Cutsem}}}
+\bibcite{Tennenhouse89layeredmultiplexing}{{47}{1989}{{Tennenhouse}}{{}}}
+\bibcite{Frequent1:online}{{48}{}{{Twilio}}{{}}}
+\bibcite{Welsh2001}{{49}{2001}{{Welsh et~al.}}{{Welsh, Culler, and Brewer}}}
+\bibcite{Wolpert1997}{{50}{1997}{{Wolpert and Macready}}{{}}}
+\bibcite{latthrough}{{51}{2014}{{Zhang et~al.}}{{Zhang, Feng, Wang, and Xie}}}
 \@writefile{toc}{\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{54}{appendix.A}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}

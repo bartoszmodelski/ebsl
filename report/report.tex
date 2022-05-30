@@ -625,6 +625,7 @@ Notably, Linux kernel developers have made a choice in a similar vein in 2003 wh
 \todo{could be smarter about yielding and use this information to identify spawners}
 
 \subsection{Promise}
+\label{section:promise}
 Promise is a placeholder value returned by a scheduler for a newly added task. It is similar to an option type, which scheduler fills with the value returned by respective task upon completion. If another thread attempts to read the promise when empty, it becomes blocked until the result is known \cite{Swalens2014}. 
 
 Fundamentally, promises do not have to be implemented in the runtime. They are a convenient abstraction, that can be built from standard synchronisation primitives as it is in Go \todo{ref to repo}. Nonetheless, including them with the scheduler built in this report encourages good habits in the users and allowed audio mixer 
@@ -911,15 +912,22 @@ that strongly favours FIFO. Notably, the workload is still locality-sensitive bu
 Finally, a number of other approaches described in \S\ref{section:impl-schedulers} has been tested. See figure \ref{fig:packet-hybrids}. Staged architecture was the only one to offer a useful point in the trade-off space, in the form of significantly superior tail latency at the cost of throughput. This gain stems from having a pool of threads dedicated directly to processing the lightweight tasks. The fall in throughput is difficult to avoid in a workload that work stealing is able to scale efficiently. Nonetheless, if the final task was lighter, it is possible for staged architecture to improve on both metrics, as observed with artifical benchmarks. 
 
 \section{Mixer benchmark}
-yielding, promises, overflow queue, short-lived tasks, long-lived tasks, lots of tasks at any given point in time
-
-very concurrent - queue size important 
-
-not perfectly optimized, mostly a convenient implementation using available primivites
 
 
+\begin{figure} 
+    \centering 
+    \includegraphics[width=0.85\textwidth]{eval/mixer-base.png}
+    \caption{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}
+   \label{fig:mixer-bench}
+\end{figure}
 
-Details would vary over time, e.g. number of calls, numbre of calls in a mixer (conference), length of calls, ratio of codecs, amount of signalling, traffic routed directly between parties (VoIP-to-VoIP) etc. But it would be great to have a robust scheduling baseline! 
+The mixer benchmark represents a particularly complicated but real use case. It derives from architecture of a VoIP softswitch (\cite{Maruzzelli2017-ou}), which heavily relies on threading and linux scheduler. \todo{more details}
+
+Such a workload is particularly difficult to optimize for due to its complexity. It features short-lived and long-lived tasks. Some tasks benefit from cache locality, while others not. Many details will vary over time, e.g. distribution of number of people in mixers (as conference could have anywhere from 3 to hundreds people), length of calls, codec selection, media routes (IP-to-IP) \cite{Frequent1:online}, etc. Moreover, the workload makes heavy use of many high-level features such as yielding (\S\ref{section:yield}) and promises (\S\ref{section:promise}), which are not the typical targets of high-performance optimizations. Therefore, in this case, the robustness is just as important as overall performance. 
+
+
+\section{Option Pricer}
+
 \chapter{Summary and conclusions}
 
 As you might imagine: summarizes the dissertation, and draws any

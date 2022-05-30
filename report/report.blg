@@ -3,6 +3,8 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: report.aux
 The style file: abbrvnat.bst
 Database file #1: refs.bib
+Warning--I didn't find a database entry for "paragraph:ocaml_preemption"
+Warning--I didn't find a database entry for "section:benchmark-general-case"
 Warning--to sort, need author or key in POWER4Wi47:online
 Warning--to sort, need author or key in AMDAnnou13:online
 Warning--to sort, need author or key in 2ndGenAM1:online
@@ -26,45 +28,46 @@ Warning--empty year in linux_cfs
 Warning--empty year in memoryor11:online
 Warning--empty journal in voip-latency
 Warning--empty journal in fad-cas-speed
-You've used 49 entries,
+Warning--empty year in Frequent1:online
+You've used 51 entries,
             2773 wiz_defined-function locations,
-            963 strings with 15918 characters,
-and the built_in function-call counts, 23828 in all, are:
-= -- 2195
-> -- 1424
-< -- 23
-+ -- 491
-- -- 442
-* -- 2034
-:= -- 3552
-add.period$ -- 221
-call.type$ -- 49
-change.case$ -- 291
-chr.to.int$ -- 49
-cite$ -- 132
-duplicate$ -- 1038
-empty$ -- 1918
-format.name$ -- 494
-if$ -- 5083
+            978 strings with 16406 characters,
+and the built_in function-call counts, 24567 in all, are:
+= -- 2265
+> -- 1455
+< -- 25
++ -- 502
+- -- 451
+* -- 2078
+:= -- 3665
+add.period$ -- 231
+call.type$ -- 51
+change.case$ -- 300
+chr.to.int$ -- 51
+cite$ -- 137
+duplicate$ -- 1076
+empty$ -- 1990
+format.name$ -- 507
+if$ -- 5245
 int.to.chr$ -- 1
 int.to.str$ -- 1
-missing$ -- 40
-newline$ -- 315
-num.names$ -- 154
-pop$ -- 657
+missing$ -- 41
+newline$ -- 328
+num.names$ -- 162
+pop$ -- 684
 preamble$ -- 1
-purify$ -- 244
+purify$ -- 251
 quote$ -- 0
-skip$ -- 766
+skip$ -- 789
 stack$ -- 0
-substring$ -- 617
-swap$ -- 130
+substring$ -- 621
+swap$ -- 134
 text.length$ -- 7
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 524
-warning$ -- 23
-while$ -- 164
+type$ -- 546
+warning$ -- 24
+while$ -- 170
 width$ -- 0
-write$ -- 748
-(There were 23 warnings)
+write$ -- 778
+(There were 26 warnings)

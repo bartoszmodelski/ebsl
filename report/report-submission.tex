@@ -625,6 +625,7 @@ Notably, Linux kernel developers have made a choice in a similar vein in 2003 wh
 \todo{could be smarter about yielding and use this information to identify spawners}
 
 \subsection{Promise}
+\label{section:promise}
 Promise is a placeholder value returned by a scheduler for a newly added task. It is similar to an option type, which scheduler fills with the value returned by respective task upon completion. If another thread attempts to read the promise when empty, it becomes blocked until the result is known \cite{Swalens2014}. 
 
 Fundamentally, promises do not have to be implemented in the runtime. They are a convenient abstraction, that can be built from standard synchronisation primitives as it is in Go \todo{ref to repo}. Nonetheless, including them with the scheduler built in this report encourages good habits in the users and allowed audio mixer 
@@ -792,8 +793,6 @@ Overall, it shows that both implementation are fairly balanced and a good founda
 \label{section:degradation}
 In line with Amdahl's law \cite{amdahl}, it is generally expected that an application may not perform better with more resources. After all, scalability is something to explicitely design for and even then, may not always be possible \todo{ref to hash chain example}. However, there is no justification for more workers actually causing harm to the performance. Such a characteristic is highly undesirable in such a foundational system as scheduler. However, why would it arise in such a battle-tested idea as work stealing? 
 
-
-
 \begin{figure} 
      \centering
      \includegraphics[width=0.85\textwidth]{eval/packet-basic-with-steal-counts2.png}
@@ -812,7 +811,7 @@ In the LIFO case, as shown by \ref{fig:packet-with-steal-counts}, the scheduler 
     \label{fig:packet-counters}
 \end{figure}
 
-In the FIFO case, the problem also relates to work distribution. Generally, FIFO is not able to steal as much as LIFO because all steals compete with local dequeues, and, by design, those steals tend to lose the race \todo{ref to implementation}. Therefore, while stealing alone is not maxed out, it significantly affects the rest of the logic. As shown by figure \ref{fig:packet-counters}, FIFO reaches over 2.5 stalls per instruction beyond 80 domains and this number keeps raising. The effect is also visible for LIFO  but its pressure on the entire caching subsystem is much subtler.
+In the FIFO case, the problem also relates to work distribution. Generally, FIFO is not able to steal as much as LIFO because all steals compete with local dequeues, and, by design, those steals tend to lose the race \todo{ref to implementation}. Therefore, while stealing alone is not maxed out, it significantly affects the rest of the logic. As shown by figure \ref{fig:packet-counters}, FIFO reaches over 2.5 stalls per instruction beyond 80 domains and this number keeps raising. The effect is also visible for LIFO but its pressure on the entire caching subsystem is much subtler.
 
 
 Finally, it is worth stating that this result should not be interpreted as work stealing being generally inappropriate for saturating 100 cores. Packet benchmark creates a short burst of 50k items, which reaches a throughput of over 1.5m items per second. Each task has its own logic and requires allocations but it does constitute a very fine-grained concurrency. That puts a high pressure on the scheduler and exposes its inefficiencies. Further, there is an unusual amount of distribution required. It is far easier to distribute tasks onto 10 threads than 100 due to e.g. atomic operations taking constant time and load information is being less dispersed. If the workload is simplified just a little, the scalability improves. 
@@ -906,16 +905,29 @@ that strongly favours FIFO. Notably, the workload is still locality-sensitive bu
 \begin{figure} 
     \centering 
     \includegraphics[width=0.85\textwidth]{eval/packet-basic-base-hybrids.png}
-    \caption{todo!!!.}
+    \caption{The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits.}
    \label{fig:packet-hybrids}
 \end{figure}
 
 Finally, a number of other approaches described in \S\ref{section:impl-schedulers} has been tested. See figure \ref{fig:packet-hybrids}. Staged architecture was the only one to offer a useful point in the trade-off space, in the form of significantly superior tail latency at the cost of throughput. This gain stems from having a pool of threads dedicated directly to processing the lightweight tasks. The fall in throughput is difficult to avoid in a workload that work stealing is able to scale efficiently. Nonetheless, if the final task was lighter, it is possible for staged architecture to improve on both metrics, as observed with artifical benchmarks. 
 
 \section{Mixer benchmark}
-yielding, promises, overflow queue 
 
-very concurrent - queue size important 
+
+\begin{figure} 
+    \centering 
+    \includegraphics[width=0.85\textwidth]{eval/mixer-base.png}
+    \caption{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}
+   \label{fig:mixer-bench}
+\end{figure}
+
+The mixer benchmark represents a particularly complicated but real use case. It derives from architecture of a VoIP softswitch (\cite{Maruzzelli2017-ou}), which heavily relies on threading and linux scheduler. \todo{more details}
+
+Such a workload is particularly difficult to optimize for due to its complexity. It features short-lived and long-lived tasks. Some tasks benefit from cache locality, while others not. Many details will vary over time, e.g. distribution of number of people in mixers (as conference could have anywhere from 3 to hundreds people), length of calls, codec selection, media routes (IP-to-IP) \cite{Frequent1:online}, etc. Moreover, the workload makes heavy use of many high-level features such as yielding (\S\ref{section:yield}) and promises (\S\ref{section:promise}), which are not the typical targets of high-performance optimizations. Therefore, in this case, the robustness is just as important as overall performance. 
+
+
+\section{Option Pricer}
+
 \chapter{Summary and conclusions}
 
 As you might imagine: summarizes the dissertation, and draws any
