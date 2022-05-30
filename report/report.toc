@@ -13,43 +13,43 @@
 \contentsline {subsection}{\numberline {2.1.3}Preemption}{13}{subsection.2.1.3}%
 \contentsline {subsection}{\numberline {2.1.4}Work stealing}{14}{subsection.2.1.4}%
 \contentsline {subsection}{\numberline {2.1.5}Summary}{15}{subsection.2.1.5}%
-\contentsline {section}{\numberline {2.2}OCaml}{15}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}Threading}{15}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Effects}{16}{subsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.2.3}Memory model}{17}{subsection.2.2.3}%
-\contentsline {subsection}{\numberline {2.2.4}Garbage Collection}{17}{subsection.2.2.4}%
-\contentsline {section}{\numberline {2.3}Multiprocessing}{17}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Amdahl's law}{17}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Lock-free algorithms}{18}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}Atomic operations}{18}{subsection.2.3.3}%
-\contentsline {subsection}{\numberline {2.3.4}Linearizability}{19}{subsection.2.3.4}%
-\contentsline {subsection}{\numberline {2.3.5}LF queue}{19}{subsection.2.3.5}%
-\contentsline {subsection}{\numberline {2.3.6}MultiQ}{19}{subsection.2.3.6}%
-\contentsline {subsection}{\numberline {2.3.7}DSCheck}{19}{subsection.2.3.7}%
-\contentsline {section}{\numberline {2.4}Benchmarks}{20}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}Packet Processing}{20}{subsection.2.4.1}%
-\contentsline {subsection}{\numberline {2.4.2}Audio Mixer}{20}{subsection.2.4.2}%
-\contentsline {subsection}{\numberline {2.4.3}Option Pricing}{21}{subsection.2.4.3}%
-\contentsline {chapter}{\numberline {3}Related work}{22}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Go}{22}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Rust}{23}{section.3.2}%
-\contentsline {chapter}{\numberline {4}Design}{24}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Objectives}{24}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Ordering}{25}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}FIFO and LIFO}{25}{subsection.4.2.1}%
-\contentsline {subsubsection}{Fairness revisited}{26}{section*.22}%
-\contentsline {subsection}{\numberline {4.2.2}Hybrid}{27}{subsection.4.2.2}%
-\contentsline {section}{\numberline {4.3}Contention and locality}{27}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Core Structure Distribution}{27}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}Staged}{28}{subsection.4.3.2}%
-\contentsline {section}{\numberline {4.4}Other design choices}{29}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Work distribution}{29}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Resizing}{30}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Blocking operations}{30}{subsection.4.4.3}%
-\contentsline {subsection}{\numberline {4.4.4}Yield}{31}{subsection.4.4.4}%
-\contentsline {subsection}{\numberline {4.4.5}Promise}{32}{subsection.4.4.5}%
-\contentsline {subsection}{\numberline {4.4.6}Backpressure}{32}{subsection.4.4.6}%
-\contentsline {subsection}{\numberline {4.4.7}Cancellations}{32}{subsection.4.4.7}%
+\contentsline {section}{\numberline {2.2}Multiprocessing}{15}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}Amdahl's law}{15}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Lock-free algorithms}{16}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}Atomic operations}{16}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Linearizability}{17}{subsection.2.2.4}%
+\contentsline {subsection}{\numberline {2.2.5}LF queue}{17}{subsection.2.2.5}%
+\contentsline {subsection}{\numberline {2.2.6}MultiQ}{17}{subsection.2.2.6}%
+\contentsline {subsection}{\numberline {2.2.7}DSCheck}{17}{subsection.2.2.7}%
+\contentsline {chapter}{\numberline {3}Related work}{19}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Go}{19}{section.3.1}%
+\contentsline {section}{\numberline {3.2}Rust}{20}{section.3.2}%
+\contentsline {section}{\numberline {3.3}OCaml}{21}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Threading}{21}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Effects}{21}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Memory model}{22}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Garbage Collection}{22}{subsection.3.3.4}%
+\contentsline {chapter}{\numberline {4}Design}{23}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Objectives}{23}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Benchmarks}{24}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Packet Processing}{24}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Audio Mixer}{24}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Option Pricing}{25}{subsection.4.2.3}%
+\contentsline {section}{\numberline {4.3}Ordering}{25}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{25}{subsection.4.3.1}%
+\contentsline {subsubsection}{Fairness revisited}{26}{section*.23}%
+\contentsline {subsection}{\numberline {4.3.2}Hybrid}{27}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}Contention and locality}{27}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Core Structure Distribution}{28}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Staged}{28}{subsection.4.4.2}%
+\contentsline {section}{\numberline {4.5}Other design choices}{29}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Work distribution}{29}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Resizing}{30}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.3}Blocking operations}{31}{subsection.4.5.3}%
+\contentsline {subsection}{\numberline {4.5.4}Yield}{31}{subsection.4.5.4}%
+\contentsline {subsection}{\numberline {4.5.5}Promise}{32}{subsection.4.5.5}%
+\contentsline {subsection}{\numberline {4.5.6}Backpressure}{32}{subsection.4.5.6}%
+\contentsline {subsection}{\numberline {4.5.7}Cancellations}{33}{subsection.4.5.7}%
 \contentsline {chapter}{\numberline {5}Implementation}{34}{chapter.5}%
 \contentsline {section}{\numberline {5.1}Schedulers}{34}{section.5.1}%
 \contentsline {subsection}{\numberline {5.1.1}Work distribution extensions}{35}{subsection.5.1.1}%
@@ -63,22 +63,21 @@
 \contentsline {subsection}{\numberline {5.2.7}Overflow avoidance}{37}{subsection.5.2.7}%
 \contentsline {subsection}{\numberline {5.2.8}False sharing}{37}{subsection.5.2.8}%
 \contentsline {subsection}{\numberline {5.2.9}Limitations}{37}{subsection.5.2.9}%
-\contentsline {chapter}{\numberline {6}Methods}{38}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Hardware}{38}{section.6.1}%
-\contentsline {section}{\numberline {6.2}System}{38}{section.6.2}%
-\contentsline {section}{\numberline {6.3}Procedures}{38}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Statistical Methods}{38}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Probe Effect}{38}{section.6.5}%
-\contentsline {chapter}{\numberline {7}Evaluation}{39}{chapter.7}%
-\contentsline {section}{\numberline {7.1}Server benchmark}{39}{section.7.1}%
-\contentsline {subsection}{\numberline {7.1.1}General Case}{39}{subsection.7.1.1}%
-\contentsline {subsubsection}{Degradation}{41}{section*.45}%
-\contentsline {subsubsection}{Extensions}{44}{section*.52}%
-\contentsline {subsection}{\numberline {7.1.2}Server benchmark with cache effects}{45}{subsection.7.1.2}%
-\contentsline {subsection}{\numberline {7.1.3}Server benchmark with multi-modal processing latency}{45}{subsection.7.1.3}%
-\contentsline {subsubsection}{Other schedulers}{46}{section*.53}%
-\contentsline {section}{\numberline {7.2}Mixer benchmark}{47}{section.7.2}%
-\contentsline {section}{\numberline {7.3}Option Pricer}{47}{section.7.3}%
-\contentsline {chapter}{\numberline {8}Summary and conclusions}{48}{chapter.8}%
+\contentsline {chapter}{\numberline {6}Evaluation}{38}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Methods}{38}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Hardware}{38}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}System}{38}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}Procedures}{38}{subsection.6.1.3}%
+\contentsline {subsection}{\numberline {6.1.4}Statistical Methods}{39}{subsection.6.1.4}%
+\contentsline {subsection}{\numberline {6.1.5}Probe Effect}{39}{subsection.6.1.5}%
+\contentsline {section}{\numberline {6.2}Server benchmark}{39}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}General Case}{39}{subsection.6.2.1}%
+\contentsline {subsubsection}{Degradation}{41}{section*.46}%
+\contentsline {subsubsection}{Extensions}{44}{section*.53}%
+\contentsline {subsection}{\numberline {6.2.2}Server benchmark with cache effects}{45}{subsection.6.2.2}%
+\contentsline {subsection}{\numberline {6.2.3}Server benchmark with multi-modal processing latency}{46}{subsection.6.2.3}%
+\contentsline {subsubsection}{Other schedulers}{46}{section*.54}%
+\contentsline {section}{\numberline {6.3}Mixer benchmark}{47}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Option Pricer}{47}{section.6.4}%
+\contentsline {chapter}{\numberline {7}Summary and conclusions}{48}{chapter.7}%
 \contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{54}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Lorem ipsum}{54}{section.A.1}%

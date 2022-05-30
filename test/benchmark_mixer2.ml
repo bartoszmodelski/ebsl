@@ -120,8 +120,9 @@ let benchmark ~domains ~n_mixers (module Sched : Schedulr.Scheduler.S) =
       Sched.init ~afterwards:`return (domains / !schedulers_count) ~f:(fun () -> ()))
   in 
   Printf.printf "{\"data\":[\n";
-  let skip = 1 in
-  for i = skip to 10 do 
+  let skip = 2 in
+  let total = 15 in 
+  for i = 0 to total do 
     if i > skip then
     Printf.printf "{\"iteration\":%d," i;
     Unix.sleepf 0.1;
@@ -143,7 +144,7 @@ let benchmark ~domains ~n_mixers (module Sched : Schedulr.Scheduler.S) =
     then Printf.printf "\"breaches-rate\":%f}" 
       (Int.to_float (breach_count / n_mixers / n_legs_const) /. 
       (Int.to_float n_packets_const));
-    if skip < i && i < 10 
+    if skip < i && i < total 
     then Printf.printf ",\n";
     Stdlib.flush_all ();
   done;

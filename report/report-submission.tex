@@ -293,45 +293,6 @@ Existing schedulers, how they are built in and what not.
 
 Composability and things
 
-\section{OCaml}
-\label{section:background_ocaml}
-As touched on in \ref{section:intr_ocaml-multicore}, OCaml introduces a new flavor of multiprocessing. It brings a number of benefits, but the most important one from the point of view of this dissertation is decoupling of scheduling and runtime \cite{stephen_effective_nodate}. In simple words, a developer of an external OCaml library now has the ability to write a powerful, built-in-like runtime scheduler without requiring any changes from the standard library, the runtime system or OCaml compiler. The rest of this section describes mechanisms enabling this decoupling and other notable features of Multicore OCaml.
-
-\subsection{Threading}
-\label{section:fibers}
-Starting with version 5.0, OCaml will offer access to OS threading through the domain interface. System threads are widely considered heavyweight due to high memory footprint and the overhead of systemcalls \todo{citation}. Domains are similar, in that a single domain consist of an OS thread and additional OCaml structures such as local minor heap \cite{Sivaramakrishnan2020}. Generally, domains offer course-grained parallelism and are optimized for the number of domains to not exceed number of processing units (\url{https://github.com/ocaml-multicore/ocaml-multicore/wiki/Concurrency-and-parallelism-design-notes}).
-
-To use system threads efficiently, we also need concurrency (see \todo{concurrency section}). Historically, OCaml did not provide any explicit support for writing concurrent programs. Thus, developers using Lwt/Async are forced to divide programs into small functions, which are then scheduled dynamically and executed on the same stack. 
-
-Multicore OCaml features fibers - light, heap-allocated, resizable stacks. Their count is mostly limited by memory and, in general, may exceed number of logical cores by orders of magnitude without any issues. Importantly, context-switching between fibers is extremely cheap. It requires saving stack and exception pointers of the fiber and loading ones of the target frame \cite{Sivaramakrishnan2021}. Therefore, they are a perfect foundation for efficient, fine-grained concurrency. 
-
-
-
-\subsection{Effects}
-\label{section:effects}
-Effects represent a novel way of modelling not just concurrency but all kinds of computational effects. The concept is a product of research on theory of computation \cite{Pretnar2015} and, even though the formal underpinnings are far beyond the scope of this report, it is introduced the easiest by analogy. 
-
-An imperative programmer may consider it a generalisation of exceptions \cite{Brachthuser2020}. Using exception language, effects allow throwing an exception (performing effect), processing it, and optionally returning to the location of throwing (continuation) to resume execution. For a functional programmer, effects provide similar capabilities to monad transformers but in direct-style, without imposing monadic form on \cite{Sivaramakrishnan2021}. This is especially important for concurrency, as with Async and Lwt real-world applications end up having almost all code written in the monadic form to prevent liveness issues. 
-
-In the case of threading, effects provide a composable mean of stopping and resuming execution. Once effects handlers are set up higher up the stack, any function may perform a yield effect, which immediately returns the control back to the handler. Up until now, the logic is implementable with exceptions. However, the handler also receives a \textit{delimited continuation}, which resumes execution of the yielding function. In the case of a scheduler, handler may put received continuation into a queue, take the oldest element and resume it instead. This logic is implemented efficiently using fibers described in the previous section (\ref{section:fibers}). Whenever effects handler is set up, it instantiates a new fiber for contained logic. If said logic performs an effect, said fiber is unchained from the top of the stack and a new one is created to execute the handler. Naturally, this harmony is by design, and fibers and effects have been strongly optimized to support high-performance concurrency. 
-
-\label{paragraph:ocaml_preemption}
-It is worth pointing out, that in the current shape, effects do not mix with preemption. Generally, true preemption is limited to OS-level scheduling and there is no way around this restriction, as running ordinary applications with higher privileges is not acceptable from security standpoint. Runtime systems typically simulate preemption by having compiler automatically insert optional yields into strategic places (checkpoints) in the code. Assuming that compiler provides us with a mean of registering a checkpoint-handler, there is no obvious solution for auto-yielding, as trying to yield within such a handler means that suddenly any line in the code may emit Yield effect - even a null function. Further, user may compose multiple schedulers and pollute all function types in the program, what defeats the point of effects system. 
-
-\subsection{Memory model}
-\label{section:memory_model}
-Other languages depend on global data race freedom. That does not facilitate reasoning about programs if a race in one library may cause undefined behavior in a different one. 
-
-OCaml Multicore features a local data race freedom property, which guarantees that races are bound in space and time. 
-
-
-\todo{fill in}
-
-\subsection{Garbage Collection}
-Could mention a bit, as some charts actually explain the performance by promotions.
-
-\todo{fill in}
-
 \section{Multiprocessing}
 \label{section:background_multiprocessing}
 
@@ -394,44 +355,6 @@ Note stronger memory model \ref{section:memory_model}.
 
 \todo{fill in}
 
-\section{Benchmarks}
-\todo{describe distributions?}
-
-This section describes the three main benchmarks used to evaluate different designs of a scheduler. They aim to simulate some true characteristics of the core of each workload (e.g. branching factors, dependencies between tasks, memory patterns) but at the same time aggressively mock all dependencies such as networking and other IO. This significantly reduces noise in the benchmarks and improves replicability. 
-
-
-Other benchmarks are introduced in the latter sections of this report, but they tend to be more artificial and targeted at exposing particular differences between scheduling strategies. 
-
-\subsection{Packet Processing}
-\label{section:background_packet-processing}
-TCP constitutes is a backbone of the internet as we know it. It is used by countless applications, from the world wide web to low-latency trading infrastructure. Thus, algorithms for processing TCP packets became very sophisticated. To minimize executed instructions and memory accesses, they tend to only parse the parts of the packet that are necessary to proceed. This is obviously crucial for performance but also security, as e.g. flooding packets should be recognized and dropped with as little overhead as possible. 
-
-Therefore, the first benchmark simulates workload similar to a webserver. Firstly, it accepts a packet and spawns a lightweight thread for its processing, which in turn scans for newlines - step necessary to do more selective parsing afterwards. 
-
-\todo{could add a little more background on why this is important, previous work or just details}
-
-\subsection{Audio Mixer}
-\label{section:bench-audio-mixer}
-Telecommunication is a relatively low latency endeavour. Research in human-computer interaction generally recommends keeping latency of (any) response below 100ms for it to feel instantaneous (\cite{Miller1968}, \cite{Amin2013}). Beyond that, users begin to notice the delay and the experience deteriorates. \cite{voip-latency} focuses on mouth-to-ear latency in softphones (software phones) and classifies everything below 150ms as excellent, 150ms-300ms good and over 300ms as poor. 
-
-While 150ms round-trip time may seem like an undemanding deadline for a modern server but there is a lot that can go wrong (and goes frequently, as we have experienced during the pandemic). 
-\begin{itemize}
-    \item \textbf{Network latency}. In practise vast majority of the RTT budget is consumed by the transport. Packet may have to cross multiple carrier networks or simply a large geographical distance. In practise, the less latency is imposed by the server the better average user experience. 
-    \item \textbf{Throughput}. Typical VoIP call-leg sends 20ms frames, each containing a few hundred bytes of audio. In my professional experience, a typical FreeSWITCH \cite{Maruzzelli2017-ou} installation was expected to handle up to 1000 concurrent calls without quality loss. 1000 concurrent calls with 2 legs each and bidirectional media means processing 100k packets a second. Each with a real deadline much smaller than the mentioned 150ms. 
-    \item \textbf{Audio complexity}. Moreover, standard VoIP signalling protocol SIP allows every participant of a conference to negotiate different codecs. Thus, the server has to decompress all incoming audio, mix it together, compress, and only then send out. In the case of mentioned FreeSWITCH, each call-leg has a separate thread for IO and codecs, and another one per conference to mix audio. That results in audio being passed around and buffered a lot, potentially causing contention.   
-\end{itemize}
-
-Thus, the second benchmark imitates a VoIP server with a number of conferences and participants, and FreeSWITCH-like audio-processing, audio-mixing threads. This benchmark aims to simulate an enterprise application with extremely complex scheduling patterns and a perhaps not perfectly optimized code, where individual threads frequently need to yield to wait for others.
-
-\subsection{Option Pricing}
-\label{section:bench-option-pricing}
-
-Interesting task-spawning pattern here.
-
-Option pricing -> DP
-Smith waterman is almost the same as option pricing  
-
-
 \chapter{Related work}
 
 
@@ -472,6 +395,48 @@ Just like Go runtime, Tokio also relies on work stealing to share work. However,
     \item Notably, with no runtime support the entire API is entirely function-based, so there's no natural way to do a yield. 
 \end{itemize}
 
+
+\section{OCaml}
+\label{section:background_ocaml}
+As touched on in \ref{section:intr_ocaml-multicore}, OCaml introduces a new flavor of multiprocessing. It brings a number of benefits, but the most important one from the point of view of this dissertation is decoupling of scheduling and runtime \cite{stephen_effective_nodate}. In simple words, a developer of an external OCaml library now has the ability to write a powerful, built-in-like runtime scheduler without requiring any changes from the standard library, the runtime system or OCaml compiler. The rest of this section describes mechanisms enabling this decoupling and other notable features of Multicore OCaml.
+
+\subsection{Threading}
+\label{section:fibers}
+Starting with version 5.0, OCaml will offer access to OS threading through the domain interface. System threads are widely considered heavyweight due to high memory footprint and the overhead of systemcalls \todo{citation}. Domains are similar, in that a single domain consist of an OS thread and additional OCaml structures such as local minor heap \cite{Sivaramakrishnan2020}. Generally, domains offer course-grained parallelism and are optimized for the number of domains to not exceed number of processing units (\url{https://github.com/ocaml-multicore/ocaml-multicore/wiki/Concurrency-and-parallelism-design-notes}).
+
+To use system threads efficiently, we also need concurrency (see \todo{concurrency section}). Historically, OCaml did not provide any explicit support for writing concurrent programs. Thus, developers using Lwt/Async are forced to divide programs into small functions, which are then scheduled dynamically and executed on the same stack. 
+
+Multicore OCaml features fibers - light, heap-allocated, resizable stacks. Their count is mostly limited by memory and, in general, may exceed number of logical cores by orders of magnitude without any issues. Importantly, context-switching between fibers is extremely cheap. It requires saving stack and exception pointers of the fiber and loading ones of the target frame \cite{Sivaramakrishnan2021}. Therefore, they are a perfect foundation for efficient, fine-grained concurrency. 
+
+
+
+\subsection{Effects}
+\label{section:effects}
+Effects represent a novel way of modelling not just concurrency but all kinds of computational effects. The concept is a product of research on theory of computation \cite{Pretnar2015} and, even though the formal underpinnings are far beyond the scope of this report, it is introduced the easiest by analogy. 
+
+An imperative programmer may consider it a generalisation of exceptions \cite{Brachthuser2020}. Using exception language, effects allow throwing an exception (performing effect), processing it, and optionally returning to the location of throwing (continuation) to resume execution. For a functional programmer, effects provide similar capabilities to monad transformers but in direct-style, without imposing monadic form on \cite{Sivaramakrishnan2021}. This is especially important for concurrency, as with Async and Lwt real-world applications end up having almost all code written in the monadic form to prevent liveness issues. 
+
+In the case of threading, effects provide a composable mean of stopping and resuming execution. Once effects handlers are set up higher up the stack, any function may perform a yield effect, which immediately returns the control back to the handler. Up until now, the logic is implementable with exceptions. However, the handler also receives a \textit{delimited continuation}, which resumes execution of the yielding function. In the case of a scheduler, handler may put received continuation into a queue, take the oldest element and resume it instead. This logic is implemented efficiently using fibers described in the previous section (\ref{section:fibers}). Whenever effects handler is set up, it instantiates a new fiber for contained logic. If said logic performs an effect, said fiber is unchained from the top of the stack and a new one is created to execute the handler. Naturally, this harmony is by design, and fibers and effects have been strongly optimized to support high-performance concurrency. 
+
+\label{paragraph:ocaml_preemption}
+It is worth pointing out, that in the current shape, effects do not mix with preemption. Generally, true preemption is limited to OS-level scheduling and there is no way around this restriction, as running ordinary applications with higher privileges is not acceptable from security standpoint. Runtime systems typically simulate preemption by having compiler automatically insert optional yields into strategic places (checkpoints) in the code. Assuming that compiler provides us with a mean of registering a checkpoint-handler, there is no obvious solution for auto-yielding, as trying to yield within such a handler means that suddenly any line in the code may emit Yield effect - even a null function. Further, user may compose multiple schedulers and pollute all function types in the program, what defeats the point of effects system. 
+
+\subsection{Memory model}
+\label{section:memory_model}
+Other languages depend on global data race freedom. That does not facilitate reasoning about programs if a race in one library may cause undefined behavior in a different one. 
+
+OCaml Multicore features a local data race freedom property, which guarantees that races are bound in space and time. 
+
+
+\todo{fill in}
+
+\subsection{Garbage Collection}
+Could mention a bit, as some charts actually explain the performance by promotions.
+
+\todo{fill in}
+
+
+
 \chapter{Design}
 
 
@@ -488,6 +453,48 @@ Therefore, in line with the literature (e.g. \cite{8057206}, \cite{latthrough}, 
 \end{itemize}
 
 Preemptive schedulers may also explicitely prioritize fairness. Naively, the lower latency the more fair scheduling, however, this does not hold if jobs have different sizes. For example, a scheduler may prefer to starve a rare long-running job rather than keep thousands of small tasks waiting, since the latter is going to have a higher impact on mean or (sufficiently small) nth percentile latencies. However, as OCaml does not feature any preemption mechanisms (\S\cite{paragraph:ocaml_preemption}) and the CPU time is effectively specified by the developer, the schedulers developed in this project treat all tasks as drawn from the same distribution. As discussed further in (\S\ref{section:design-staged}), staged architecture does allow developer to more explicitely choose between fairness, latency and throughput. 
+
+
+\section{Benchmarks}
+\todo{describe distributions?}
+
+\todo{design to evaluate realistic work-loads with respect to just described objectives}
+
+This section describes the three main benchmarks used to evaluate different designs of a scheduler. They aim to simulate some true characteristics of the core of each workload (e.g. branching factors, dependencies between tasks, memory patterns) but at the same time aggressively mock all dependencies such as networking and other IO. This significantly reduces noise in the benchmarks and improves replicability. 
+
+
+Other benchmarks are introduced in the latter sections of this report, but they tend to be more artificial and targeted at exposing particular differences between scheduling strategies. 
+
+\subsection{Packet Processing}
+\label{section:background_packet-processing}
+TCP constitutes is a backbone of the internet as we know it. It is used by countless applications, from the world wide web to low-latency trading infrastructure. Thus, algorithms for processing TCP packets became very sophisticated. To minimize executed instructions and memory accesses, they tend to only parse the parts of the packet that are necessary to proceed. This is obviously crucial for performance but also security, as e.g. flooding packets should be recognized and dropped with as little overhead as possible. 
+
+Therefore, the first benchmark simulates workload similar to a webserver. Firstly, it accepts a packet and spawns a lightweight thread for its processing, which in turn scans for newlines - step necessary to do more selective parsing afterwards. 
+
+\todo{could add a little more background on why this is important, previous work or just details}
+
+\subsection{Audio Mixer}
+\label{section:bench-audio-mixer}
+Telecommunication is a relatively low latency endeavour. Research in human-computer interaction generally recommends keeping latency of (any) response below 100ms for it to feel instantaneous (\cite{Miller1968}, \cite{Amin2013}). Beyond that, users begin to notice the delay and the experience deteriorates. \cite{voip-latency} focuses on mouth-to-ear latency in softphones (software phones) and classifies everything below 150ms as excellent, 150ms-300ms good and over 300ms as poor. 
+
+While 150ms round-trip time may seem like an undemanding deadline for a modern server but there is a lot that can go wrong (and goes frequently, as we have experienced during the pandemic). 
+\begin{itemize}
+    \item \textbf{Network latency}. In practise vast majority of the RTT budget is consumed by the transport. Packet may have to cross multiple carrier networks or simply a large geographical distance. In practise, the less latency is imposed by the server the better average user experience. 
+    \item \textbf{Throughput}. Typical VoIP call-leg sends 20ms frames, each containing a few hundred bytes of audio. In my professional experience, a typical FreeSWITCH \cite{Maruzzelli2017-ou} installation was expected to handle up to 1000 concurrent calls without quality loss. 1000 concurrent calls with 2 legs each and bidirectional media means processing 100k packets a second. Each with a real deadline much smaller than the mentioned 150ms. 
+    \item \textbf{Audio complexity}. Moreover, standard VoIP signalling protocol SIP allows every participant of a conference to negotiate different codecs. Thus, the server has to decompress all incoming audio, mix it together, compress, and only then send out. In the case of mentioned FreeSWITCH, each call-leg has a separate thread for IO and codecs, and another one per conference to mix audio. That results in audio being passed around and buffered a lot, potentially causing contention.   
+\end{itemize}
+
+Thus, the second benchmark imitates a VoIP server with a number of conferences and participants, and FreeSWITCH-like audio-processing, audio-mixing threads. This benchmark aims to simulate an enterprise application with extremely complex scheduling patterns and a perhaps not perfectly optimized code, where individual threads frequently need to yield to wait for others.
+
+\subsection{Option Pricing}
+\label{section:bench-option-pricing}
+
+Interesting task-spawning pattern here.
+
+Option pricing -> DP
+Smith waterman is almost the same as option pricing  
+
+
 
 
 \section{Ordering}
@@ -727,41 +734,41 @@ Since this project has a limited timescale, the schedulers were optimized in des
 
 
 
-\chapter{Methods}
-
-This section describes details of the testing experimental setup: hardware, system and testing procedures. Afterwards, it justifies the statistical methods and discusses probe effect.
-
-perf stat
-
-\section{Hardware}
-
-\section{System}
-mention thread limit in ocaml
-\section{Procedures}
-reject first sample lazy loading and caches
-
-how many times executed
-
-performance sensitive data was collected on thread-local counters
-\section{Statistical Methods}
-
-look for extra variance
-use medians and quartiles as its h
-\section{Probe Effect}
-
-Story about vdso.
-
-
-
-
-
-
 
 \chapter{Evaluation}
 \label{chapter:evaluation}
 
 This chapter presents evidence gathered to verify the hypothesis (\S\ref{section:thesis}). First, it shows that some classic ideas like work stealing with an overflow queue (used in Go and Rust) do not scale to modern hardware and concurrency. This result is analyzed in depth (\S\ref{section:degradation}) and a number of extensions favoring fine-grained concurrency are evaluated (\S\ref{section:extensions}). Further, the section focuses on more complex workloads. First, web-server with cache effects (\S\ref{section:server-bench-with-cache-effects}) 
 and bimodal task processing time (\S\ref{section:server-bench-with-multi-modal}). Second, the audio mixer benchmark. 
+
+
+\section{Methods}
+
+This section describes details of the testing experimental setup: hardware, system and testing procedures. Afterwards, it justifies the statistical methods and discusses probe effect.
+
+perf stat
+
+\subsection{Hardware}
+
+\subsection{System}
+mention thread limit in ocaml
+\subsection{Procedures}
+reject first sample lazy loading and caches
+
+how many times executed
+
+performance sensitive data was collected on thread-local counters
+\subsection{Statistical Methods}
+
+look for extra variance
+use medians and quartiles as its h
+\subsection{Probe Effect}
+
+Story about vdso.
+
+
+
+
 
 
 
@@ -844,7 +851,7 @@ Finally, it is worth stating that this result should not be interpreted as work 
         
     \item \textbf{Higher workload}. In fact, increasing the number of tasks also stabilizes the scaling. See figure \ref{fig:packet-10m-throughput} for the case with 10 million task instead of 50k. This case saturates many more workers, and while overall throughput is lower, the performance overall remains stable beyond 30 cores. \todo{say long-running, which is unusual in e.g. http traffic}
     
-    \item \textbf{More spawners}. See figure \ref{fig:packet-4spawners} for the performance when there is more spawners, i.e. developer made an explicit change to help the scheduler.
+    \item \textbf{More spawners}. See figure \ref{fig:packet-4spawners} for the performance under more spawners, i.e. developer made an explicit change to help the scheduler.
 \end{itemize}
 
 
@@ -916,7 +923,7 @@ Finally, a number of other approaches described in \S\ref{section:impl-scheduler
 
 \begin{figure} 
     \centering 
-    \includegraphics[width=0.85\textwidth]{eval/mixer-base.png}
+    \includegraphics[width=0.85\textwidth]{eval/mixer-base8.png}
     \caption{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}
    \label{fig:mixer-bench}
 \end{figure}
@@ -948,11 +955,7 @@ potential future work.
 
 \chapter{Technical details, proofs, etc.}
 
-\section{Lorem ipsum}
-
-% Some traditional fake Latin prose for calibrating words/page
-Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam
-
+\todo{microbenchmarks - queues, etc.}
 
 \label{lastpage}
 \end{document}
