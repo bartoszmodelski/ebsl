@@ -5,6 +5,6 @@
   scheduler_promises_test test_inject micropools_test benchmark_queue
   benchmark_micropools benchmark_hash benchmark_micropools_bimod 
   benchmark_process_packet_micr benchmark_mixer2 benchmark_mixer_micr
-  benchmark_process_packet_domainslib)
+  benchmark_process_packet_domainslib benchmark_options)
  (libraries schedulr unix dscheck core oclock micropools domainslib
  datastructures reporting digestif.ocaml digestif checkseum checkseum.ocaml))

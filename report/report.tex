@@ -357,6 +357,8 @@ Note stronger memory model \ref{section:memory_model}.
 
 \chapter{Related work}
 
+\todo{Scheduling is a very literature-rich part of computer science. Summarising all the research up to date is far beyond the scope of this section. Therefore, I have selected two very modern and mature runtime schedulers, and analyzed them in depth. Go boasts to offer a very good concurrency support and its one of the main selling points. Rust is a high-perf language, it is a library scherules and non-preemptive! There is also Domainslib but its at a much earlier stage. It features a classic deque design. In the last section it is benchmarked against this project.}
+
 
 \section{Go}
 \label{section:rel-work-go}
@@ -398,6 +400,8 @@ Just like Go runtime, Tokio also relies on work stealing to share work. However,
 
 \section{OCaml}
 \label{section:background_ocaml}
+
+\todo{there is the domainslib, although it does not seem to have been built with high core counts in mind}
 As touched on in \ref{section:intr_ocaml-multicore}, OCaml introduces a new flavor of multiprocessing. It brings a number of benefits, but the most important one from the point of view of this dissertation is decoupling of scheduling and runtime \cite{stephen_effective_nodate}. In simple words, a developer of an external OCaml library now has the ability to write a powerful, built-in-like runtime scheduler without requiring any changes from the standard library, the runtime system or OCaml compiler. The rest of this section describes mechanisms enabling this decoupling and other notable features of Multicore OCaml.
 
 \subsection{Threading}
@@ -934,6 +938,30 @@ Such a workload is particularly difficult to optimize for due to its complexity.
 
 
 \section{Option Pricer}
+
+Trading shops tend to be organized around 3 feedback loops. s
+
+Modern derivate markets offer 
+Options 
+Continous option pricing. 
+
+Any options trading shop has multiple pricing mechanisms. Hot loop, warm loop, cold loop
+
+\section{Comparison with Domainslib}
+Two benchmarks have been selected 
+
+
+Domainslib:
+- Far more optimized (use of magic, force inline, unsafe array operations)
+- Stronger LF optimization - only one atomic operation per enqueue/dequeue/steal 
+
+Those optimizations are possible to apply to this project but were deemed too risky, as they can produce bugs that are extremely difficult to trace. 
+
+Schedulr: 
+- More scalable steal 
+
+Try adding cpu relax, which may not be best placed inside the structure itself.f
+
 
 \chapter{Summary and conclusions}
 
