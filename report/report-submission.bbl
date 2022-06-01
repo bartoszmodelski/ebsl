@@ -1,4 +1,4 @@
-\begin{thebibliography}{58}
+\begin{thebibliography}{63}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -142,6 +142,12 @@ D.~Chase and Y.~Lev.
   {ACM} Press, 2005.
 \newblock \doi{10.1145/1073970.1073974}.
 \newblock URL \url{https://doi.org/10.1145/1073970.1073974}.
+
+\bibitem[chebyrash(2022)]{chebyras74:online}
+chebyrash.
+\newblock chebyrash/promise: Promise / future library for go.
+\newblock \url{https://github.com/chebyrash/promise}, 2022.
+\newblock (Accessed on 06/01/2022).
 
 \bibitem[Cheng et~al.(2017)Cheng, Chen, Zhou, Gmach, and Milojicic]{8057206}
 D.~Cheng, Y.~Chen, X.~Zhou, D.~Gmach, and D.~Milojicic.
@@ -292,6 +298,19 @@ N.~M. L\^{e}, A.~Pop, A.~Cohen, and F.~Zappa~Nardelli.
 \newblock \doi{10.1145/2517327.2442524}.
 \newblock URL \url{https://doi.org/10.1145/2517327.2442524}.
 
+\bibitem[Lerche({\natexlab{a}})]{Makingth53:online}
+C.~Lerche.
+\newblock Making the tokio scheduler 10x faster | tokio - an asynchronous rust
+  runtime.
+\newblock \url{https://tokio.rs/blog/2019-10-scheduler}, {\natexlab{a}}.
+\newblock (Accessed on 06/01/2022).
+
+\bibitem[Lerche({\natexlab{b}})]{TokioAna8:online}
+C.~Lerche.
+\newblock Tokio - an asynchronous rust runtime.
+\newblock \url{https://tokio.rs/}, {\natexlab{b}}.
+\newblock (Accessed on 06/01/2022).
+
 \bibitem[Maruzzelli(2017)]{Maruzzelli2017-ou}
 G.~Maruzzelli.
 \newblock \emph{{FreeSWITCH} 1.8}.
@@ -404,6 +423,14 @@ J.~Swalens, S.~Marr, J.~D. Koster, and T.~V. Cutsem.
 \newblock \doi{10.4204/eptcs.155.8}.
 \newblock URL \url{https://doi.org/10.4204/eptcs.155.8}.
 
+\bibitem[Team(2022)]{goprocgo14:online}
+G.~Team.
+\newblock go/proc.go at master · golang/go.
+\newblock
+  \url{https://github.com/golang/go/blob/master/src/runtime/proc.go#L2597},
+  2022.
+\newblock (Accessed on 06/01/2022).
+
 \bibitem[Team()]{ocamlmul59:online}
 O.-M. Team.
 \newblock ocaml-multicore/domainslib: Parallel programming over domains.
@@ -437,6 +464,14 @@ D.~Wolpert and W.~Macready.
   (1):\penalty0 67--82, Apr. 1997.
 \newblock \doi{10.1109/4235.585893}.
 \newblock URL \url{https://doi.org/10.1109/4235.585893}.
+
+\bibitem[Yang and Mellor-Crummey(2016)]{Yang2016}
+C.~Yang and J.~Mellor-Crummey.
+\newblock A wait-free queue as fast as fetch-and-add.
+\newblock In \emph{Proceedings of the 21st {ACM} {SIGPLAN} Symposium on
+  Principles and Practice of Parallel Programming}. {ACM}, Feb. 2016.
+\newblock \doi{10.1145/2851141.2851168}.
+\newblock URL \url{https://doi.org/10.1145/2851141.2851168}.
 
 \bibitem[Zhang et~al.(2014)Zhang, Feng, Wang, and Xie]{latthrough}
 Q.~Zhang, D.~Feng, F.~Wang, and Y.~Xie.

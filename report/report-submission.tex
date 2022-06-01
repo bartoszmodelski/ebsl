@@ -16,6 +16,8 @@
 \usepackage{setspace} % for \onehalfspacing
 \usepackage{refcount} % for counting pages
 \usepackage{upquote}  % for correct quotation marks in verbatim text
+\usepackage{float}
+\usepackage{wrapfig}
 
 
 \usepackage[square,numbers]{natbib}
@@ -365,7 +367,7 @@ An obvious disadvantage to this setup is that this threading model is forced upo
 \label{section:rel-work-rust}
 Rust is another modern imperative programming language that, nonetheless, encompasses a much different philosophy than Go. Historically, performance and safety were a trade-off. For example, memory management was either manual (error-prone, zero-overhead) or handed to the garbage collector (safe, non-trivial overheads). Rust strives to achieve both: safety and performance on par with C++. It applies a number of novel ideas, e.g. ownership system, but they typically come in the form of zero-cost abstractions or static analyzers as adding runtime overheads would quickly make the goal of matching C++ performance unattainable. 
 
-Therefore, threading in Rust's standard library largely maps to OS threads and leaves building out more advanced management to the user. One such attempt is Tokio. An external library, which provides multithreaded runtime and an asynchronous version of standard library.
+Therefore, threading in Rust's standard library largely maps to OS threads and leaves building out more advanced management to the user. One particularly successful attempt is Tokio \cite{TokioAna8:online}. An external library, which provides multithreaded runtime and an asynchronous version of standard library.
 
 Just like Go runtime, Tokio also relies on work stealing to share work. However, it does not abstract out OS threads and relies on a much simpler scheme with a single worker per OS thread and number of OS threads corresponding to number of processing units. As the total number of threads is limited and external library cannot do preemption, such a scheme is prone to liveness issues. Thus, Tokio provides a special spawn\_blocking call to spawn new OS threads on demand for blocking or CPU-intensive computations. 
 
@@ -602,12 +604,21 @@ Notably, Linux kernel developers have made a choice in a similar vein in 2003 wh
 
 \subsection{Promise}
 \label{section:promise}
-Promise is a placeholder value returned by a scheduler for a newly added task. It is similar to an option type, which scheduler fills with the value returned by respective task upon completion. If another thread attempts to read the promise when empty, it becomes blocked until the result is known \cite{Swalens2014}. 
+Promise is a placeholder value returned by a scheduler for a newly added task. It is similar to an option type, which is automatically filled with returned value upon completion of respective task. If another thread attempts to read the promise when empty, it becomes blocked until the result is known \cite{Swalens2014}. 
 
-Fundamentally, promises do not have to be implemented in the runtime. They are a convenient abstraction, that can be built from standard synchronisation primitives as it is in Go \todo{ref to repo}. Nonetheless, including them with the scheduler built in this report encourages good habits in the users and allowed audio mixer 
-\ref{section:bench-audio-mixer} and option pricing \ref{section:bench-option-pricing} benchmarks to be written in a realistic way. 
+\begin{wrapfigure}{r}{0.63\textwidth}
+    \centering
+    \begin{verbatim}
 
-\todo{code listing}
+  val await : 'a Promise.t -> 'a
+  val schedule : (unit -> 'a) -> 'a Promise.t
+    \end{verbatim}
+    \caption{Implemented promise interface.}
+    \label{fig:promise-interface}
+\end{wrapfigure}
+
+
+Fundamentally, promises do not have to be implemented in the runtime. They are a convenient abstraction to avoid busy waiting, that can be built entirely from standard synchronisation primitives. It is the case in Go \cite{chebyras74:online} as with preemption, goroutines tend to be more long-lived than tasks in Rust or OCaml, and similar mechanism is offered by channels. Conversely, they have been indcluded in this project as tasks are very granular and their presence allowed audio mixer \ref{section:bench-audio-mixer} and option pricing \ref{section:bench-option-pricing} benchmarks to be written in a more idiomatic way. Figure \ref{fig:promise-interface} shows the implemented interface. Naturally, it is an eager mechanism - scheduled tasks are executed even if nothing awaits the promise. 
 
 \subsection{Backpressure}
 One of the primary use cases that a scheduler needs to handle is akin to the producer-consumer pattern. For example, in the case of packet processing benchmark (\ref{section:background_packet-processing}), one long-lived task listens to network traffic and spawns a task per request to be picked up by other threads for execution. A common problem in systems organized in that way occurs when producer is faster than consumers, as this fills up queues. This increases mean latency and impedes responsiveness. Moreover, it effectively slows down the system due to intense memory pressure and adverse cache effects.
@@ -659,11 +670,11 @@ The aforementioned observations translated into the following implementations.
 
 \begin{itemize}
     \item Reduce the contention on critical threads by having each thread only target its \textit{n} nearest neighbours in threads array. That creates a hierarchy along which tasks move and prevents the underloaded threads at the bottom of hierarchy from contending in the hotspots. Implemented with nearest 15 and 20 threads.
-    \item Do not steal less than 10 elements as they will be efficiently processed by owner. Instead, look for work elsewhere. 
-    \item Naive work-requesting. A polar opposite of work stealing. Busy thread randomly chooses another thread, which is forced to steal some of the busy thread's load. Implemented as non-sticky, only a single steal is forced, and sticky, in which the victim keeps the target until another thread overrides it. Both cases have highly negative impact on this workload. The single spawner becomes a victim of too many threads for efficient stealing. Further, the actual steal happens only once designated thread runs out of work, what may only happen once the steal is no longer needed.
-    \item Work-requesting from busy to free. Requestor publishes its id in a highly-scalable lock-free queue. Threads looking for work picks up the id from the queue and steals work. This has the benefit of closing the information gap of pure work stealing or naive work-requesting. Only the overloaded and underloaded threads participate, while others remain unaffected.
-    \item Overflow queues. Use extra structure for work distribution and put some tasks into a global queue. Here, spawner thread has a chance of inserting a tasks into global structure. Both Tokio (Rust) and Go (\todo{cite}\url{https://github.com/golang/go/blob/master/src/runtime/proc.go#L2597}) feature global, locked queues for any tasks overflowing local queue. Three queues have been implemented: locked, lock-free, lock-free, 5-multi-queue. \textbf{what effect}
-    \item Local resizing. Stealers aims to take half of its victims tasks. Increasing the size of local structure and the number of awaiting itmes may in turn lead to higher number of items distributed per steal. 
+    \item \textbf{Steal at least 10.} Do not steal less than 10 elements as they will be efficiently processed by owner. Instead, look for work elsewhere. 
+    \item \textbf{Work-shedding}. A polar opposite of work stealing. Busy worker randomly chooses another thread, which is forced to steal some of the busy thread's load. Notably, \ref{workshed} found improvement of tail latency stemming from extending work-stealing with work-shedding on a 32-core machine. Implemented as non-sticky, only a single steal is forced, and sticky, in which the victim keeps the target until another thread overrides it. 
+    \item \textbf{Work-sharing from busy to free}. Requestor publishes its id in a highly-scalable lock-free queue. Threads looking for work picks up the id from the queue and steals work. This has the benefit of closing the information gap of pure work stealing or work-shedding. Only the overloaded and underloaded threads participate, while others remain unaffected.
+    \item \textbf{Overflow queues}. Use extra structure for work distribution and put some tasks into a global queue. Here, spawner thread has a chance of inserting a tasks into global structure. Both Tokio \cite{Makingth53:online} and Go \cite{goprocgo14:online} feature global, locked queues for any tasks overflowing local queue. Three queues have been implemented: locked, lock-free, lock-free, 5-multi-queue. 
+    \item \textbf{Local resizing}. Stealers aims to take half of its victims tasks. Increasing the size of local structure and the number of awaiting itmes may in turn lead to higher number of items distributed per steal. 
 \end{itemize}
 
 \todo{could try doing horizontal scaling}
@@ -680,18 +691,55 @@ Lock-free data structures tend to be difficult to use in the real-world. Firstly
 
 Secondly, the effort required to add new features increases as a function of current complexity. With a single-threaded code, developer implementing a new function can focus solely on the state before and afters its execution. That alone is enough to examine whether the new function fits with the rest of the codebase. Moreover, if the code has no side effects and illegal states are not representable, even just a type check provides high confidence. Thus, such function is correct as long as its internals follow requirement. This could not be further from the truth with lock-free concurrency. In fact, a new function has to be made safe to execute concurrently with entirety of existing codebase. Even if the function is trivial, it may render some seemingly unrelated portion of the code non-linearizable. 
 
-Therefore, this thesis relies on a lock-free structure inspired by \citet{Kappes2021}. The structure is described in detail in the next section. Before that, it is worth touching on the main advantages of such approach. 
-
+Therefore, this thesis relies on lock-free structures inspired by \citet{Kappes2021}. The design is described in detail in the next section. Before that, it is worth touching on the main advantages of such approach. 
 \begin{itemize}
-    \item \textbf{Scalability}. CAS and FAD operations take approximately the same time \cite{fad-cas-speed}, but traditional CAS-based queues scale poorly due to number of CAS fails growing proportionally with number of threads. Here, despite additional CAS required, all the significant contention is resolved by FAD and thus, this algorithm scales similarly to state-of-the-art FAD queues.
+    \item \textbf{Scalability}. It uses fetch and add (FAD) operations for modifying indices. CAS and FAD operations take approximately the same time \cite{fad-cas-speed}, but traditional CAS-based queues scale poorly due to number of CAS retries growing proportionally with number of threads. Here, (despite additional item-level CAS) the contention is resolved by FAD and the whole structure scales similarly to state-of-the-art FAD queues (e.g. \cite{Yang2016}).
+    \item \textbf{Flexibility}. Lock-free implementation can be unwieldy. This posed a particular threat to this thesis, as ultimately, the experiments should aim to evaluate scheduling methodologies rather than just show which underlying data structure can be implemented in the fastest way on existing architecture. The described queue has the benefit of being extremely flexible for a LF algorithm and was adapted to support LIFO, non-blocking returns on full or empty and single-producer scenarios with relative ease.
     \item \textbf{Simplicity}. The base case of this structure takes a little over 10 lines of lines of code. It is unusually concise for a practical multi-producer multi-consumer LF queue. 
-    \item \textbf{Flexibility}. As discussed, lock-free implementation can be unwieldy. This posed a particular threat to this thesis, as ultimately, the experiments should aim to evaluate scheduling methodologies rather than just show which underlying data structure can be implemented in the fastest way on existing architecture. CAS+FAD queue has the benefit of being extremely flexible for a LF data structure and was adapted to support LIFO, non-blocking returns on full or empty and single-producer scenarios with relative ease.
 \end{itemize}
 
+\subsection{MPMC Queue on Infinite Array}
+\label{section:mpmc_queue_on_inf}
+As the first step, it is crucial to understand the main idea behind any multi-producer or multi-consumer FAD-based queue. A particularly intuitive exposition is offered by \cite{Yang2016} (which takes a wait-free direction afterwards). The key simplification is to assume that said queue is built on top of an array of infinite length. 
+
+Functions operating on such an array are presented in listing \ref{fig:basic-enqueue} and \ref{fig:basic-deque}. The enqueuer simply increases the \textit{tail} index by one using an atomic operation, receives the index of its slot in return and stores the enqueued element there. Since the queue is infinite, every slot is only used once. Likewise, the dequeuer begins by increasing the \textit{head} index and receives the index of its slot in return. However, since there is no synchronisation with the tail, the actual slot can still be empty. Either because head overshot the tail or enqueuer is simply slow to finish operation. Thus, dequeur needs to make sure that the slot actually contains an element and once that's established, it returns the element. 
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \centering
+    \begin{verbatim}
+  let enqueue {array; tail; _} element = 
+    let index = Atomic.fetch_and_add tail 1 in
+    let cell = Array.get array index in 
+    Atomic.set cell (Some element)
+  ;;
+    \end{verbatim}
+    \caption{Basic enqueue function.}
+    \label{fig:basic-enqueue}
+\end{wrapfigure}
 
 
+With such a setup both enqueue and dequeue must do two atomic operations (FAD+GET/SET) but the contention is resolved at the \textit{head}, \textit{tail} indices with FAD. Thus, there is never any need to retry in the hotspots. Once past the FAD, each dequeuer is essentially matched up with an enqueuer and a slot to pass the information through. Accesses to the slot need to be atomic as enqueuer and dequeuer may work in parallel. This extra atomic operation is avoidable in some cases and convenient in others (e.g. implementation of cancellations or lightweight yielding \todo{ref}). Overall, it is a constant factor and does not impact scalability of the structure.
+
+
+\begin{wrapfigure}{r}{0.5\textwidth}
+    \centering
+    \begin{verbatim}
+  let dequeue {array; head; _} element = 
+    let index = Atomic.fetch_and_add head 1 in
+    let cell = Array.get array index in 
+    while Option.is_none (Atomic.get cell) do () done;
+    Atomic.get cell
+  ;;
+    \end{verbatim}
+    \caption{Basic deque function.}
+    \label{fig:basic-deque}
+\end{wrapfigure}
 
 \subsection{MPMC Queue Blocking}
+
+While the infinite array is a powerful idea and some designs actually simulate that using a linked list of arrays (e.g. \cite{Sundell2011}), in practise use of circular buffer is far more common. Luckily, the design from \ref{section:mpmc_queue_on_inf} almost work on a circular array.
+
+
 \subsection{Relaxation to SPMC Queue}
 \subsection{SPMC Queue with stealing}
 \subsection{SPMC Stack with FIFO stealing}
@@ -783,9 +831,7 @@ In line with Amdahl's law \cite{amdahl}, it is generally expected that an applic
     \label{fig:packet-with-steal-counts}
 \end{figure}
 
-In the LIFO case, as shown by \ref{fig:packet-with-steal-counts}, the scheduler is unable to maintain the increase in stealing attempts. Such increase is necessary for scalability, as each worker will need more stealing attempts to find the tasks. For example, if 1 out of 2 threads is spawning, the other thread has 100\% hit rate. On the other hand, if it is 1 out of 10 threads, then there are are likely going to be some misses or inefficiencies (minimal amount of work acquired). The diagram shows, that above 80 domains, as the information becomes more dispersed, the scheduler does not increase stealing attempts. In theory, there should be no scalability issues since each new worker also adds a new queue but in practise there is only so much cross-core coordination the processor can handle \todo{MESI link}. This effect compounds, since the starved cores keep retrying, thus impeding the actual useful attempts. Conversely, if there is significantly more work and more time, the tasks saturate the system enough to prevent excessive stealing and observed negative effect does not occur (\ref{fig:packet-10m-throughput}). \todo{rethink this paragraph}
-
-\todo{Could show a diagram of \% of tasks processed by each core.}
+In the LIFO case, as shown by \ref{fig:packet-with-steal-counts}, the scheduler is unable to maintain the increase in stealing attempts. Such increase is necessary for scalability, as each worker will need more stealing attempts to find the tasks. For example, if 1 out of 2 threads is spawning, the other thread has 100\% hit rate. On the other hand, if it is 1 out of 10 threads, then there are are likely going to be some misses or inefficiencies (minimal amount of work acquired). The diagram shows, that above 80 domains, as the information becomes more dispersed, the scheduler does not increase stealing attempts. In theory, there should be no scalability issues since each new worker also adds a new queue but in practise contention increases significantly as starved cores keep retrying and impeding the actual useful attempts. Conversely, if there is significantly more work and more time, the tasks saturate the system enough to prevent excessive stealing and observed negative effect ceases to exist (\ref{fig:packet-10m-throughput}).
 
 \begin{figure} 
      \centering 
@@ -835,8 +881,6 @@ Finally, it is worth stating that this result should not be interpreted as work 
 \subsubsection{Extensions}
 \label{section:extensions}
 
-
-
 \begin{figure} 
      \centering
      \includegraphics[width=0.85\textwidth]{eval/packet-basic-distribution10-granular.png}
@@ -848,9 +892,9 @@ Finally, it is worth stating that this result should not be interpreted as work 
 \S\ref{section:work-distribution-extensions} discussed a number of alternative work distribution mechanisms. The positive results are shown in \ref{fig:packet-extenstions}. Only neighbourhood stealing has shown a clear improvement over the baseline, which is in line with the diagnosis stated in the previous section \S\ref{section:degradation}. It is worth pointing out that such an optimization is going to have a negative effect on coarse-grained workload, where threads higher in the hierarchy are going to be stuck processing tasks for longer and thus not replenish its local structure regularly. 
 
 \label{paragraph:overflow-queue-bad-1}
-Only stealing at least 10 elements had a strong negative effect, as it paradoxically increased the number of underloaded threads and contention on the loaded ones. Similarly, naive work-requesting approaches resulted in other threads overloading the spawner and causing less efficient work distribution than random work-stealing, where tasks often flow through multiple hops, thus reducing the contention in the hotspot. The same effect was observed for simple locked overflow queues (as in Go and Rust) as the spawner has to compete with the workers for the lock.
+Only stealing at least 10 elements had a strong negative effect, as it paradoxically increased the number of underloaded threads and contention on the loaded ones. Similarly, work-shedding approaches (sticky and non-sticky) resulted in other threads overloading the spawner and causing less efficient work distribution than random work-stealing. In pure work-stealing case tasks often flow through multiple hops, thus reducing the contention in the hotspot. The same effect was observed for simple locked overflow queues (as in Go and Rust) as the spawner has to compete with the workers for the lock.
 
-Finally, scalable overflow structures (lock-free queue, multi-queue) and advanced work-requesting had an insignifcant positive effect. They would likely yield a stronger benefit for less heterogenous workload. Likewise, local resizing would be beneficial if starting size of the local structure was small enough.
+Finally, scalable overflow structures (lock-free queue, multi-queue) and work-sharing from busy to free had an insignifcant positive effect. They would likely yield a stronger benefit for less heterogenous workload. Likewise, local resizing would be beneficial if starting size of the local structure was small enough.
 
 \subsection{Server benchmark with cache effects}
 \label{section:server-bench-with-cache-effects}

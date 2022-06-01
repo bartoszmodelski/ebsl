@@ -45,39 +45,40 @@
 \contentsline {subsection}{\numberline {4.5.3}Blocking operations}{32}{subsection.4.5.3}%
 \contentsline {subsection}{\numberline {4.5.4}Yield}{32}{subsection.4.5.4}%
 \contentsline {subsection}{\numberline {4.5.5}Promise}{33}{subsection.4.5.5}%
-\contentsline {subsection}{\numberline {4.5.6}Backpressure}{33}{subsection.4.5.6}%
+\contentsline {subsection}{\numberline {4.5.6}Backpressure}{34}{subsection.4.5.6}%
 \contentsline {subsection}{\numberline {4.5.7}Cancellations}{34}{subsection.4.5.7}%
 \contentsline {chapter}{\numberline {5}Implementation}{35}{chapter.5}%
 \contentsline {section}{\numberline {5.1}Schedulers}{35}{section.5.1}%
 \contentsline {subsection}{\numberline {5.1.1}Work distribution extensions}{36}{subsection.5.1.1}%
 \contentsline {section}{\numberline {5.2}Underlying Data Structures}{37}{section.5.2}%
 \contentsline {subsection}{\numberline {5.2.1}Core Data Structure}{37}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}MPMC Queue Blocking}{38}{subsection.5.2.2}%
-\contentsline {subsection}{\numberline {5.2.3}Relaxation to SPMC Queue}{38}{subsection.5.2.3}%
-\contentsline {subsection}{\numberline {5.2.4}SPMC Queue with stealing}{38}{subsection.5.2.4}%
-\contentsline {subsection}{\numberline {5.2.5}SPMC Stack with FIFO stealing}{38}{subsection.5.2.5}%
-\contentsline {subsection}{\numberline {5.2.6}Sharded Queue}{38}{subsection.5.2.6}%
-\contentsline {subsection}{\numberline {5.2.7}Overflow avoidance}{38}{subsection.5.2.7}%
-\contentsline {subsection}{\numberline {5.2.8}False sharing}{38}{subsection.5.2.8}%
-\contentsline {subsection}{\numberline {5.2.9}Validation}{38}{subsection.5.2.9}%
-\contentsline {subsection}{\numberline {5.2.10}Limitations}{39}{subsection.5.2.10}%
-\contentsline {chapter}{\numberline {6}Evaluation}{40}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Methods}{40}{section.6.1}%
-\contentsline {subsection}{\numberline {6.1.1}Hardware}{40}{subsection.6.1.1}%
-\contentsline {subsection}{\numberline {6.1.2}System}{40}{subsection.6.1.2}%
-\contentsline {subsection}{\numberline {6.1.3}Procedures}{40}{subsection.6.1.3}%
-\contentsline {subsection}{\numberline {6.1.4}Statistical Methods}{41}{subsection.6.1.4}%
-\contentsline {subsection}{\numberline {6.1.5}Probe Effect}{41}{subsection.6.1.5}%
-\contentsline {section}{\numberline {6.2}Server benchmark}{41}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}General Case}{41}{subsection.6.2.1}%
-\contentsline {subsubsection}{Degradation}{43}{section*.37}%
-\contentsline {subsubsection}{Extensions}{46}{section*.44}%
-\contentsline {subsection}{\numberline {6.2.2}Server benchmark with cache effects}{47}{subsection.6.2.2}%
-\contentsline {subsection}{\numberline {6.2.3}Server benchmark with multi-modal processing latency}{48}{subsection.6.2.3}%
-\contentsline {subsubsection}{Other schedulers}{48}{section*.45}%
-\contentsline {section}{\numberline {6.3}Mixer benchmark}{49}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Options Pricer}{49}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Comparison with Domainslib}{50}{section.6.5}%
-\contentsline {chapter}{\numberline {7}Summary and conclusions}{51}{chapter.7}%
-\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{58}{appendix.A}%
-\contentsline {section}{\numberline {A.1}ommited sections}{58}{section.A.1}%
+\contentsline {subsection}{\numberline {5.2.2}MPMC Queue on Infinite Array}{38}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}MPMC Queue Blocking}{39}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}Relaxation to SPMC Queue}{39}{subsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.2.5}SPMC Queue with stealing}{39}{subsection.5.2.5}%
+\contentsline {subsection}{\numberline {5.2.6}SPMC Stack with FIFO stealing}{39}{subsection.5.2.6}%
+\contentsline {subsection}{\numberline {5.2.7}Sharded Queue}{39}{subsection.5.2.7}%
+\contentsline {subsection}{\numberline {5.2.8}Overflow avoidance}{39}{subsection.5.2.8}%
+\contentsline {subsection}{\numberline {5.2.9}False sharing}{39}{subsection.5.2.9}%
+\contentsline {subsection}{\numberline {5.2.10}Validation}{39}{subsection.5.2.10}%
+\contentsline {subsection}{\numberline {5.2.11}Limitations}{40}{subsection.5.2.11}%
+\contentsline {chapter}{\numberline {6}Evaluation}{41}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Methods}{41}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Hardware}{41}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}System}{41}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}Procedures}{41}{subsection.6.1.3}%
+\contentsline {subsection}{\numberline {6.1.4}Statistical Methods}{42}{subsection.6.1.4}%
+\contentsline {subsection}{\numberline {6.1.5}Probe Effect}{42}{subsection.6.1.5}%
+\contentsline {section}{\numberline {6.2}Server benchmark}{42}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}General Case}{42}{subsection.6.2.1}%
+\contentsline {subsubsection}{Degradation}{44}{section*.35}%
+\contentsline {subsubsection}{Extensions}{47}{section*.39}%
+\contentsline {subsection}{\numberline {6.2.2}Server benchmark with cache effects}{48}{subsection.6.2.2}%
+\contentsline {subsection}{\numberline {6.2.3}Server benchmark with multi-modal processing latency}{49}{subsection.6.2.3}%
+\contentsline {subsubsection}{Other schedulers}{49}{section*.40}%
+\contentsline {section}{\numberline {6.3}Mixer benchmark}{50}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Options Pricer}{50}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Comparison with Domainslib}{51}{section.6.5}%
+\contentsline {chapter}{\numberline {7}Summary and conclusions}{52}{chapter.7}%
+\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{59}{appendix.A}%
+\contentsline {section}{\numberline {A.1}ommited sections}{59}{section.A.1}%
