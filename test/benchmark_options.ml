@@ -12,62 +12,6 @@ let price_option ~start_price ~volatility ~total_depth ~t ~call_price ~rate =
   let e = 2.71828 in 
   let deltaT = t /. (Int.to_float total_depth) in 
   let up_move = e ** (volatility *. sqrt(deltaT)) in
-  Printf.printf "up_move: %f\n" up_move;
-  let down_move = 1. /. up_move in
-  let p_of_up_move = 
-    let x = e ** (rate *. deltaT) in 
-    (x -. down_move) /. (up_move -. down_move) 
-  in 
-  (* comptue stock price *)
-  let stock_layer = Array.init (total_depth+1) (fun _ -> 0.) in 
-  let rec f price iter = 
-    if iter == Array.length stock_layer 
-    then () 
-    else
-      let price = price *. (down_move ** 2.) in 
-      Array.set stock_layer iter price;
-      f price (iter+1)
-  in
-  let top_price = start_price *. (up_move ** (Int.to_float total_depth)) in 
-  Array.set stock_layer 0 top_price;
-  f top_price 1;
-  Array.iter (fun v -> Printf.printf "%f," v) stock_layer;
-  let backward_layers = Array.init (total_depth+1) (fun i -> 
-    Array.init (total_depth+1-i) (fun _ -> 0.)) in 
-  (* copy over *)
-  let backward_last = Array.get backward_layers 0 in 
-  Array.iteri  (fun index v -> 
-    let payout = max 0. (v -. call_price) in 
-    Array.set backward_last index payout) 
-    stock_layer;
-  (* backpropagate *)
-  for i = 1 to (Array.length backward_layers) - 1 do 
-    let previous_array = Array.get backward_layers (i-1) in  
-    let current_array = Array.get backward_layers (i) in
-    for j = 0 to (Array.length current_array) - 1 do 
-      let x = Array.get previous_array j in 
-      let y = Array.get previous_array (j+1) in 
-      assert (x >= y);
-      let out = 
-        (p_of_up_move *. x +. (1.-.p_of_up_move) *. y)
-        *. (e ** (-.rate *. deltaT))
-      in
-      Array.set current_array j out;
-    done;
-  done;
-  Printf.printf "\n-----\n";
-  Array.iter (fun arr -> 
-    Array.iter (fun v -> Printf.printf "%f," v) arr; 
-    Printf.printf "|\n") 
-    backward_layers;
-;;
-
-
-let price_option ~start_price ~volatility ~total_depth ~t ~call_price ~rate = 
-  (* inits *)
-  let e = 2.71828 in 
-  let deltaT = t /. (Int.to_float total_depth) in 
-  let up_move = e ** (volatility *. sqrt(deltaT)) in
   let down_move = 1. /. up_move in
   let p_of_up_move = 
     let x = e ** (rate *. deltaT) in 
