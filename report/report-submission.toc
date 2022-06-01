@@ -26,58 +26,60 @@
 \contentsline {section}{\numberline {3.2}Rust}{20}{section.3.2}%
 \contentsline {section}{\numberline {3.3}OCaml}{21}{section.3.3}%
 \contentsline {subsection}{\numberline {3.3.1}Threading}{21}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Effects}{21}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Memory model}{22}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Garbage Collection}{22}{subsection.3.3.4}%
-\contentsline {chapter}{\numberline {4}Design}{23}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Objectives}{23}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Benchmarks}{24}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Packet Processing}{24}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}Audio Mixer}{24}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}Option Pricing}{25}{subsection.4.2.3}%
-\contentsline {section}{\numberline {4.3}Ordering}{25}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{25}{subsection.4.3.1}%
-\contentsline {subsubsection}{Fairness revisited}{26}{section*.22}%
-\contentsline {subsection}{\numberline {4.3.2}Hybrid}{27}{subsection.4.3.2}%
-\contentsline {section}{\numberline {4.4}Contention and locality}{27}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Core Structure Distribution}{28}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Staged}{28}{subsection.4.4.2}%
-\contentsline {section}{\numberline {4.5}Other design choices}{29}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}Work distribution}{29}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {4.5.2}Resizing}{30}{subsection.4.5.2}%
-\contentsline {subsection}{\numberline {4.5.3}Blocking operations}{31}{subsection.4.5.3}%
-\contentsline {subsection}{\numberline {4.5.4}Yield}{31}{subsection.4.5.4}%
-\contentsline {subsection}{\numberline {4.5.5}Promise}{32}{subsection.4.5.5}%
-\contentsline {subsection}{\numberline {4.5.6}Backpressure}{32}{subsection.4.5.6}%
-\contentsline {subsection}{\numberline {4.5.7}Cancellations}{33}{subsection.4.5.7}%
-\contentsline {chapter}{\numberline {5}Implementation}{34}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Schedulers}{34}{section.5.1}%
-\contentsline {subsection}{\numberline {5.1.1}Work distribution extensions}{35}{subsection.5.1.1}%
-\contentsline {section}{\numberline {5.2}Underlying Data Structures}{36}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Core Data Structure}{36}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}MPMC Queue Blocking}{37}{subsection.5.2.2}%
-\contentsline {subsection}{\numberline {5.2.3}Relaxation to SPMC Queue}{37}{subsection.5.2.3}%
-\contentsline {subsection}{\numberline {5.2.4}SPMC Queue with stealing}{37}{subsection.5.2.4}%
-\contentsline {subsection}{\numberline {5.2.5}SPMC Stack with FIFO stealing}{37}{subsection.5.2.5}%
-\contentsline {subsection}{\numberline {5.2.6}Sharded Queue}{37}{subsection.5.2.6}%
-\contentsline {subsection}{\numberline {5.2.7}Overflow avoidance}{37}{subsection.5.2.7}%
-\contentsline {subsection}{\numberline {5.2.8}False sharing}{37}{subsection.5.2.8}%
-\contentsline {subsection}{\numberline {5.2.9}Limitations}{37}{subsection.5.2.9}%
-\contentsline {chapter}{\numberline {6}Evaluation}{38}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Methods}{38}{section.6.1}%
-\contentsline {subsection}{\numberline {6.1.1}Hardware}{38}{subsection.6.1.1}%
-\contentsline {subsection}{\numberline {6.1.2}System}{38}{subsection.6.1.2}%
-\contentsline {subsection}{\numberline {6.1.3}Procedures}{38}{subsection.6.1.3}%
-\contentsline {subsection}{\numberline {6.1.4}Statistical Methods}{39}{subsection.6.1.4}%
-\contentsline {subsection}{\numberline {6.1.5}Probe Effect}{39}{subsection.6.1.5}%
-\contentsline {section}{\numberline {6.2}Server benchmark}{39}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}General Case}{39}{subsection.6.2.1}%
-\contentsline {subsubsection}{Degradation}{41}{section*.45}%
-\contentsline {subsubsection}{Extensions}{44}{section*.52}%
-\contentsline {subsection}{\numberline {6.2.2}Server benchmark with cache effects}{45}{subsection.6.2.2}%
-\contentsline {subsection}{\numberline {6.2.3}Server benchmark with multi-modal processing latency}{46}{subsection.6.2.3}%
-\contentsline {subsubsection}{Other schedulers}{46}{section*.53}%
-\contentsline {section}{\numberline {6.3}Mixer benchmark}{47}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Option Pricer}{47}{section.6.4}%
-\contentsline {chapter}{\numberline {7}Summary and conclusions}{48}{chapter.7}%
-\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{54}{appendix.A}%
+\contentsline {subsection}{\numberline {3.3.2}Effects}{22}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Memory model}{23}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Garbage Collection}{23}{subsection.3.3.4}%
+\contentsline {subsection}{\numberline {3.3.5}Domainslib}{23}{subsection.3.3.5}%
+\contentsline {chapter}{\numberline {4}Design}{24}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Objectives}{24}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Benchmarks}{25}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Packet Processing}{25}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Audio Mixer}{25}{subsection.4.2.2}%
+\contentsline {subsection}{\numberline {4.2.3}Option Pricing}{26}{subsection.4.2.3}%
+\contentsline {section}{\numberline {4.3}Ordering}{26}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{26}{subsection.4.3.1}%
+\contentsline {subsubsection}{Fairness revisited}{27}{section*.23}%
+\contentsline {subsection}{\numberline {4.3.2}Hybrid}{28}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}Contention and locality}{28}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Core Structure Distribution}{29}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.2}Staged}{29}{subsection.4.4.2}%
+\contentsline {section}{\numberline {4.5}Other design choices}{30}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Work distribution}{30}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Resizing}{31}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.3}Blocking operations}{32}{subsection.4.5.3}%
+\contentsline {subsection}{\numberline {4.5.4}Yield}{32}{subsection.4.5.4}%
+\contentsline {subsection}{\numberline {4.5.5}Promise}{33}{subsection.4.5.5}%
+\contentsline {subsection}{\numberline {4.5.6}Backpressure}{33}{subsection.4.5.6}%
+\contentsline {subsection}{\numberline {4.5.7}Cancellations}{34}{subsection.4.5.7}%
+\contentsline {chapter}{\numberline {5}Implementation}{35}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Schedulers}{35}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Work distribution extensions}{36}{subsection.5.1.1}%
+\contentsline {section}{\numberline {5.2}Underlying Data Structures}{37}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Core Data Structure}{37}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}MPMC Queue Blocking}{38}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Relaxation to SPMC Queue}{38}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}SPMC Queue with stealing}{38}{subsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.2.5}SPMC Stack with FIFO stealing}{38}{subsection.5.2.5}%
+\contentsline {subsection}{\numberline {5.2.6}Sharded Queue}{38}{subsection.5.2.6}%
+\contentsline {subsection}{\numberline {5.2.7}Overflow avoidance}{38}{subsection.5.2.7}%
+\contentsline {subsection}{\numberline {5.2.8}False sharing}{38}{subsection.5.2.8}%
+\contentsline {subsection}{\numberline {5.2.9}Limitations}{38}{subsection.5.2.9}%
+\contentsline {chapter}{\numberline {6}Evaluation}{39}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Methods}{39}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Hardware}{39}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}System}{39}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}Procedures}{39}{subsection.6.1.3}%
+\contentsline {subsection}{\numberline {6.1.4}Statistical Methods}{40}{subsection.6.1.4}%
+\contentsline {subsection}{\numberline {6.1.5}Probe Effect}{40}{subsection.6.1.5}%
+\contentsline {section}{\numberline {6.2}Server benchmark}{40}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}General Case}{40}{subsection.6.2.1}%
+\contentsline {subsubsection}{Degradation}{42}{section*.46}%
+\contentsline {subsubsection}{Extensions}{45}{section*.53}%
+\contentsline {subsection}{\numberline {6.2.2}Server benchmark with cache effects}{46}{subsection.6.2.2}%
+\contentsline {subsection}{\numberline {6.2.3}Server benchmark with multi-modal processing latency}{47}{subsection.6.2.3}%
+\contentsline {subsubsection}{Other schedulers}{47}{section*.54}%
+\contentsline {section}{\numberline {6.3}Mixer benchmark}{48}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Options Pricer}{48}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Comparison with Domainslib}{49}{section.6.5}%
+\contentsline {chapter}{\numberline {7}Summary and conclusions}{50}{chapter.7}%
+\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{56}{appendix.A}%

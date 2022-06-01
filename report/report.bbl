@@ -1,4 +1,4 @@
-\begin{thebibliography}{51}
+\begin{thebibliography}{54}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -182,6 +182,12 @@ D.~Geer.
 \newblock \doi{10.1109/mc.2005.160}.
 \newblock URL \url{https://doi.org/10.1109/mc.2005.160}.
 
+\bibitem[HashiCorp()]{NomadbyH95:online}
+HashiCorp.
+\newblock Nomad by hashicorp.
+\newblock \url{https://www.nomadproject.io/}.
+\newblock (Accessed on 06/01/2022).
+
 \bibitem[Herlihy et~al.(2021)Herlihy, Shavit, Luchangco, and
   Spear]{art_of_mult}
 M.~Herlihy, N.~Shavit, V.~Luchangco, and M.~Spear.
@@ -201,6 +207,14 @@ Y.~Ho and D.~Pepyne.
   (3):\penalty0 549--570, Dec. 2002.
 \newblock \doi{10.1023/a:1021251113462}.
 \newblock URL \url{https://doi.org/10.1023/a:1021251113462}.
+
+\bibitem[Hull(2005)]{Hull_John}
+J.~Hull.
+\newblock \emph{Options, Futures And Other Derivatives}.
+\newblock Pearson College Div, hardcover edition, 6 2005.
+\newblock ISBN 978-0131499089.
+\newblock URL
+  \url{https://lead.to/amazon/com/?op=bt&la=en&cu=usd&key=0131499084}.
 
 \bibitem[Igel and Toussaint(2005)]{Igel2005}
 C.~Igel and M.~Toussaint.
@@ -360,6 +374,12 @@ J.~Swalens, S.~Marr, J.~D. Koster, and T.~V. Cutsem.
   155:\penalty0 54--60, June 2014.
 \newblock \doi{10.4204/eptcs.155.8}.
 \newblock URL \url{https://doi.org/10.4204/eptcs.155.8}.
+
+\bibitem[Team()]{ocamlmul59:online}
+O.-M. Team.
+\newblock ocaml-multicore/domainslib: Parallel programming over domains.
+\newblock \url{https://github.com/ocaml-multicore/domainslib}.
+\newblock (Accessed on 06/01/2022).
 
 \bibitem[Tennenhouse(1989)]{Tennenhouse89layeredmultiplexing}
 D.~L. Tennenhouse.

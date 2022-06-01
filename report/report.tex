@@ -248,11 +248,13 @@ Scheduling attempts to assign resources to tasks in a way that optimizes some me
 
 
 \subsection{System Threads}
+\label{section:system-threads}
 System threads are a fundamental OS feature, which allows to detach the number of synchronous executions from the number of processing units. All kinds of program grew to rely on this abstraction heavily. For example, Google Chrome spawns a single process per tab \cite{Howwebbr64:online}, and depending on the logic, each such process spawns additional threads. This aggressive acquisition of resources leads to smooth operation of the web browser but puts significant pressure on the operating system, which has to ensure that in the sea of threads everything gets a fair share of the CPU time and their individual objectives are achieved, e.g. a heavy web browser and light but latency-sensitive audio driver.
 
 
 
 \subsection{Lightweight Threads}
+\label{section:lightweight-threads}
 System threading provides the fundamental mechanisms to execute concurrent workloads across parallel hardware. But programmers need to be wary of designed computations as the cost of interacting with kernel is non-trivial. It may vary from mode switching to full syscall overhead. System call logic requires a number of things to happen (such as a, b, c) and that easily thwarts the cost of a small task. Thus, the performance of highly concurrent workloads suffers significantly.
 
 This is inconvenient for the developers. Spawning little concurrent tasks is the natural way to express many common server-side workloads, e.g. processing HTTP requests. Therefore, language designers started to construct lightweight threads, what stands for threading implemented entirely in the user space. They aim to be very cheap to use and they do deliver on that promise. Context switch in Go requires saving and restoring just 3 registers \cite{gorout_vs_os_thread}. In OCaml only 2 \cite{Sivaramakrishnan2021}. Conversely, a system scheduler needs to save and restore \textit{all} registers and also perform mode switching \cite{gorout_vs_os_thread}. Therefore, lightweight threads are naturally better suited to support fine-grained concurrency. The next section touches on a disadvantage of not having access to privileged mode \ref{section:preemption}. 
@@ -279,6 +281,7 @@ Work-stealing splits the global work queue (in the FIFO case) into a number of l
     \item \textbf{Locality}. Children tasks are likely to execute on the same processor as their parents, what maximizes the locality and improves overall performance.
 \end{itemize}
 
+\label{paragraph:deque}
 Chase-Lev deque (double-ended queue) \cite{Chase2005} is one of the notable, classic work stealing implementations. Its design is similar to the example describe above but while steal remains FIFO, local insertions and removal follow LIFO order. It aimed to minimize required synchronisation, since local thread operates at one end of the structure and steal at the other but, incidentally, also improves locality of the workload \ref{section:approaches}. 
 
 \todo{mention deque}
@@ -357,8 +360,12 @@ Note stronger memory model \ref{section:memory_model}.
 
 \chapter{Related work}
 
-\todo{Scheduling is a very literature-rich part of computer science. Summarising all the research up to date is far beyond the scope of this section. Therefore, I have selected two very modern and mature runtime schedulers, and analyzed them in depth. Go boasts to offer a very good concurrency support and its one of the main selling points. Rust is a high-perf language, it is a library scherules and non-preemptive! There is also Domainslib but its at a much earlier stage. It features a classic deque design. In the last section it is benchmarked against this project.}
+Scheduling is omnipresent in computer science. It may happen at multiple levels simultaneously: data-center orchestration \cite{NomadbyH95:online}, OS-level threading (\S\ref{section:system-threads}) and runtime threads (\S\ref{section:lightweight-threads}). The field is very rich in literature and applications. Therefore, instead of summarising all the related work (which would be beyond the scope of this report), this section takes a close look at the design of two modern runtime schedulers. Project work and design decisions tie back to this review. 
 
+The first analyzed runtime is part of the Go programming language (\S
+\label{section:rel-work-go}). The excellent support for concurrency is one of its main features. Just like OCaml, it is a high-level language with features like garbage collection. However, OCaml also strives strongly to maintain high-performance, does not feature preemption or a built-in runtime scheduling. Therefore, the second reviewed scheduler is Tokio (\S\ref{section:rel-work-rust}), which is a Rust library. It covers all of the mentioned discrepancies.
+
+Finally, OCaml's unique features for supporting concurrency and parallelism are discussed. 
 
 \section{Go}
 \label{section:rel-work-go}
@@ -431,7 +438,6 @@ Other languages depend on global data race freedom. That does not facilitate rea
 
 OCaml Multicore features a local data race freedom property, which guarantees that races are bound in space and time. 
 
-
 \todo{fill in}
 
 \subsection{Garbage Collection}
@@ -439,11 +445,11 @@ Could mention a bit, as some charts actually explain the performance by promotio
 
 \todo{fill in}
 
+\subsection{Domainslib}
 
+Notably, OCaml ecosystem already has a scheduler endorsed by OCaml core developers \cite{ocamlmul59:online}. It has not been chosen as one of the dissected schedulers as multicore OCaml is not yet widely adopted. Thus Domainslib is not yet mature and its design closely follows the deque (\S\ref{paragraph:deque}). Nonetheless, it is compared against this project in (\S\ref{section:result_with_domainslib}).
 
 \chapter{Design}
-
-
 This chapter describes the design space of a scheduler. First, \S\ref{section:objectives} states the desirable properties and metrics to evaluate scheduling policies. Afterwards, major approaches are described and other design choices are discussed in the remainder. 
 
 \section{Objectives}
@@ -497,9 +503,6 @@ Interesting task-spawning pattern here.
 
 Option pricing -> DP
 Smith waterman is almost the same as option pricing  
-
-
-
 
 \section{Ordering}
 \label{section:approaches}
@@ -599,8 +602,7 @@ On the other hand, this same mechanism becomes harder to accept for regular work
 dump into na mpmc queue is better than forcing a victimg because it will not act on another busy thread. 
 
 
-\todo{
-In the case of staged architecture this is not a problem.}
+\todo{In the case of staged architecture this is not a problem.}
 
 
 \subsection{Resizing}
@@ -708,20 +710,21 @@ This section describes the implemented schedulers and, briefly, underlying lock-
 
 \subsection{Core Data Structure}
 
-Lock-free data structures tend to be difficult to use in the real-world. Firstly, all assumptions about their naive counterparts are off once fine-grained concurrency is in place. For example, such a simple method as size() often turns out to be non-trivial to make linearizable \ref{section:linearizability} when size of a linked-list or circular queue changes in multiple places at once. This makes the trade-off space far more complex and points in that space (algorithms) more varied than in the single-thread world.
+Lock-free data structures tend to be difficult to use in the real-world. Firstly, all assumptions about their naive counterparts are off once fine-grained concurrency is in place. For example, such a simple method as size() often turns out to be non-trivial to make linearizable (\S\ref{section:linearizability}) when size of a linked-list or circular queue changes in multiple places at once. This makes the trade-off space far more complex and points in that space (algorithms) more varied than in the single-thread world.
 
 Secondly, the effort required to add new features increases as a function of current complexity. With a single-threaded code, developer implementing a new function can focus solely on the state before and afters its execution. That alone is enough to examine whether the new function fits with the rest of the codebase. Moreover, if the code has no side effects and illegal states are not representable, even just a type check provides high confidence. Thus, such function is correct as long as its internals follow requirement. This could not be further from the truth with lock-free concurrency. In fact, a new function has to be made safe to execute concurrently with entirety of existing codebase. Even if the function is trivial, it may render some seemingly unrelated portion of the code non-linearizable. 
 
 Therefore, this thesis relies on a lock-free structure inspired by \citet{Kappes2021}. The structure is described in detail in the next section. Before that, it is worth touching on the main advantages of such approach. 
 
 \begin{itemize}
-    \item \textbf{Scalability}. CAS and FAD operations take approximately the same time \textbf{PAPER B}, but traditional CAS-based queues scale poorly due to number of CAS fails growing proportionally with number of threads. Here, despite additional CAS required, all the significant contention is resolved by FAD (\textbf{See result X}.) and thus, this algorithm scales similarly to state-of-the-art FAD queues.
+    \item \textbf{Scalability}. CAS and FAD operations take approximately the same time \cite{fad-cas-speed}, but traditional CAS-based queues scale poorly due to number of CAS fails growing proportionally with number of threads. Here, despite additional CAS required, all the significant contention is resolved by FAD and thus, this algorithm scales similarly to state-of-the-art FAD queues.
     \item \textbf{Simplicity}. The base case of this structure takes a little over 10 lines of lines of code. It is unusually concise for a practical multi-producer multi-consumer LF queue. 
     \item \textbf{Flexibility}. As discussed, lock-free implementation can be unwieldy. This posed a particular threat to this thesis, as ultimately, the experiments should aim to evaluate scheduling methodologies rather than just show which underlying data structure can be implemented in the fastest way on existing architecture. CAS+FAD queue has the benefit of being extremely flexible for a LF data structure and was adapted to support LIFO, non-blocking returns on full or empty and single-producer scenarios with relative ease.
 \end{itemize}
 
 
 \todo{describe fast local queue}
+
 
 
 \subsection{MPMC Queue Blocking}
@@ -937,17 +940,23 @@ The mixer benchmark represents a particularly complicated but real use case. It 
 Such a workload is particularly difficult to optimize for due to its complexity. It features short-lived and long-lived tasks. Some tasks benefit from cache locality, while others not. Many details will vary over time, e.g. distribution of number of people in mixers (as conference could have anywhere from 3 to hundreds people), length of calls, codec selection, media routes (IP-to-IP) \cite{Frequent1:online}, etc. Moreover, the workload makes heavy use of many high-level features such as yielding (\S\ref{section:yield}) and promises (\S\ref{section:promise}), which are not the typical targets of high-performance optimizations. Therefore, in this case, the robustness is just as important as overall performance. 
 
 
-\section{Option Pricer}
+\section{Options Pricer}
+Option contracts are financial derivative instruments, which provide the holder with an option (but not an obligation) to make a trade as specified by the contract. For example, a european call option on Google with strike price of \$2600 and expiration date of 2022-03-06 lets the holder buy a specified number of Google shares at the specified price and on the specified date only \cite{Hull_John}. Value of an option depends on the value of its underlying at expiration. If the underlying is more expensive than strke price, holder can exercise the option and sell the underlying with profit equal to the difference. Conversley, if strike price is higher than the underlying, value of option is zero.  
+
+Binomial model estimates value of an option in multiple steps. First, it simulates price changes of the underlying in time, e.g. for the next year, in a number of steps. Each step assumes that price of the underlying can increase or decrease by set amount. Once the future prices are known, it calculates the option payoffs for every possible path taken by the underlying's price. Finally, knowing the expected value of each path and its likelihood, it can calculate overall expectation at present time. Despite its simplicity, this model is still widely used in practise as it is e.g. easier to include additional contract features than in the Black-Scholes model \todo{binomial better}. 
+
+\todo{could simplify this to monte carlo options pricer for the benefit of the reader}
+
+
+
+It is known to be hard to parallilze \todo{the two citations.}. Therefore, it was only made concurrent. Therefore, a simple parallelizaiton technique was applied. 
 
 Trading shops tend to be organized around 3 feedback loops. s
-
-Modern derivate markets offer 
-Options 
 Continous option pricing. 
-
 Any options trading shop has multiple pricing mechanisms. Hot loop, warm loop, cold loop
 
 \section{Comparison with Domainslib}
+\label{section:result_with_domainslib}
 Two benchmarks have been selected 
 
 
@@ -964,6 +973,11 @@ Try adding cpu relax, which may not be best placed inside the structure itself.f
 
 
 \chapter{Summary and conclusions}
+
+This project has delivered a number of 
+
+
+Findings: 
 
 As you might imagine: summarizes the dissertation, and draws any
 conclusions. Depending on the length of your work, and how well you
