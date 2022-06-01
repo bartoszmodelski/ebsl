@@ -94,7 +94,8 @@ let price_option_slimmed ~start_price ~volatility ~total_depth ~t ~call_price ~r
     Array.set !forward_layer index payout) 
     stock_layer;
   (* backpropagate *)
-  for i = 1 to total_depth do 
+  for i = 0 to total_depth-1 do 
+    Printf.printf "\n";
     for j = 0 to total_depth - 1 - i do 
       let x = Array.get !forward_layer j in 
       let y = Array.get !forward_layer (j+1) in 
