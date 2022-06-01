@@ -1,4 +1,4 @@
-\begin{thebibliography}{51}
+\begin{thebibliography}{58}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -68,6 +68,14 @@ C.~Agastya, D.~Mechanic, and N.~Kothari.
 \newblock 2009.
 \newblock \doi{10.7916/D80Z794V}.
 \newblock URL \url{https://academiccommons.columbia.edu/doi/10.7916/D80Z794V}.
+
+\bibitem[Alglave et~al.(2011)Alglave, Maranget, Sarkar, and Sewell]{litmus}
+J.~Alglave, L.~Maranget, S.~Sarkar, and P.~Sewell.
+\newblock Litmus: Running tests against hardware.
+\newblock In P.~A. Abdulla and K.~R.~M. Leino, editors, \emph{Tools and
+  Algorithms for the Construction and Analysis of Systems}, pages 41--44,
+  Berlin, Heidelberg, 2011. Springer Berlin Heidelberg.
+\newblock ISBN 978-3-642-19835-9.
 
 \bibitem[Amin et~al.(2013)Amin, Jackson, Gilbert, Martin, and Shaw]{Amin2013}
 R.~Amin, F.~Jackson, J.~E. Gilbert, J.~Martin, and T.~Shaw.
@@ -182,6 +190,12 @@ D.~Geer.
 \newblock \doi{10.1109/mc.2005.160}.
 \newblock URL \url{https://doi.org/10.1109/mc.2005.160}.
 
+\bibitem[HashiCorp()]{NomadbyH95:online}
+HashiCorp.
+\newblock Nomad by hashicorp.
+\newblock \url{https://www.nomadproject.io/}.
+\newblock (Accessed on 06/01/2022).
+
 \bibitem[Herlihy et~al.(2021)Herlihy, Shavit, Luchangco, and
   Spear]{art_of_mult}
 M.~Herlihy, N.~Shavit, V.~Luchangco, and M.~Spear.
@@ -202,6 +216,14 @@ Y.~Ho and D.~Pepyne.
 \newblock \doi{10.1023/a:1021251113462}.
 \newblock URL \url{https://doi.org/10.1023/a:1021251113462}.
 
+\bibitem[Hull(2005)]{Hull_John}
+J.~Hull.
+\newblock \emph{Options, Futures And Other Derivatives}.
+\newblock Pearson College Div, hardcover edition, 6 2005.
+\newblock ISBN 978-0131499089.
+\newblock URL
+  \url{https://lead.to/amazon/com/?op=bt&la=en&cu=usd&key=0131499084}.
+
 \bibitem[Igel and Toussaint(2005)]{Igel2005}
 C.~Igel and M.~Toussaint.
 \newblock A no-free-lunch theorem for non-uniform distributions of target
@@ -210,6 +232,12 @@ C.~Igel and M.~Toussaint.
   (4):\penalty0 313--322, Jan. 2005.
 \newblock \doi{10.1007/s10852-005-2586-y}.
 \newblock URL \url{https://doi.org/10.1007/s10852-005-2586-y}.
+
+\bibitem[Jaffer()]{sadiqjds97:online}
+S.~Jaffer.
+\newblock sadiqj/dscheck.
+\newblock \url{https://github.com/sadiqj/dscheck}.
+\newblock (Accessed on 06/01/2022).
 
 \bibitem[Kappes and Anastasiadis(2021)]{Kappes2021}
 G.~Kappes and S.~V. Anastasiadis.
@@ -255,6 +283,15 @@ M.~Kleppmann.
 \newblock \emph{Designing data-intensive applications}.
 \newblock O'Reilly Media, Sebastopol, CA, Mar. 2017.
 
+\bibitem[L\^{e} et~al.(2013)L\^{e}, Pop, Cohen, and
+  Zappa~Nardelli]{correct_and_efficiect_deque}
+N.~M. L\^{e}, A.~Pop, A.~Cohen, and F.~Zappa~Nardelli.
+\newblock Correct and efficient work-stealing for weak memory models.
+\newblock \emph{SIGPLAN Not.}, 48\penalty0 (8):\penalty0 69–80, feb 2013.
+\newblock ISSN 0362-1340.
+\newblock \doi{10.1145/2517327.2442524}.
+\newblock URL \url{https://doi.org/10.1145/2517327.2442524}.
+
 \bibitem[Maruzzelli(2017)]{Maruzzelli2017-ou}
 G.~Maruzzelli.
 \newblock \emph{{FreeSWITCH} 1.8}.
@@ -268,6 +305,12 @@ R.~B. Miller.
   Press, 1968.
 \newblock \doi{10.1145/1476589.1476628}.
 \newblock URL \url{https://doi.org/10.1145/1476589.1476628}.
+
+\bibitem[Modelski()]{bartoszm90:online}
+B.~Modelski.
+\newblock bartoszmodelski/ebsl.
+\newblock \url{https://github.com/bartoszmodelski/ebsl}.
+\newblock (Accessed on 06/01/2022).
 
 \bibitem[Moore(2006)]{Moore2006}
 G.~E. Moore.
@@ -360,6 +403,12 @@ J.~Swalens, S.~Marr, J.~D. Koster, and T.~V. Cutsem.
   155:\penalty0 54--60, June 2014.
 \newblock \doi{10.4204/eptcs.155.8}.
 \newblock URL \url{https://doi.org/10.4204/eptcs.155.8}.
+
+\bibitem[Team()]{ocamlmul59:online}
+O.-M. Team.
+\newblock ocaml-multicore/domainslib: Parallel programming over domains.
+\newblock \url{https://github.com/ocaml-multicore/domainslib}.
+\newblock (Accessed on 06/01/2022).
 
 \bibitem[Tennenhouse(1989)]{Tennenhouse89layeredmultiplexing}
 D.~L. Tennenhouse.

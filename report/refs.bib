@@ -538,6 +538,32 @@ year = {},
 note = {(Accessed on 05/18/2022)}
 }
 
+@InProceedings{litmus,
+author="Alglave, Jade
+and Maranget, Luc
+and Sarkar, Susmit
+and Sewell, Peter",
+editor="Abdulla, Parosh Aziz
+and Leino, K. Rustan M.",
+title="Litmus: Running Tests against Hardware",
+booktitle="Tools and Algorithms for the Construction and Analysis of Systems",
+year="2011",
+publisher="Springer Berlin Heidelberg",
+address="Berlin, Heidelberg",
+pages="41--44",
+abstract="Shared memory multiprocessors typically expose subtle, poorly understood and poorly specified relaxed-memory semantics to programmers. To understand them, and to develop formal models to use in program verification, we find it essential to take an empirical approach, testing what results parallel programs can actually produce when executed on the hardware. We describe a key ingredient of our approach, our litmus tool, which takes small `litmus test' programs and runs them for many iterations to find interesting behaviour. It embodies various techniques for making such interesting behaviour appear more frequently.",
+isbn="978-3-642-19835-9"
+}
+
+@misc{sadiqjds97:online,
+author = {Sadiq Jaffer},
+title = {sadiqj/dscheck},
+howpublished = {\url{https://github.com/sadiqj/dscheck}},
+month = {},
+year = {},
+note = {(Accessed on 06/01/2022)}
+}
+
 @article{fad-cas-speed,
   doi = {10.48550/ARXIV.2010.09852},
   url = {https://arxiv.org/abs/2010.09852},
@@ -628,3 +654,51 @@ month = {},
 year = {},
 note = {(Accessed on 06/01/2022)}
 }
+
+@misc{bartoszm90:online,
+author = {Bartosz Modelski},
+title = {bartoszmodelski/ebsl},
+howpublished = {\url{https://github.com/bartoszmodelski/ebsl}},
+month = {},
+year = {},
+note = {(Accessed on 06/01/2022)}
+}
+
+@inproceedings{10.1145/2442516.2442524,
+author = {L\^{e}, Nhat Minh and Pop, Antoniu and Cohen, Albert and Zappa Nardelli, Francesco},
+title = {Correct and Efficient Work-Stealing for Weak Memory Models},
+year = {2013},
+isbn = {9781450319225},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2442516.2442524},
+doi = {10.1145/2442516.2442524},
+abstract = {Chase and Lev's concurrent deque is a key data structure in shared-memory parallel programming and plays an essential role in work-stealing schedulers. We provide the first correctness proof of an optimized implementation of Chase and Lev's deque on top of the POWER and ARM architectures: these provide very relaxed memory models, which we exploit to improve performance but considerably complicate the reasoning. We also study an optimized x86 and a portable C11 implementation, conducting systematic experiments to evaluate the impact of memory barrier optimizations. Our results demonstrate the benefits of hand tuning the deque code when running on top of relaxed memory models.},
+booktitle = {Proceedings of the 18th ACM SIGPLAN Symposium on Principles and Practice of Parallel Programming},
+pages = {69–80},
+numpages = {12},
+keywords = {relaxed memory model, work-stealing, proof, lock-free algorithm},
+location = {Shenzhen, China},
+series = {PPoPP '13}
+}
+
+@article{correct_and_efficiect_deque,
+author = {L\^{e}, Nhat Minh and Pop, Antoniu and Cohen, Albert and Zappa Nardelli, Francesco},
+title = {Correct and Efficient Work-Stealing for Weak Memory Models},
+year = {2013},
+issue_date = {August 2013},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {48},
+number = {8},
+issn = {0362-1340},
+url = {https://doi.org/10.1145/2517327.2442524},
+doi = {10.1145/2517327.2442524},
+abstract = {Chase and Lev's concurrent deque is a key data structure in shared-memory parallel programming and plays an essential role in work-stealing schedulers. We provide the first correctness proof of an optimized implementation of Chase and Lev's deque on top of the POWER and ARM architectures: these provide very relaxed memory models, which we exploit to improve performance but considerably complicate the reasoning. We also study an optimized x86 and a portable C11 implementation, conducting systematic experiments to evaluate the impact of memory barrier optimizations. Our results demonstrate the benefits of hand tuning the deque code when running on top of relaxed memory models.},
+journal = {SIGPLAN Not.},
+month = {feb},
+pages = {69–80},
+numpages = {12},
+keywords = {proof, relaxed memory model, work-stealing, lock-free algorithm}
+}
+

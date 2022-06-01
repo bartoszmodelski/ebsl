@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  1 JUN 2022 03:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  1 JUN 2022 17:55
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -554,11 +554,7 @@ File: l3backend-pdftex.def 2022-01-12 L3 backend support: PDF output (pdfTeX)
 \l__color_backend_stack_int=\count301
 \l__pdf_internal_box=\box61
 )
-(./report.aux
-
-LaTeX Warning: Label `section:rel-work-go' multiply defined.
-
-)
+(./report.aux)
 \openout1 = `report.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 42.
@@ -653,17 +649,11 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-<logo-dcst-colour.pdf, id=332, 185.69376pt x 70.2625pt>
+<logo-dcst-colour.pdf, id=324, 185.69376pt x 70.2625pt>
 File: logo-dcst-colour.pdf Graphic file (type pdf)
 <use logo-dcst-colour.pdf>
 Package pdftex.def Info: logo-dcst-colour.pdf  used on input line 50.
 (pdftex.def)             Requested size: 184.9429pt x 69.98035pt.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <24.88> on input line 74.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <20.74> on input line 74.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <17.28> on input line 74.
 
 [1
 
@@ -701,33 +691,25 @@ of the avail-able par-al-lelism. Compute-
 
 [10] [11]
 Chapter 2.
-<scheduler_graph.png, id=537, 698.61pt x 272.01625pt>
+<scheduler_graph.png, id=527, 698.61pt x 272.01625pt>
 File: scheduler_graph.png Graphic file (type png)
 <use scheduler_graph.png>
-Package pdftex.def Info: scheduler_graph.png  used on input line 244.
+Package pdftex.def Info: scheduler_graph.png  used on input line 242.
 (pdftex.def)             Requested size: 386.96027pt x 150.67195pt.
 [12
 
-] [13 <./scheduler_graph.png>] [14] [15] [16]
-
-LaTeX Warning: Marginpar on page 17 moved.
-
-[17] [18]
+] [13 <./scheduler_graph.png>] [14] [15] [16] [17] [18]
 Chapter 3.
 [19
 
 ] [20]
-Overfull \hbox (31.06438pt too wide) in paragraph at lines 416--417
+Overfull \hbox (31.06438pt too wide) in paragraph at lines 387--388
 \OT1/cmtt/m/n/12 ocaml-[]multicore / ocaml-[]multicore / wiki / Concurrency-[]a
 nd-[]parallelism-[]design-[]notes$[]\OT1/cmr/m/n/12 ). 
  []
 
 [21] [22] [23]
 Chapter 4.
-
-Package natbib Warning: Citation `paragraph:ocaml_preemption' on page 24 undefi
-ned on input line 465.
-
 [24
 
 ]
@@ -735,19 +717,12 @@ ned on input line 465.
 LaTeX Warning: Marginpar on page 25 moved.
 
 [25] [26]
-<FIFOLIFO.png, id=703, 824.07875pt x 241.90375pt>
+<FIFOLIFO.png, id=693, 824.07875pt x 241.90375pt>
 File: FIFOLIFO.png Graphic file (type png)
 <use FIFOLIFO.png>
-Package pdftex.def Info: FIFOLIFO.png  used on input line 525.
+Package pdftex.def Info: FIFOLIFO.png  used on input line 488.
 (pdftex.def)             Requested size: 455.24411pt x 133.63435pt.
- [27 <./FIFOLIFO.png>]
-
-LaTeX Warning: Marginpar on page 28 moved.
-
-
-LaTeX Warning: Marginpar on page 28 moved.
-
-[28] [29] [30] [31]
+ [27 <./FIFOLIFO.png>] [28] [29] [30] [31]
 
 LaTeX Warning: Marginpar on page 32 moved.
 
@@ -755,7 +730,7 @@ LaTeX Warning: Marginpar on page 32 moved.
 LaTeX Warning: Marginpar on page 32 moved.
 
 [32]
-Overfull \hbox (76.69481pt too wide) in paragraph at lines 636--637
+Overfull \hbox (76.69481pt too wide) in paragraph at lines 599--600
 \OT1/cmr/m/n/12 tasks were changed to en-queue to ex-pired queue rather than ru
 n queue (https://lwn.net/Articles/31462/). 
  []
@@ -764,116 +739,115 @@ n queue (https://lwn.net/Articles/31462/).
 Chapter 5.
 [35
 
-]
+] [36]
 
-Package natbib Warning: Citation `section:benchmark-general-case' on page 36 un
-defined on input line 681.
+LaTeX Warning: Marginpar on page 37 moved.
 
-[36] [37] [38]
+[37] [38] [39]
 Chapter 6.
-[39
+[40
 
 ]
-<eval/packet-basic-with-steal-counts2std.png, id=836, 734.62456pt x 1354.3398pt
+<eval/packet-basic-with-steal-counts2std.png, id=834, 734.62456pt x 1354.3398pt
 >
 File: eval/packet-basic-with-steal-counts2std.png Graphic file (type png)
 <use eval/packet-basic-with-steal-counts2std.png>
 Package pdftex.def Info: eval/packet-basic-with-steal-counts2std.png  used on i
-nput line 789.
+nput line 758.
 (pdftex.def)             Requested size: 386.96027pt x 713.41559pt.
 
 
-LaTeX Warning: Float too large for page by 9.01306pt on input line 792.
+LaTeX Warning: Float too large for page by 9.01306pt on input line 761.
 
-[40] [41 <./eval/packet-basic-with-steal-counts2std.png>]
-<eval/packet-basic-with-steal-counts2.png, id=852, 716.1957pt x 263.0628pt>
+[41] [42 <./eval/packet-basic-with-steal-counts2std.png>]
+<eval/packet-basic-with-steal-counts2.png, id=850, 716.1957pt x 263.0628pt>
 File: eval/packet-basic-with-steal-counts2.png Graphic file (type png)
 <use eval/packet-basic-with-steal-counts2.png>
 Package pdftex.def Info: eval/packet-basic-with-steal-counts2.png  used on inpu
-t line 812.
+t line 781.
 (pdftex.def)             Requested size: 386.96027pt x 142.13206pt.
- [42 <./eval/packet-basic-with-steal-counts2.png>]
+ [43 <./eval/packet-basic-with-steal-counts2.png>]
 
-LaTeX Warning: Marginpar on page 43 moved.
+LaTeX Warning: Marginpar on page 44 moved.
 
-<eval/packet-basic-counters.png, id=863, 716.1957pt x 263.0628pt>
+<eval/packet-basic-counters.png, id=862, 716.1957pt x 263.0628pt>
 File: eval/packet-basic-counters.png Graphic file (type png)
 <use eval/packet-basic-counters.png>
-Package pdftex.def Info: eval/packet-basic-counters.png  used on input line 823
+Package pdftex.def Info: eval/packet-basic-counters.png  used on input line 792
 .
 (pdftex.def)             Requested size: 386.96027pt x 142.13206pt.
 
-LaTeX Warning: Marginpar on page 43 moved.
+LaTeX Warning: Marginpar on page 44 moved.
 
-<eval/packet-basic-10million-just-throughput.png, id=865, 734.62456pt x 263.062
+<eval/packet-basic-10million-just-throughput.png, id=864, 734.62456pt x 263.062
 8pt>
 File: eval/packet-basic-10million-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-10million-just-throughput.png>
 Package pdftex.def Info: eval/packet-basic-10million-just-throughput.png  used 
-on input line 835.
+on input line 804.
 (pdftex.def)             Requested size: 386.96027pt x 138.57164pt.
-<eval/packet-basic-slowed_2.png, id=866, 717.6411pt x 263.0628pt>
+<eval/packet-basic-slowed_2.png, id=865, 717.6411pt x 263.0628pt>
 File: eval/packet-basic-slowed_2.png Graphic file (type png)
 <use eval/packet-basic-slowed_2.png>
-Package pdftex.def Info: eval/packet-basic-slowed_2.png  used on input line 843
+Package pdftex.def Info: eval/packet-basic-slowed_2.png  used on input line 812
 .
 (pdftex.def)             Requested size: 386.96027pt x 141.84708pt.
-<eval/packet-basic-4spawners-just-throughput.png, id=867, 717.6411pt x 263.0628
+<eval/packet-basic-4spawners-just-throughput.png, id=866, 717.6411pt x 263.0628
 pt>
 File: eval/packet-basic-4spawners-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-4spawners-just-throughput.png>
 Package pdftex.def Info: eval/packet-basic-4spawners-just-throughput.png  used 
-on input line 851.
+on input line 820.
 (pdftex.def)             Requested size: 386.96027pt x 141.84708pt.
-[43 <./eval/packet-basic-counters.png> <./eval/packet-basic-10million-just-thro
-ughput.png>] [44 <./eval/packet-basic-slowed_2.png> <./eval/packet-basic-4spawn
+[44 <./eval/packet-basic-counters.png> <./eval/packet-basic-10million-just-thro
+ughput.png>] [45 <./eval/packet-basic-slowed_2.png> <./eval/packet-basic-4spawn
 ers-just-throughput.png>]
-<eval/packet-basic-distribution10-granular.png, id=892, 728.84296pt x 481.3182p
+<eval/packet-basic-distribution10-granular.png, id=890, 728.84296pt x 481.3182p
 t>
 File: eval/packet-basic-distribution10-granular.png Graphic file (type png)
 <use eval/packet-basic-distribution10-granular.png>
 Package pdftex.def Info: eval/packet-basic-distribution10-granular.png  used on
- input line 873.
+ input line 842.
 (pdftex.def)             Requested size: 386.96027pt x 255.55278pt.
- [45 <./eval/packet-basic-distribution10-granular.png>]
-<eval/packet-basic-lifo-better.png, id=903, 771.1209pt x 286.1892pt>
+ [46 <./eval/packet-basic-distribution10-granular.png>]
+<eval/packet-basic-lifo-better.png, id=901, 771.1209pt x 286.1892pt>
 File: eval/packet-basic-lifo-better.png Graphic file (type png)
 <use eval/packet-basic-lifo-better.png>
 Package pdftex.def Info: eval/packet-basic-lifo-better.png  used on input line 
-890.
+860.
 (pdftex.def)             Requested size: 386.96027pt x 143.61826pt.
-<eval/packet-basic-fifo-better.png, id=907, 831.46635pt x 251.86095pt>
+<eval/packet-basic-fifo-better.png, id=905, 831.46635pt x 251.86095pt>
 File: eval/packet-basic-fifo-better.png Graphic file (type png)
 <use eval/packet-basic-fifo-better.png>
 Package pdftex.def Info: eval/packet-basic-fifo-better.png  used on input line 
-904.
+874.
 (pdftex.def)             Requested size: 386.96027pt x 117.21788pt.
- [46 <./eval/packet-basic-lifo-better.png>]
-<eval/packet-basic-base-hybrids.png, id=917, 823.51665pt x 254.3904pt>
+ [47 <./eval/packet-basic-lifo-better.png>]
+<eval/packet-basic-base-hybrids.png, id=915, 823.51665pt x 254.3904pt>
 File: eval/packet-basic-base-hybrids.png Graphic file (type png)
 <use eval/packet-basic-base-hybrids.png>
 Package pdftex.def Info: eval/packet-basic-base-hybrids.png  used on input line
- 921.
+ 891.
 (pdftex.def)             Requested size: 386.96027pt x 119.53632pt.
-<eval/mixer-base8.png, id=920, 867.24pt x 289.08pt>
+<eval/mixer-base8.png, id=918, 867.24pt x 289.08pt>
 File: eval/mixer-base8.png Graphic file (type png)
 <use eval/mixer-base8.png>
-Package pdftex.def Info: eval/mixer-base8.png  used on input line 933.
+Package pdftex.def Info: eval/mixer-base8.png  used on input line 903.
 (pdftex.def)             Requested size: 386.96027pt x 128.98645pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [47 <./eval/packet-basic-fifo-better.png>] [48 <./eval/packet-basic-base-hybri
+ [48 <./eval/packet-basic-fifo-better.png>] [49 <./eval/packet-basic-base-hybri
 ds.png> <./eval/mixer-base8.png>]
 
-LaTeX Warning: Marginpar on page 49 moved.
+LaTeX Warning: Marginpar on page 50 moved.
 
 
-LaTeX Warning: Marginpar on page 49 moved.
+LaTeX Warning: Marginpar on page 50 moved.
 
-[49]
+[50]
 Chapter 7.
-(./report.bbl [50
+(./report.bbl [51
 
 ]
 Underfull \hbox (badness 1509) in paragraph at lines 14--18
@@ -904,38 +878,32 @@ Underfull \hbox (badness 10000) in paragraph at lines 32--35
 ipedia . org / wiki / POWER4 # cite _
  []
 
-[51
+[52
 
-] [52] [53] [54] [55]) [56]
+] [53] [54] [55] [56]) [57]
 Appendix A.
 
-Overfull \hbox (14.08798pt too wide) in paragraph at lines 995--995
+Overfull \hbox (14.08798pt too wide) in paragraph at lines 971--971
 [][][]\OT1/cmr/m/n/12 microbenchmarks 
  []
 
 
-Overfull \hbox (14.08798pt too wide) in paragraph at lines 995--995
+Overfull \hbox (14.08798pt too wide) in paragraph at lines 971--971
 [][][]\OT1/cmr/m/n/12 microbenchmarks 
  []
 
-
-Package natbib Warning: There were undefined citations.
-
-[57
+[58
 
 ] (./report.aux)
-
-LaTeX Warning: There were multiply-defined labels.
-
 Package rerunfilecheck Info: File `report.out' has not changed.
-(rerunfilecheck)             Checksum: 07F85B3F0BC0C6DEFA9AFA1691F4FD40;10591.
+(rerunfilecheck)             Checksum: 41DA345C29F50ACD3A8BEE1375E1853D;10424.
  ) 
 Here is how much of TeX's memory you used:
- 21711 strings out of 480247
- 411207 string characters out of 5896151
- 703562 words of memory out of 5000000
- 39028 multiletter control sequences out of 15000+600000
- 478718 words of font info for 59 fonts, out of 8000000 for 9000
+ 21646 strings out of 480247
+ 409820 string characters out of 5896151
+ 702484 words of memory out of 5000000
+ 38968 multiletter control sequences out of 15000+600000
+ 476268 words of font info for 51 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  99i,9n,94p,1922b,1016s stack positions out of 5000i,500n,10000p,200000b,80000s
  </home/model/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcti1200.600
@@ -951,10 +919,10 @@ public/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 /amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
 ts/cm/cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmtt12.pfb>
-Output written on report.pdf (57 pages, 1451097 bytes).
+Output written on report.pdf (58 pages, 1452729 bytes).
 PDF statistics:
- 1183 PDF objects out of 1200 (max. 8388607)
- 1055 compressed objects within 11 object streams
- 267 named destinations out of 1000 (max. 500000)
- 731 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1196 PDF objects out of 1200 (max. 8388607)
+ 1067 compressed objects within 11 object streams
+ 262 named destinations out of 1000 (max. 500000)
+ 715 words of extra memory for PDF output out of 10000 (max. 10000000)
 

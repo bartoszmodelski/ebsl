@@ -12,24 +12,20 @@
 \contentsline {subsection}{\numberline {2.1.2}Lightweight Threads}{13}{subsection.2.1.2}%
 \contentsline {subsection}{\numberline {2.1.3}Preemption}{13}{subsection.2.1.3}%
 \contentsline {subsection}{\numberline {2.1.4}Work stealing}{14}{subsection.2.1.4}%
-\contentsline {subsection}{\numberline {2.1.5}Summary}{15}{subsection.2.1.5}%
 \contentsline {section}{\numberline {2.2}Multiprocessing}{15}{section.2.2}%
 \contentsline {subsection}{\numberline {2.2.1}Amdahl's law}{15}{subsection.2.2.1}%
 \contentsline {subsection}{\numberline {2.2.2}Lock-free algorithms}{16}{subsection.2.2.2}%
 \contentsline {subsection}{\numberline {2.2.3}Atomic operations}{16}{subsection.2.2.3}%
 \contentsline {subsection}{\numberline {2.2.4}Linearizability}{17}{subsection.2.2.4}%
-\contentsline {subsection}{\numberline {2.2.5}LF queue}{17}{subsection.2.2.5}%
-\contentsline {subsection}{\numberline {2.2.6}MultiQ}{17}{subsection.2.2.6}%
-\contentsline {subsection}{\numberline {2.2.7}DSCheck}{17}{subsection.2.2.7}%
+\contentsline {subsection}{\numberline {2.2.5}DSCheck}{17}{subsection.2.2.5}%
 \contentsline {chapter}{\numberline {3}Related work}{19}{chapter.3}%
 \contentsline {section}{\numberline {3.1}Go}{19}{section.3.1}%
 \contentsline {section}{\numberline {3.2}Rust}{20}{section.3.2}%
 \contentsline {section}{\numberline {3.3}OCaml}{21}{section.3.3}%
 \contentsline {subsection}{\numberline {3.3.1}Threading}{21}{subsection.3.3.1}%
 \contentsline {subsection}{\numberline {3.3.2}Effects}{22}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Memory model}{23}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Garbage Collection}{23}{subsection.3.3.4}%
-\contentsline {subsection}{\numberline {3.3.5}Domainslib}{23}{subsection.3.3.5}%
+\contentsline {subsection}{\numberline {3.3.3}Garbage Collection}{23}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Domainslib}{23}{subsection.3.3.4}%
 \contentsline {chapter}{\numberline {4}Design}{24}{chapter.4}%
 \contentsline {section}{\numberline {4.1}Objectives}{24}{section.4.1}%
 \contentsline {section}{\numberline {4.2}Benchmarks}{25}{section.4.2}%
@@ -38,7 +34,7 @@
 \contentsline {subsection}{\numberline {4.2.3}Option Pricing}{26}{subsection.4.2.3}%
 \contentsline {section}{\numberline {4.3}Ordering}{26}{section.4.3}%
 \contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{26}{subsection.4.3.1}%
-\contentsline {subsubsection}{Fairness revisited}{27}{section*.24}%
+\contentsline {subsubsection}{Fairness revisited}{27}{section*.14}%
 \contentsline {subsection}{\numberline {4.3.2}Hybrid}{28}{subsection.4.3.2}%
 \contentsline {section}{\numberline {4.4}Contention and locality}{28}{section.4.4}%
 \contentsline {subsection}{\numberline {4.4.1}Core Structure Distribution}{29}{subsection.4.4.1}%
@@ -63,23 +59,25 @@
 \contentsline {subsection}{\numberline {5.2.6}Sharded Queue}{38}{subsection.5.2.6}%
 \contentsline {subsection}{\numberline {5.2.7}Overflow avoidance}{38}{subsection.5.2.7}%
 \contentsline {subsection}{\numberline {5.2.8}False sharing}{38}{subsection.5.2.8}%
-\contentsline {subsection}{\numberline {5.2.9}Limitations}{38}{subsection.5.2.9}%
-\contentsline {chapter}{\numberline {6}Evaluation}{39}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Methods}{39}{section.6.1}%
-\contentsline {subsection}{\numberline {6.1.1}Hardware}{39}{subsection.6.1.1}%
-\contentsline {subsection}{\numberline {6.1.2}System}{39}{subsection.6.1.2}%
-\contentsline {subsection}{\numberline {6.1.3}Procedures}{39}{subsection.6.1.3}%
-\contentsline {subsection}{\numberline {6.1.4}Statistical Methods}{40}{subsection.6.1.4}%
-\contentsline {subsection}{\numberline {6.1.5}Probe Effect}{40}{subsection.6.1.5}%
-\contentsline {section}{\numberline {6.2}Server benchmark}{40}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}General Case}{40}{subsection.6.2.1}%
-\contentsline {subsubsection}{Degradation}{42}{section*.47}%
-\contentsline {subsubsection}{Extensions}{45}{section*.54}%
-\contentsline {subsection}{\numberline {6.2.2}Server benchmark with cache effects}{46}{subsection.6.2.2}%
-\contentsline {subsection}{\numberline {6.2.3}Server benchmark with multi-modal processing latency}{47}{subsection.6.2.3}%
-\contentsline {subsubsection}{Other schedulers}{47}{section*.55}%
-\contentsline {section}{\numberline {6.3}Mixer benchmark}{48}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Options Pricer}{48}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Comparison with Domainslib}{49}{section.6.5}%
-\contentsline {chapter}{\numberline {7}Summary and conclusions}{50}{chapter.7}%
-\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{57}{appendix.A}%
+\contentsline {subsection}{\numberline {5.2.9}Validation}{38}{subsection.5.2.9}%
+\contentsline {subsection}{\numberline {5.2.10}Limitations}{39}{subsection.5.2.10}%
+\contentsline {chapter}{\numberline {6}Evaluation}{40}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Methods}{40}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Hardware}{40}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}System}{40}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}Procedures}{40}{subsection.6.1.3}%
+\contentsline {subsection}{\numberline {6.1.4}Statistical Methods}{41}{subsection.6.1.4}%
+\contentsline {subsection}{\numberline {6.1.5}Probe Effect}{41}{subsection.6.1.5}%
+\contentsline {section}{\numberline {6.2}Server benchmark}{41}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}General Case}{41}{subsection.6.2.1}%
+\contentsline {subsubsection}{Degradation}{43}{section*.37}%
+\contentsline {subsubsection}{Extensions}{46}{section*.44}%
+\contentsline {subsection}{\numberline {6.2.2}Server benchmark with cache effects}{47}{subsection.6.2.2}%
+\contentsline {subsection}{\numberline {6.2.3}Server benchmark with multi-modal processing latency}{48}{subsection.6.2.3}%
+\contentsline {subsubsection}{Other schedulers}{48}{section*.45}%
+\contentsline {section}{\numberline {6.3}Mixer benchmark}{49}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Options Pricer}{49}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Comparison with Domainslib}{50}{section.6.5}%
+\contentsline {chapter}{\numberline {7}Summary and conclusions}{51}{chapter.7}%
+\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{58}{appendix.A}%
+\contentsline {section}{\numberline {A.1}ommited sections}{58}{section.A.1}%
