@@ -601,6 +601,7 @@ Firstly, pure LIFO-based scheduler is not practical as the underlying data struc
 Notably, Linux kernel developers have made a choice in a similar vein in 2003 when yielded tasks were changed to enqueue to expired queue rather than run queue  (https://lwn.net/Articles/31462/). 
 
 \todo{could be smarter about yielding and use this information to identify spawners}
+\todo{curiously, this forces existence of some form of external queue to put the yielding tasks there}
 
 \subsection{Promise}
 \label{section:promise}
@@ -737,7 +738,21 @@ With such a setup both enqueue and dequeue must do two atomic operations (FAD+GE
 
 \subsection{MPMC Queue Blocking}
 
-While the infinite array is a powerful idea and some designs actually simulate that using a linked list of arrays (e.g. \cite{Sundell2011}), in practise use of circular buffer is far more common. Luckily, the design from \ref{section:mpmc_queue_on_inf} almost work on a circular array.
+While the infinite array is a powerful idea and some designs actually simulate that using a linked list of arrays (e.g. \cite{Sundell2011}), use of circular buffer is far more common. Luckily, the design described in the previous section almost works on a circular array. The major difference is that now enqueuer wraps around the array and may encounter a full slot, thus enqueue function requires some mechanism to not overwrite another item, e.g. a busy wait akin to that in figure \ref{fig:basic-deque}. Secondly, both enqueuer and dequeuer must use CAS to edit the item slot as the queue can overlap multiple times. 
+
+Such an implementation constitutes a fully-functional multi-producer multi-consumer unbounded queue as described in \cite{Kappes2021}. Importantly, such an implementation remains somewhat inconvenient for a modern system. Busy waiting is generally bad for performance. Especially since this busy waiting is not the typical busy waiting in lock-free algorithm, which is expected to take a few tens of cycles. Further, such a structure is no longer strictly FIFO as two overlapping enqueuers or dequeuers are essentially racing on the same slot. Both issues are fixed in the following sections. 
+
+\subsection{MPMC Queue Non-blocking Dequeue}
+
+Using FAD eliminates the contention in dequeue() but it trades-off consistency. Now, dequeue() may increment the \textit{head} only to discover that is has over overshot the \textit{tail}. In fact, multiple threads can overshoot at once causing the \textit{head} to be multiple slots higher than \textit{tail}, where the maximum discrepancy is bounded by number of independent processing units. There is a number of possible ways to recover from an overshoot.
+
+\begin{itemize}
+    \item Use CAS to rollback the increment. The CAS operation has to precisely revert the increment done by FAD. The CAS-rollback can fail if there is another dequeuer than incremented the \textit{head} even further. There are two possible cases. Firstly, it is going to try to rollback too and said CAS should be retried. Alternatively, in the meantime enqueuers have appeared and the other thread actually found an item in the higher slot. In such a case the latter thread is not going to rollback but the current slot has a paired enqueuer and should have item shortly. 
+    \item Analogically, CAS could be used to increment the \textit{tail} to cover the overshot. This has the benefit that overshooters free themselves in FIFO order but adds load onto the \textit{tail} index and negatively affects enqueuers in a busy loop.
+    \item Mark slot as burned and return immediately. Then once enqueuer gets assigned that slot, it discovers that dequeuer is no longer active, recycles it by removing the mark and retries the insertion from scratch. Again, this puts extra stress on the enqueuer and requires additional logic to prevent too much of the queue to be marked (as it inflates queue true size).  
+\end{itemize}
+
+
 
 
 \subsection{Relaxation to SPMC Queue}
@@ -981,13 +996,15 @@ Domainslib:
 
 Those optimizations are possible to apply to this project but were deemed too risky, as they can produce bugs that are extremely difficult to trace. 
 
-Schedulr: 
+This project: 
 - More scalable steal 
 
 Try adding cpu relax, which may not be best placed inside the structure itself.f
 
 
 \chapter{Summary and conclusions}
+
+\todo{mention that core devs wants some algos merged}
 
 This dissertation focused on exploring the trade-offs between various real-world scheduling policies. The core of the work has produced lock-free FIFO and LIFO schedulers, which were then later extended in various ways (\S\ref{paragraph:lifo-heuristics}, \S\ref{section:work-distribution-extensions}) and composed (\S\ref{section:staged-as-composition}). The evaluation used real-world benchmarks to evaluate the implementations focusing on common industrial metrics: throughput and tail latency (\S
 \ref{section:objectives}). 
