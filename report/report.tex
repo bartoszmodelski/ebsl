@@ -752,8 +752,7 @@ Using FAD eliminates the contention in dequeue() but it trades-off consistency. 
     \item Mark slot as burned and return immediately. Then once enqueuer gets assigned that slot, it discovers that dequeuer is no longer active, recycles it by removing the mark and retries the insertion from scratch. Again, this puts extra stress on the enqueuer and requires additional logic to prevent too much of the queue to be marked (as it inflates queue true size).  
 \end{itemize}
 
-
-
+The implementations in this project rely on the first solution. The third one is useful in the wait-free algorithms as it helps bound maximal number of retries of other methods. 
 
 \subsection{Relaxation to SPMC Queue}
 \subsection{SPMC Queue with stealing}
