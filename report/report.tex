@@ -743,6 +743,7 @@ While the infinite array is a powerful idea and some designs actually simulate t
 Such an implementation constitutes a fully-functional multi-producer multi-consumer unbounded queue as described in \cite{Kappes2021}. Importantly, such an implementation remains somewhat inconvenient for a modern system. Busy waiting is generally bad for performance. Especially since this busy waiting is not the typical busy waiting in lock-free algorithm, which is expected to take a few tens of cycles. Further, such a structure is no longer strictly FIFO as two overlapping enqueuers or dequeuers are essentially racing on the same slot. Both issues are fixed in the following sections. 
 
 \subsection{MPMC Queue Non-blocking Dequeue}
+\label{section:mpmc_non_blocking_dequeue}
 
 Using FAD eliminates the contention in dequeue() but it trades-off consistency. Now, dequeue() may increment the \textit{head} only to discover that is has over overshot the \textit{tail}. In fact, multiple threads can overshoot at once causing the \textit{head} to be multiple slots higher than \textit{tail}, where the maximum discrepancy is bounded by number of independent processing units. There is a number of possible ways to recover from an overshoot.
 
@@ -754,9 +755,48 @@ Using FAD eliminates the contention in dequeue() but it trades-off consistency. 
 
 The implementations in this project rely on the first solution. The third one is useful in the wait-free algorithms as it helps bound maximal number of retries of other methods. 
 
-\subsection{Relaxation to SPMC Queue}
-\subsection{SPMC Queue with stealing}
-\subsection{SPMC Stack with FIFO stealing}
+\subsection{MPMC Queue Non-blocking Enqueue}
+
+Similar rollback methods apply as to the dequeue. Moreover, items can be queued up as a linked list in a single slot (what may also be used to bring back strict FIFO order) or the enqueuer may simply resize the queue. There is perhaps an additional consideration from the perspective of work-distribution, if the queue is already overloaded, one should not cause additional rollback synchronisation and cause further slowdown (in e.g. passing the tasks to overflow queue). 
+
+For the purpose of this dissertation there was no need to use any of these methods. MPMC is only used as the global overflow structure, which generally means that it is not commonly full and at that point putting halt on the spawner is likely better than letting it allocate endless memory. The local work stealing queues, on the other hand, are single-producer, which means that the enqueuer is able to use additional assumptions to avoid the need to rollback.
+
+\subsection{Work Stealing Queue}
+\label{section:wss-queue}
+
+In the case of work stealing, there is no need to employ a full MPMC queue. Local queues only have a single enqueuer and that eliminates the possibility of races on the \textit{tail} index. This has two important benefits.
+\begin{itemize}
+    \item Any accesses to \textit{tail} index have to be atomic as other functions read \textit{tail} but updates may occur in multiple steps, i.e. atomic get, modification, atomic set. Such updates are cheaper to execute than fully-fledged atomic updates using FAD or CAS. 
+    \item The single enqueuer is able to ensure that it is not going to overlap the queue. It can simply check whether there is space in the queue and act accordingly as no other enqueuer can act in between. A natural single-core approach would be to simply check whether \textit{head} index is sufficiently far. But this does not guarantee that the dequeuer has already removed item from the slot. Thus, an easier and more approach is to simply check whether the slot in \textit{tail+1} is empty. If it is, enqueuer can safely place an item and increase the \textit{tail}.
+\end{itemize}
+
+That gives rise to a fast local enqueue. It is an ideal choice for a work stealing system, in which threads under heavy load focus entirely on their local work. Likewise, to fully optimize the local queue, it would be nice to have a fast local dequeue. Again, such a local dequeue can utilize the knowledge that no new elements are inserted during its execution. Therefore, it can begin by executing a FAD operation on the \textit{head} index and if it has overshot the \textit{tail}, it necessarily has to roll back. 
+
+Possible rollback methods have been described in \S\ref{section:mpmc_non_blocking_dequeue}. None of them is perfect. In particular, rolling back any of the indices may be stuck behind other overshot dequeuers. Potentially paralylizing the local dequeuer until another thread gets scheduled. Thus, the actual SPMC Queue implementation has two dequeue methods:
+\begin{itemize}
+    \item \textbf{Local deque.} It takes a single element from the local queue. It is the only method that is allowed to speculate (and possibly overshoot) using FAD. Therefore, whenever local dequeue overshoots, it is guaranteed that no other thread can overshoot further. With such knowledge the rollback is trivial. Local deque simply sets the \textit{head} to what is used to be, and terminates. Local deque only needs to synchronize with steal function.  
+    \item \textbf{Steal.} It attempts to transfer half of the elements of the victim's queue to its local structure. To simplify the local dequeue logic, it is not allowed to speculate on the \textit{head} index. Instead steal uses a CAS operation, which guarantees no overshooting as \textit{tail} cannot decrease. CAS is naturally slower and more contentious but, importantly, there is only one CAS operation required to take many elements. Therefore, the extra cost of index CAS is in effect very small on per-item basis if queue had a considerable number of items in it. Notably, steal can be called from any thread and needs to synchronize with both local enqueue and local dequeue. 
+\end{itemize}
+
+Such a design gives rise to a practical implementation of SPMC structure. It is scalable and follows the philosophy of work stealing by prioritising local operations. 
+
+\subsection{Work Stealing Stack}
+Assume that a stack with synchronized local functions exists. A natural question to ask is whether the steal should also follow LIFO ordering or just take the elements from the top of the stack (FIFO). The latter has two considerable benefits over LIFO. Firstly, FIFO steal means that stealers contend for the bottom of the stack, while local thread works only the top. Such a setup is very convenient since local and global methods work on different indices, what reduces complexity and contention. Secondly, the alleged benefit of LIFO is locality. However, a different thread is not going to benefit from that as much as the owner. Thus, instead, it can take the oldest elements in the stack (FIFO) and significantly improve tail latencies. 
+
+
+\todo{this is almost the same as previous section - just need a local pop!}
+
+This design is similar to the classic work stealing deque \cite{Chase2005}. However, this implementation:
+\begin{itemize}
+    \item Steals half of the queue rather than a single element. Stolen elements are transferred directly into thief's queue rather than returned.
+    \item Local pop does never needs to rollback an index. Instead, it executes CAS on a less contended item slot.
+    \item Has the extra flexibility coming from atomic slots. \todo{link extra flexiblity - cancellations and light yields}
+\end{itemize}
+
+
+\subsection{SPSC Queue}
+\todo{elements get stuck :( no workloads showing that but e.g. long IO has a dramatic impact}
+
 \subsection{Sharded Queue}
 \subsection{Overflow avoidance}
 \subsection{False sharing}

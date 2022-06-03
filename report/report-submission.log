@@ -1,6 +1,7 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  2 JUN 2022 14:01
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  3 JUN 2022 01:11
 entering extended mode
  restricted \write18 enabled.
+ file:line:error style messages enabled.
  %&-line parsing enabled.
 **report-submission.tex
 (./report-submission.tex
@@ -666,7 +667,7 @@ Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
-<logo-dcst-colour.pdf, id=332, 185.69376pt x 70.2625pt>
+<logo-dcst-colour.pdf, id=336, 185.69376pt x 70.2625pt>
 File: logo-dcst-colour.pdf Graphic file (type pdf)
 <use logo-dcst-colour.pdf>
 Package pdftex.def Info: logo-dcst-colour.pdf  used on input line 52.
@@ -707,7 +708,7 @@ of the avail-able par-al-lelism. Compute-
 
 [10] [11]
 Chapter 2.
-<scheduler_graph.png, id=537, 698.61pt x 272.01625pt>
+<scheduler_graph.png, id=542, 698.61pt x 272.01625pt>
 File: scheduler_graph.png Graphic file (type png)
 <use scheduler_graph.png>
 Package pdftex.def Info: scheduler_graph.png  used on input line 244.
@@ -738,7 +739,7 @@ Chapter 4.
 LaTeX Warning: Marginpar on page 25 moved.
 
 [25] [26]
-<FIFOLIFO.png, id=705, 824.07875pt x 241.90375pt>
+<FIFOLIFO.png, id=710, 824.07875pt x 241.90375pt>
 File: FIFOLIFO.png Graphic file (type png)
 <use FIFOLIFO.png>
 Package pdftex.def Info: FIFOLIFO.png  used on input line 490.
@@ -850,162 +851,166 @@ ne 741.
 }) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.751     \item A
+l.752     \item A
                  nalogically, CAS could be used to increment the \textit{tai...
-] [40]
+] [40] [41]
+
+LaTeX Warning: Marginpar on page 42 moved.
+
+[42]
 Chapter 6.
-[41
+[43
 
 ]
-<eval/packet-basic-with-steal-counts2std.png, id=862, 734.62456pt x 1354.3398pt
+<eval/packet-basic-with-steal-counts2std.png, id=881, 734.62456pt x 1354.3398pt
 >
 File: eval/packet-basic-with-steal-counts2std.png Graphic file (type png)
 <use eval/packet-basic-with-steal-counts2std.png>
 Package pdftex.def Info: eval/packet-basic-with-steal-counts2std.png  used on i
-nput line 821.
+nput line 860.
 (pdftex.def)             Requested size: 386.96027pt x 713.41559pt.
 
 
-LaTeX Warning: Float too large for page by 9.01306pt on input line 824.
+LaTeX Warning: Float too large for page by 9.01306pt on input line 863.
 
-[42] [43pdfTeX warning (ext4): destination with the same identifier (name{figur
+[44] [45pdfTeX warning (ext4): destination with the same identifier (name{figur
 e.6.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.833 
+l.872 
        <./eval/packet-basic-with-steal-counts2std.png>]
-<eval/packet-basic-with-steal-counts2.png, id=879, 716.1957pt x 263.0628pt>
+<eval/packet-basic-with-steal-counts2.png, id=897, 716.1957pt x 263.0628pt>
 File: eval/packet-basic-with-steal-counts2.png Graphic file (type png)
 <use eval/packet-basic-with-steal-counts2.png>
 Package pdftex.def Info: eval/packet-basic-with-steal-counts2.png  used on inpu
-t line 844.
+t line 883.
 (pdftex.def)             Requested size: 386.96027pt x 142.13206pt.
- [44pdfTeX warning (ext4): destination with the same identifier (name{figure.6.
+ [46pdfTeX warning (ext4): destination with the same identifier (name{figure.6.
 2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.850 
+l.889 
        <./eval/packet-basic-with-steal-counts2.png>]
-<eval/packet-basic-counters.png, id=890, 716.1957pt x 263.0628pt>
+<eval/packet-basic-counters.png, id=908, 716.1957pt x 263.0628pt>
 File: eval/packet-basic-counters.png Graphic file (type png)
 <use eval/packet-basic-counters.png>
-Package pdftex.def Info: eval/packet-basic-counters.png  used on input line 853
+Package pdftex.def Info: eval/packet-basic-counters.png  used on input line 892
 .
 (pdftex.def)             Requested size: 386.96027pt x 142.13206pt.
-<eval/packet-basic-10million-just-throughput.png, id=892, 734.62456pt x 263.062
+<eval/packet-basic-10million-just-throughput.png, id=910, 734.62456pt x 263.062
 8pt>
 File: eval/packet-basic-10million-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-10million-just-throughput.png>
 Package pdftex.def Info: eval/packet-basic-10million-just-throughput.png  used 
-on input line 865.
+on input line 904.
 (pdftex.def)             Requested size: 386.96027pt x 138.57164pt.
-<eval/packet-basic-slowed_2.png, id=893, 717.6411pt x 263.0628pt>
+<eval/packet-basic-slowed_2.png, id=911, 717.6411pt x 263.0628pt>
 File: eval/packet-basic-slowed_2.png Graphic file (type png)
 <use eval/packet-basic-slowed_2.png>
-Package pdftex.def Info: eval/packet-basic-slowed_2.png  used on input line 873
+Package pdftex.def Info: eval/packet-basic-slowed_2.png  used on input line 912
 .
 (pdftex.def)             Requested size: 386.96027pt x 141.84708pt.
-<eval/packet-basic-4spawners-just-throughput.png, id=894, 717.6411pt x 263.0628
+<eval/packet-basic-4spawners-just-throughput.png, id=912, 717.6411pt x 263.0628
 pt>
 File: eval/packet-basic-4spawners-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-4spawners-just-throughput.png>
 Package pdftex.def Info: eval/packet-basic-4spawners-just-throughput.png  used 
-on input line 881.
+on input line 920.
 (pdftex.def)             Requested size: 386.96027pt x 141.84708pt.
- [45pdfTeX warning (ext4): destination with the same identifier (name{figure.6.
+ [47pdfTeX warning (ext4): destination with the same identifier (name{figure.6.
 3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.888 
+l.927 
       pdfTeX warning (ext4): destination with the same identifier (name{figure.
 6.4}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.888 
+l.927 
        <./eval/packet-basic-counters.png> <./eval/packet-basic-10million-just-t
-hroughput.png>] [46pdfTeX warning (ext4): destination with the same identifier 
+hroughput.png>] [48pdfTeX warning (ext4): destination with the same identifier 
 (name{figure.6.5}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.888 
+l.927 
       pdfTeX warning (ext4): destination with the same identifier (name{figure.
 6.6}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.888 
+l.927 
        <./eval/packet-basic-slowed_2.png> <./eval/packet-basic-4spawners-just-t
 hroughput.png>]
-<eval/packet-basic-distribution10-granular.png, id=915, 728.84296pt x 481.3182p
+<eval/packet-basic-distribution10-granular.png, id=933, 728.84296pt x 481.3182p
 t>
 File: eval/packet-basic-distribution10-granular.png Graphic file (type png)
 <use eval/packet-basic-distribution10-granular.png>
 Package pdftex.def Info: eval/packet-basic-distribution10-granular.png  used on
- input line 901.
+ input line 940.
 (pdftex.def)             Requested size: 386.96027pt x 255.55278pt.
- [47pdfTeX warning (ext4): destination with the same identifier (name{figure.6.
+ [49pdfTeX warning (ext4): destination with the same identifier (name{figure.6.
 7}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.911 
+l.950 
        <./eval/packet-basic-distribution10-granular.png>]
-<eval/packet-basic-lifo-better.png, id=926, 771.1209pt x 286.1892pt>
+<eval/packet-basic-lifo-better.png, id=945, 771.1209pt x 286.1892pt>
 File: eval/packet-basic-lifo-better.png Graphic file (type png)
 <use eval/packet-basic-lifo-better.png>
 Package pdftex.def Info: eval/packet-basic-lifo-better.png  used on input line 
-919.
+958.
 (pdftex.def)             Requested size: 386.96027pt x 143.61826pt.
-<eval/packet-basic-fifo-better.png, id=930, 831.46635pt x 251.86095pt>
+<eval/packet-basic-fifo-better.png, id=949, 831.46635pt x 251.86095pt>
 File: eval/packet-basic-fifo-better.png Graphic file (type png)
 <use eval/packet-basic-fifo-better.png>
 Package pdftex.def Info: eval/packet-basic-fifo-better.png  used on input line 
-933.
+972.
 (pdftex.def)             Requested size: 386.96027pt x 117.21788pt.
- [48pdfTeX warning (ext4): destination with the same identifier (name{figure.6.
+ [50pdfTeX warning (ext4): destination with the same identifier (name{figure.6.
 8}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.936 \end{figure}
+l.975 \end{figure}
                    <./eval/packet-basic-lifo-better.png>]
-<eval/packet-basic-base-hybrids.png, id=940, 823.51665pt x 254.3904pt>
+<eval/packet-basic-base-hybrids.png, id=959, 823.51665pt x 254.3904pt>
 File: eval/packet-basic-base-hybrids.png Graphic file (type png)
 <use eval/packet-basic-base-hybrids.png>
 Package pdftex.def Info: eval/packet-basic-base-hybrids.png  used on input line
- 950.
+ 989.
 (pdftex.def)             Requested size: 386.96027pt x 119.53632pt.
-<eval/mixer-base8.png, id=943, 867.24pt x 289.08pt>
+<eval/mixer-base8.png, id=962, 867.24pt x 289.08pt>
 File: eval/mixer-base8.png Graphic file (type png)
 <use eval/mixer-base8.png>
-Package pdftex.def Info: eval/mixer-base8.png  used on input line 962.
+Package pdftex.def Info: eval/mixer-base8.png  used on input line 1001.
 (pdftex.def)             Requested size: 386.96027pt x 128.98645pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [49pdfTeX warning (ext4): destination with the same identifier (name{figure.6.
+ [51pdfTeX warning (ext4): destination with the same identifier (name{figure.6.
 9}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.968 
-       <./eval/packet-basic-fifo-better.png>] [50pdfTeX warning (ext4): destina
-tion with the same identifier (name{figure.6.10}) has been already used, duplic
-ate ignored
+l.1007 
+        <./eval/packet-basic-fifo-better.png>] [52pdfTeX warning (ext4): destin
+ation with the same identifier (name{figure.6.10}) has been already used, dupli
+cate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.977 
-      pdfTeX warning (ext4): destination with the same identifier (name{figure.
-6.11}) has been already used, duplicate ignored
+l.1016 
+       pdfTeX warning (ext4): destination with the same identifier (name{figure
+.6.11}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.977 
-       <./eval/packet-basic-base-hybrids.png> <./eval/mixer-base8.png>]
+l.1016 
+        <./eval/packet-basic-base-hybrids.png> <./eval/mixer-base8.png>]
 
-LaTeX Warning: Marginpar on page 51 moved.
+LaTeX Warning: Marginpar on page 53 moved.
 
 
-LaTeX Warning: Marginpar on page 51 moved.
+LaTeX Warning: Marginpar on page 53 moved.
 
-[51]
+[53]
 Chapter 7.
-(./report-submission.bbl [52
+(./report-submission.bbl [54
 
 ]
 Underfull \hbox (badness 1509) in paragraph at lines 14--18
@@ -1036,37 +1041,37 @@ Underfull \hbox (badness 10000) in paragraph at lines 32--35
 ipedia . org / wiki / POWER4 # cite _
  []
 
-[53
+[55
 
-] [54] [55] [56] [57]) [58]
+] [56] [57] [58] [59]) [60]
 Appendix A.
 
-Overfull \hbox (14.08798pt too wide) in paragraph at lines 1032--1032
+Overfull \hbox (14.08798pt too wide) in paragraph at lines 1071--1071
 [][][]\OT1/cmr/m/n/12 microbenchmarks 
  []
 
 
-Overfull \hbox (14.08798pt too wide) in paragraph at lines 1032--1032
+Overfull \hbox (14.08798pt too wide) in paragraph at lines 1071--1071
 [][][]\OT1/cmr/m/n/12 microbenchmarks 
  []
 
 
 Package natbib Warning: There were undefined citations.
 
-[59
+[61
 
 ] (./report-submission.aux)
 
 LaTeX Warning: There were undefined references.
 
 Package rerunfilecheck Info: File `report-submission.out' has not changed.
-(rerunfilecheck)             Checksum: 03D2CEA71196360E98D3985ECE0297E2;10866.
+(rerunfilecheck)             Checksum: 8ED734F606924DE27A64270E6DCD8B18;10933.
  ) 
 Here is how much of TeX's memory you used:
- 21803 strings out of 480247
- 412594 string characters out of 5896151
- 703237 words of memory out of 5000000
- 39108 multiletter control sequences out of 15000+600000
+ 21836 strings out of 480247
+ 413310 string characters out of 5896151
+ 702990 words of memory out of 5000000
+ 39135 multiletter control sequences out of 15000+600000
  476320 words of font info for 51 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  99i,9n,94p,1933b,1016s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1084,10 +1089,10 @@ public/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 onts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
 /cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt1
 2.pfb>
-Output written on report-submission.pdf (59 pages, 1470470 bytes).
+Output written on report-submission.pdf (61 pages, 1477069 bytes).
 PDF statistics:
- 1237 PDF objects out of 1440 (max. 8388607)
- 1103 compressed objects within 12 object streams
- 269 named destinations out of 1000 (max. 500000)
- 731 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 1257 PDF objects out of 1440 (max. 8388607)
+ 1121 compressed objects within 12 object streams
+ 275 named destinations out of 1000 (max. 500000)
+ 739 words of extra memory for PDF output out of 10000 (max. 10000000)
 
