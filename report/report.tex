@@ -570,6 +570,9 @@ dump into na mpmc queue is better than forcing a victimg because it will not act
 \todo{In the case of staged architecture this is not a problem.}
 
 
+\subsection{Overflow Queue}
+\label{section:design_overflow_queue}
+
 \subsection{Resizing}
 \label{section:resizing}
 Having a runtime scheduler gives its users a freedom to express workloads concurrent far beyond what is reasonable with pure system threads. This leads to some algorithms creating large numbers of tasks, large enough to rapidly fill up their local data structures. Now, a common strategy is to simply send new tasks to a slower, global overflow queue \todo{link to background}.
@@ -783,22 +786,24 @@ Such a design gives rise to a practical implementation of SPMC structure. It is 
 \subsection{Work Stealing Stack}
 Assume that a stack with synchronized local functions exists. A natural question to ask is whether the steal should also follow LIFO ordering or just take the elements from the top of the stack (FIFO). The latter has two considerable benefits over LIFO. Firstly, FIFO steal means that stealers contend for the bottom of the stack, while local thread works only the top. Such a setup is very convenient since local and global methods work on different indices, what reduces complexity and contention. Secondly, the alleged benefit of LIFO is locality. However, a different thread is not going to benefit from that as much as the owner. Thus, instead, it can take the oldest elements in the stack (FIFO) and significantly improve tail latencies. 
 
-Fast local push and FIFO steal are already implemented in the previous section (\S\ref{section:wss-queue}). The only missing bit is local (FIFO) pop. It can work akin to the FIFO push, i.e. firstly act on the array and only update the \textit{top} pointer afterwards. With such a procedure, local pop simply tries to remove item from the array. It either succeeds or not, and terminates. Stealer, on the other hand, may have its item taken by pop operation, and needs to be able to roll back.
-
+Fast local push and FIFO steal are already implemented in the previous section (\S\ref{section:wss-queue}). The only missing bit is local (FIFO) pop. One way to implement it is akin to the FIFO push, i.e. firstly act on the array and only update the \textit{top} pointer afterwards. With such a procedure, local pop simply tries to remove item from the array. It either succeeds (and updates \textit{top}) or not, and terminates. Stealer, on the other hand, may have its item taken by pop operation, and needs to be able to roll back.
 
 This design is similar to the classic work stealing deque \cite{Chase2005}. However, this implementation:
 \begin{itemize}
-    \item Steals half of the queue rather than a single element. Stolen elements are transferred directly into thief's queue rather than returned.
+    \item Steals half of the queue rather than a single element. Stolen elements are transferred directly into the thief's queue rather than returned.
     \item Local pop does never needs to rollback an index. Instead, it executes CAS on a less contended item slot.
     \item Has the extra flexibility coming from atomic slots. \todo{link extra flexiblity - cancellations and light yields}
 \end{itemize}
 
-
-\subsection{SPSC Queue}
-\todo{elements get stuck :( no workloads showing that but e.g. long IO has a dramatic impact}
+\subsection{Resizing}
 
 \subsection{Sharded Queue}
-\subsection{Overflow avoidance}
+
+Performance of staged architecture (\S\ref{section:design-staged}) and overflow queue (\S\ref{section:design_overflow_queue}) depends on the scalability of the underlying queue. Using a lock-free MPMC queue allows two threads to work in parallel, in contrast with locked structure, but it does not guarantee scaling beyond that as shown by figure \todo{fig}. 
+
+Using fine-grained concurrency does not  
+
+
 \subsection{False sharing}
 
 \subsection{Validation}
@@ -808,6 +813,7 @@ The core lock-free queue and stack have been extensively load tested and verifie
 \subsection{Limitations}
 
 Since this project has a limited timescale, the schedulers were optimized in design (for e.g. scalability) but their implementations were not optimized 
+
 
 
 

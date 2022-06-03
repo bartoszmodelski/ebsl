@@ -785,7 +785,6 @@ Assume that a stack with synchronized local functions exists. A natural question
 
 Fast local push and FIFO steal are already implemented in the previous section (\S\ref{section:wss-queue}). The only missing bit is local (FIFO) pop. It can work akin to the FIFO push, i.e. firstly act on the array and only update the \textit{top} pointer afterwards. With such a procedure, local pop simply tries to remove item from the array. It either succeeds or not, and terminates. Stealer, on the other hand, may have its item taken by pop operation, and needs to be able to roll back.
 
-
 This design is similar to the classic work stealing deque \cite{Chase2005}. However, this implementation:
 \begin{itemize}
     \item Steals half of the queue rather than a single element. Stolen elements are transferred directly into thief's queue rather than returned.
