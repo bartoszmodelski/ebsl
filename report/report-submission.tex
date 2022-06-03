@@ -783,8 +783,8 @@ Such a design gives rise to a practical implementation of SPMC structure. It is 
 \subsection{Work Stealing Stack}
 Assume that a stack with synchronized local functions exists. A natural question to ask is whether the steal should also follow LIFO ordering or just take the elements from the top of the stack (FIFO). The latter has two considerable benefits over LIFO. Firstly, FIFO steal means that stealers contend for the bottom of the stack, while local thread works only the top. Such a setup is very convenient since local and global methods work on different indices, what reduces complexity and contention. Secondly, the alleged benefit of LIFO is locality. However, a different thread is not going to benefit from that as much as the owner. Thus, instead, it can take the oldest elements in the stack (FIFO) and significantly improve tail latencies. 
 
+Fast local push and FIFO steal are already implemented in the previous section (\S\ref{section:wss-queue}). The only missing bit is local (FIFO) pop. It can work akin to the FIFO push, i.e. firstly act on the array and only update the \textit{top} pointer afterwards. With such a procedure, local pop simply tries to remove item from the array. It either succeeds or not, and terminates. Stealer, on the other hand, may have its item taken by pop operation, and needs to be able to roll back.
 
-\todo{this is almost the same as previous section - just need a local pop!}
 
 This design is similar to the classic work stealing deque \cite{Chase2005}. However, this implementation:
 \begin{itemize}

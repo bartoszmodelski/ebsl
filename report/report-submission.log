@@ -1,7 +1,6 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  3 JUN 2022 01:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  3 JUN 2022 10:11
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
 **report-submission.tex
 (./report-submission.tex
@@ -1068,10 +1067,10 @@ Package rerunfilecheck Info: File `report-submission.out' has not changed.
 (rerunfilecheck)             Checksum: 8ED734F606924DE27A64270E6DCD8B18;10933.
  ) 
 Here is how much of TeX's memory you used:
- 21836 strings out of 480247
- 413310 string characters out of 5896151
- 702990 words of memory out of 5000000
- 39135 multiletter control sequences out of 15000+600000
+ 21827 strings out of 480247
+ 413106 string characters out of 5896151
+ 702850 words of memory out of 5000000
+ 39127 multiletter control sequences out of 15000+600000
  476320 words of font info for 51 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  99i,9n,94p,1933b,1016s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1089,10 +1088,10 @@ public/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 onts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
 /cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt1
 2.pfb>
-Output written on report-submission.pdf (61 pages, 1477069 bytes).
+Output written on report-submission.pdf (61 pages, 1477327 bytes).
 PDF statistics:
  1257 PDF objects out of 1440 (max. 8388607)
  1121 compressed objects within 12 object streams
- 275 named destinations out of 1000 (max. 500000)
+ 274 named destinations out of 1000 (max. 500000)
  739 words of extra memory for PDF output out of 10000 (max. 10000000)
 

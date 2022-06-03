@@ -73,11 +73,11 @@
 \contentsline {subsection}{\numberline {6.1.5}Probe Effect}{44}{subsection.6.1.5}%
 \contentsline {section}{\numberline {6.2}Server benchmark}{44}{section.6.2}%
 \contentsline {subsection}{\numberline {6.2.1}General Case}{44}{subsection.6.2.1}%
-\contentsline {subsubsection}{Degradation}{46}{section*.39}%
-\contentsline {subsubsection}{Extensions}{49}{section*.43}%
+\contentsline {subsubsection}{Degradation}{46}{section*.38}%
+\contentsline {subsubsection}{Extensions}{49}{section*.42}%
 \contentsline {subsection}{\numberline {6.2.2}Server benchmark with cache effects}{50}{subsection.6.2.2}%
 \contentsline {subsection}{\numberline {6.2.3}Server benchmark with multi-modal processing latency}{51}{subsection.6.2.3}%
-\contentsline {subsubsection}{Other schedulers}{51}{section*.44}%
+\contentsline {subsubsection}{Other schedulers}{51}{section*.43}%
 \contentsline {section}{\numberline {6.3}Mixer benchmark}{52}{section.6.3}%
 \contentsline {section}{\numberline {6.4}Options Pricer}{52}{section.6.4}%
 \contentsline {section}{\numberline {6.5}Comparison with Domainslib}{53}{section.6.5}%

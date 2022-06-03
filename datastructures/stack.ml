@@ -43,6 +43,8 @@ let local_push {top; bottom; array; mask; _} element =
     Atomic.incr top;
     true);;
 
+failwith "remove atomic from local methods"
+
 let local_pop {top; bottom; array; mask} =
   let top_val = Atomic.get top in 
   let bottom_val = Atomic.get bottom in

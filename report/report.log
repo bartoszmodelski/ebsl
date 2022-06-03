@@ -1,7 +1,6 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  3 JUN 2022 01:11
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  3 JUN 2022 10:11
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
 **report.tex
 (./report.tex
@@ -843,10 +842,6 @@ Overfull \hbox (105.82811pt too wide) in paragraph at lines 734--734
 Package wrapfig Warning: Stationary wrapfigure forced to float on input line 73
 9.
 
-
-Package natbib Warning: Citation `Sundell2011' on page 39 undefined on input li
-ne 741.
-
 [39pdfTeX warning (ext4): destination with the same identifier (name{figure.5.2
 }) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
@@ -862,7 +857,7 @@ Chapter 6.
 [43
 
 ]
-<eval/packet-basic-with-steal-counts2std.png, id=881, 734.62456pt x 1354.3398pt
+<eval/packet-basic-with-steal-counts2std.png, id=883, 734.62456pt x 1354.3398pt
 >
 File: eval/packet-basic-with-steal-counts2std.png Graphic file (type png)
 <use eval/packet-basic-with-steal-counts2std.png>
@@ -879,7 +874,7 @@ e.6.1}) has been already used, duplicate ignored
                                                   \__shipout_drop_firstpage_...
 l.872 
        <./eval/packet-basic-with-steal-counts2std.png>]
-<eval/packet-basic-with-steal-counts2.png, id=897, 716.1957pt x 263.0628pt>
+<eval/packet-basic-with-steal-counts2.png, id=899, 716.1957pt x 263.0628pt>
 File: eval/packet-basic-with-steal-counts2.png Graphic file (type png)
 <use eval/packet-basic-with-steal-counts2.png>
 Package pdftex.def Info: eval/packet-basic-with-steal-counts2.png  used on inpu
@@ -891,26 +886,26 @@ t line 883.
                                                   \__shipout_drop_firstpage_...
 l.889 
        <./eval/packet-basic-with-steal-counts2.png>]
-<eval/packet-basic-counters.png, id=908, 716.1957pt x 263.0628pt>
+<eval/packet-basic-counters.png, id=910, 716.1957pt x 263.0628pt>
 File: eval/packet-basic-counters.png Graphic file (type png)
 <use eval/packet-basic-counters.png>
 Package pdftex.def Info: eval/packet-basic-counters.png  used on input line 892
 .
 (pdftex.def)             Requested size: 386.96027pt x 142.13206pt.
-<eval/packet-basic-10million-just-throughput.png, id=910, 734.62456pt x 263.062
+<eval/packet-basic-10million-just-throughput.png, id=912, 734.62456pt x 263.062
 8pt>
 File: eval/packet-basic-10million-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-10million-just-throughput.png>
 Package pdftex.def Info: eval/packet-basic-10million-just-throughput.png  used 
 on input line 904.
 (pdftex.def)             Requested size: 386.96027pt x 138.57164pt.
-<eval/packet-basic-slowed_2.png, id=911, 717.6411pt x 263.0628pt>
+<eval/packet-basic-slowed_2.png, id=913, 717.6411pt x 263.0628pt>
 File: eval/packet-basic-slowed_2.png Graphic file (type png)
 <use eval/packet-basic-slowed_2.png>
 Package pdftex.def Info: eval/packet-basic-slowed_2.png  used on input line 912
 .
 (pdftex.def)             Requested size: 386.96027pt x 141.84708pt.
-<eval/packet-basic-4spawners-just-throughput.png, id=912, 717.6411pt x 263.0628
+<eval/packet-basic-4spawners-just-throughput.png, id=914, 717.6411pt x 263.0628
 pt>
 File: eval/packet-basic-4spawners-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-4spawners-just-throughput.png>
@@ -940,7 +935,7 @@ l.927
 l.927 
        <./eval/packet-basic-slowed_2.png> <./eval/packet-basic-4spawners-just-t
 hroughput.png>]
-<eval/packet-basic-distribution10-granular.png, id=933, 728.84296pt x 481.3182p
+<eval/packet-basic-distribution10-granular.png, id=935, 728.84296pt x 481.3182p
 t>
 File: eval/packet-basic-distribution10-granular.png Graphic file (type png)
 <use eval/packet-basic-distribution10-granular.png>
@@ -953,13 +948,13 @@ Package pdftex.def Info: eval/packet-basic-distribution10-granular.png  used on
                                                   \__shipout_drop_firstpage_...
 l.950 
        <./eval/packet-basic-distribution10-granular.png>]
-<eval/packet-basic-lifo-better.png, id=945, 771.1209pt x 286.1892pt>
+<eval/packet-basic-lifo-better.png, id=947, 771.1209pt x 286.1892pt>
 File: eval/packet-basic-lifo-better.png Graphic file (type png)
 <use eval/packet-basic-lifo-better.png>
 Package pdftex.def Info: eval/packet-basic-lifo-better.png  used on input line 
 958.
 (pdftex.def)             Requested size: 386.96027pt x 143.61826pt.
-<eval/packet-basic-fifo-better.png, id=949, 831.46635pt x 251.86095pt>
+<eval/packet-basic-fifo-better.png, id=951, 831.46635pt x 251.86095pt>
 File: eval/packet-basic-fifo-better.png Graphic file (type png)
 <use eval/packet-basic-fifo-better.png>
 Package pdftex.def Info: eval/packet-basic-fifo-better.png  used on input line 
@@ -971,13 +966,13 @@ Package pdftex.def Info: eval/packet-basic-fifo-better.png  used on input line
                                                   \__shipout_drop_firstpage_...
 l.975 \end{figure}
                    <./eval/packet-basic-lifo-better.png>]
-<eval/packet-basic-base-hybrids.png, id=959, 823.51665pt x 254.3904pt>
+<eval/packet-basic-base-hybrids.png, id=961, 823.51665pt x 254.3904pt>
 File: eval/packet-basic-base-hybrids.png Graphic file (type png)
 <use eval/packet-basic-base-hybrids.png>
 Package pdftex.def Info: eval/packet-basic-base-hybrids.png  used on input line
  989.
 (pdftex.def)             Requested size: 386.96027pt x 119.53632pt.
-<eval/mixer-base8.png, id=962, 867.24pt x 289.08pt>
+<eval/mixer-base8.png, id=964, 867.24pt x 289.08pt>
 File: eval/mixer-base8.png Graphic file (type png)
 <use eval/mixer-base8.png>
 Package pdftex.def Info: eval/mixer-base8.png  used on input line 1001.
@@ -1055,9 +1050,6 @@ Overfull \hbox (14.08798pt too wide) in paragraph at lines 1071--1071
 [][][]\OT1/cmr/m/n/12 microbenchmarks 
  []
 
-
-Package natbib Warning: There were undefined citations.
-
 [61
 
 ] (./report.aux)
@@ -1068,10 +1060,10 @@ Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: 8ED734F606924DE27A64270E6DCD8B18;10933.
  ) 
 Here is how much of TeX's memory you used:
- 21835 strings out of 480247
- 413040 string characters out of 5896151
- 702968 words of memory out of 5000000
- 39135 multiletter control sequences out of 15000+600000
+ 21830 strings out of 480247
+ 412909 string characters out of 5896151
+ 702910 words of memory out of 5000000
+ 39130 multiletter control sequences out of 15000+600000
  476268 words of font info for 51 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
  99i,9n,94p,1922b,1016s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -1088,10 +1080,10 @@ public/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 /amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfon
 ts/cm/cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmtt12.pfb>
-Output written on report.pdf (61 pages, 1467654 bytes).
+Output written on report.pdf (61 pages, 1468326 bytes).
 PDF statistics:
- 1253 PDF objects out of 1440 (max. 8388607)
- 1119 compressed objects within 12 object streams
+ 1256 PDF objects out of 1440 (max. 8388607)
+ 1122 compressed objects within 12 object streams
  276 named destinations out of 1000 (max. 500000)
  739 words of extra memory for PDF output out of 10000 (max. 10000000)
 
