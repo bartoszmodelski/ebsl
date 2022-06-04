@@ -1068,9 +1068,13 @@ The results highlight vast differences in latency and throughput between differe
     \item Scaling fine-grained workloads to high-core machines is non-trivial. In fact, an algorithm that scales well up to 20 cores can in fact lose perfomance as more resources are added due to to contention (\S\ref{section:benchmark-general-case}).
     \item Locked overflow queue used in Go and Tokio limits performance (\S\ref{paragraph:overflow-queue-bad-1}, \S\ref{paragraph:overflow-queue-bad-2}).
 \end{itemize}
-Therefore, there are clear benefits from customization and composition of schedulers and the hypothesis stated in the introduction is accepted (\S\ref{section:thesis}).
+Therefore, there are clear benefits from customization and composition of schedulers and the hypothesis stated in the introduction is accepted (\S\ref{section:thesis}). 
+
+Historically, built-in scheduling necessitated FIFO ordering to avoid the bad latency characteristics of LIFO under very heterogenous workloads. LIFO is, nonetheless, the optimal choice for many homogenous workloads (e.g. \S\ref{fig:mixer-bench}). The newfound capabilities of OCaml let developers tap into the benefits of using custom scheduling policies. In the case of mixer benchmark, the homogenous workload can be isolated on LIFO scheduler, while other diverse work remains on traditional FIFO discipline.
 
 \todo{do I have to mention future work?}
+
+
 \label{lastcontentpage} % end page count here
 
 
@@ -1087,11 +1091,8 @@ Therefore, there are clear benefits from customization and composition of schedu
 \section{ommited sections}
 
 \begin{itemize}
-    \item LF queue
-    \item MultiQ - \url{https://dl.acm.org/doi/pdf/10.1145/3503221.3508432}
     \item Memory model. OCaml features a novdel memory model.
     Other languages depend on global data race freedom. That does not facilitate reasoning about programs if a race in one library may cause undefined behavior in a different one. 
-    
     OCaml Multicore features a local data race freedom property, which guarantees that races are bound in space and time. 
 \end{itemize}
 

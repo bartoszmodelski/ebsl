@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  4 JUN 2022 01:07
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  4 JUN 2022 11:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1033,12 +1033,12 @@ ipedia . org / wiki / POWER4 # cite _
 ] [57] [58] [59] [60]) [61]
 Appendix A.
 
-Overfull \hbox (14.08798pt too wide) in paragraph at lines 1085--1085
+Overfull \hbox (14.08798pt too wide) in paragraph at lines 1089--1089
 [][][]\OT1/cmr/m/n/12 microbenchmarks 
  []
 
 
-Overfull \hbox (14.08798pt too wide) in paragraph at lines 1085--1085
+Overfull \hbox (14.08798pt too wide) in paragraph at lines 1089--1089
 [][][]\OT1/cmr/m/n/12 microbenchmarks 
  []
 
@@ -1054,7 +1054,7 @@ Package rerunfilecheck Info: File `report-submission.out' has not changed.
 Here is how much of TeX's memory you used:
  21826 strings out of 480247
  413057 string characters out of 5896151
- 704759 words of memory out of 5000000
+ 704754 words of memory out of 5000000
  39125 multiletter control sequences out of 15000+600000
  476320 words of font info for 51 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1073,7 +1073,7 @@ public/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 onts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm
 /cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt1
 2.pfb>
-Output written on report-submission.pdf (62 pages, 1480590 bytes).
+Output written on report-submission.pdf (62 pages, 1480860 bytes).
 PDF statistics:
  1270 PDF objects out of 1440 (max. 8388607)
  1133 compressed objects within 12 object streams
