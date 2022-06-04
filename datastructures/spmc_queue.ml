@@ -91,8 +91,8 @@ let local_resize t =
   Atomic.set head 0;;
 
 
-let local_enqueue {tail; head; mask; array; owned_by_id; _} element =
-  assert_domain_id "enq" owned_by_id;
+let local_enqueue {tail; head; mask; array; owned_by_id = _; _} element =
+  (* assert_domain_id "enq" owned_by_id; *)
   let (mask,array) = Atomic.(get mask, get array) in 
   let tail_val = Atomic.get tail in 
   let head_val = Atomic.get head in 
@@ -128,8 +128,8 @@ let rec local_enqueue_with_resize t element =
     then local_resize t;
     local_enqueue_with_resize t element;;
 
-let local_dequeue {head; tail; mask; array; owned_by_id; _} : 'a option =
-  assert_domain_id "deq" owned_by_id;
+let local_dequeue {head; tail; mask; array; owned_by_id = _; _} : 'a option =
+  (* assert_domain_id "deq" owned_by_id; *)
   let (mask,array) = Atomic.(get mask, get array) in 
   (* local deque is optimistic because it can fix its mistake if needed *)
   let index = Atomic.fetch_and_add head 1 in
@@ -137,7 +137,8 @@ let local_dequeue {head; tail; mask; array; owned_by_id; _} : 'a option =
   if index = tail_val 
   then
     (* nobody else would speculate *)
-    (assert (Atomic.compare_and_set head (index + 1) index);
+    ( (* assert (Atomic.compare_and_set head (index + 1) index); *) 
+    Atomic.set head index;
     None)
   else if index - tail_val > 0 
   then 

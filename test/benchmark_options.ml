@@ -113,9 +113,66 @@ let price_option_slimmed ~start_price ~volatility ~total_depth ~t ~call_price ~r
   let result = 
     Array.get !forward_layer 0
   in
-  Printf.printf "\nresult: %f\n" result;
+  Sys.opaque_identity result;
 ;;
 
+let price_option_concurrent ~start_price ~volatility ~total_depth ~t ~call_price ~rate callback_f = 
+  assert (total_depth > 1);
+  (* inits *)
+  let e = 2.71828 in 
+  let deltaT = t /. (Int.to_float total_depth) in 
+  let up_move = e ** (volatility *. sqrt(deltaT)) in
+  let down_move = 1. /. up_move in
+  let p_of_up_move = 
+    let x = e ** (rate *. deltaT) in 
+    (x -. down_move) /. (up_move -. down_move) 
+  in 
+  (* comptue stock price *)
+  let stock_layer = Array.init (total_depth+1) (fun _ -> 0.) in 
+  let rec f price iter = 
+    if iter == Array.length stock_layer 
+    then () 
+    else
+      let price = price *. (down_move ** 2.) in 
+      Array.set stock_layer iter price;
+      f price (iter+1)
+  in
+  let top_price = start_price *. (up_move ** (Int.to_float total_depth)) in 
+  Array.set stock_layer 0 top_price;
+  f top_price 1;
+  let layer_1 = Array.init (total_depth+1) (fun _ -> 0.) in 
+  let layer_2 = Array.init (total_depth+1) (fun _ -> 0.) in 
+  (* copy over *)
+  let forward_layer = ref layer_1 in 
+  let backward_layer = ref layer_2 in 
+  Array.iteri  (fun index v -> 
+    let payout = max 0. (v -. call_price) in 
+    Array.set !forward_layer index payout) 
+    stock_layer;
+  (* backpropagate *)
+  let rec f i = 
+    if i < total_depth 
+    then (
+      for j = 0 to total_depth - 1 - i do 
+        let x = Array.get !forward_layer j in 
+        let y = Array.get !forward_layer (j+1) in 
+        assert (x >= y);
+        let out = 
+          (p_of_up_move *. x +. (1.-.p_of_up_move) *. y)
+          *. (e ** (-.rate *. deltaT))
+        in
+        Array.set !backward_layer j out;
+      done;
+      let tmp = !backward_layer in 
+      backward_layer := !forward_layer;
+      forward_layer := tmp;
+      Schedulr.Scheduler.schedule (fun () -> f (i+1)) |> ignore) 
+    else 
+      (let result = Array.get !forward_layer 0 in 
+      callback_f result);
+  in  
+  Schedulr.Scheduler.schedule (fun () -> f 0) |> ignore;
+;;
 
 
 let finish start_time = 
@@ -132,12 +189,22 @@ let finish start_time =
     (Per_thread.local_get_hist ()) (difference))
 
 let run_processor ~n () =
+  let start_time = Core.Time_ns.now () in 
   for _i = 1 to n do 
-    let start_time = Core.Time_ns.now () in 
-    Schedulr.Scheduler.schedule (fun () -> 
-      finish start_time) |> ignore
+    Schedulr.Scheduler.schedule (fun () ->
+      let total_depth =
+        if Random.int 100 < 50
+        then 40 
+        else 20  
+      in 
+      price_option_concurrent 
+          ~start_price:100. ~volatility:0.02 
+          ~total_depth ~t:1. ~call_price:110. ~rate:0.01
+        (fun _ -> finish start_time)) 
+      |> ignore;
+      if _i mod 10 == 0 
+      then Schedulr.Scheduler.yield ()
   done;
-  Schedulr.Scheduler.schedule (fun () -> ())
 ;;
 let items_total = ref 1_000
 
@@ -150,7 +217,6 @@ let workload ~num_of_spawners () =
       Schedulr.Scheduler.schedule (run_processor ~n:items_per_worker)
       |> ignore
     done;
-    Schedulr.Scheduler.schedule (fun () -> ()) |> ignore;
     while Reporting.Success.unsafe_sum () < num_of_spawners * items_per_worker do 
       (* Schedulr.Scheduler.yield () *) ()
     done; 
@@ -190,6 +256,8 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
         Printf.printf "\"latency_median\":%d,\n\"latency_three_nine\":%d\n" 
           (quantile ~quantile:0.5 hist)
           (quantile ~quantile:0.999 hist);
+        Printf.printf "two nine: %d\n " (quantile ~quantile:0.99 hist);
+        Printf.printf "four nine: %d\n " (quantile ~quantile:0.9999 hist);
         Reporting.Histogram.Per_thread.zero_out ();
       in
       Printf.printf "}";
