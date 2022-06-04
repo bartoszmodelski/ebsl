@@ -1,4 +1,4 @@
-\begin{thebibliography}{63}
+\begin{thebibliography}{64}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -414,6 +414,16 @@ D.~Sun, H.~He, H.~Yan, S.~Gao, X.~Liu, and X.~Zheng.
   Jan. 2021.
 \newblock \doi{10.1016/j.future.2020.08.003}.
 \newblock URL \url{https://doi.org/10.1016/j.future.2020.08.003}.
+
+\bibitem[Sundell et~al.(2011)Sundell, Gidenstam, Papatriantafilou, and
+  Tsigas]{Sundell2011}
+H.~Sundell, A.~Gidenstam, M.~Papatriantafilou, and P.~Tsigas.
+\newblock A lock-free algorithm for concurrent bags.
+\newblock In \emph{Proceedings of the 23rd {ACM} symposium on Parallelism in
+  algorithms and architectures - {SPAA} {\textquotesingle}11}. {ACM} Press,
+  2011.
+\newblock \doi{10.1145/1989493.1989550}.
+\newblock URL \url{https://doi.org/10.1145/1989493.1989550}.
 
 \bibitem[Swalens et~al.(2014)Swalens, Marr, Koster, and Cutsem]{Swalens2014}
 J.~Swalens, S.~Marr, J.~D. Koster, and T.~V. Cutsem.

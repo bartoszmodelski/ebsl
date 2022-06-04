@@ -633,6 +633,7 @@ Implementing backpressure in the core of the scheduler would indisputably improv
 
 
 \subsection{Cancellations}
+\label{section:cancellations}
 Important as cancellations are common in modern workloads with requests with deadlines. Further, cancellations are critical to recovering from overloading and thus their implementation has to be particularly robust, as a large wave of propagating cancellations may be the actual event reaching breaking point and causing system meltdown.  
 
 Paper a discusses this explicitely. In this work,
@@ -740,6 +741,7 @@ With such a setup both enqueue and dequeue must do two atomic operations (FAD+GE
 \end{wrapfigure}
 
 \subsection{MPMC Queue Blocking}
+\label{section:blocking_mpmc}
 
 While the infinite array is a powerful idea and some designs actually simulate that using a linked list of arrays (e.g. \cite{Sundell2011}), use of circular buffer is far more common. Luckily, the design described in the previous section almost works on a circular array. The major difference is that now enqueuer wraps around the array and may encounter a full slot, thus enqueue function requires some mechanism to not overwrite another item, e.g. a busy wait akin to that in figure \ref{fig:basic-deque}. Secondly, both enqueuer and dequeuer must use CAS to edit the item slot as the queue can overlap multiple times. 
 
@@ -792,19 +794,23 @@ This design is similar to the classic work stealing deque \cite{Chase2005}. Howe
 \begin{itemize}
     \item Steals half of the queue rather than a single element. Stolen elements are transferred directly into the thief's queue rather than returned.
     \item Local pop does never needs to rollback an index. Instead, it executes CAS on a less contended item slot.
-    \item Has the extra flexibility coming from atomic slots. \todo{link extra flexiblity - cancellations and light yields}
+    \item Has the extra flexibility coming from atomic slots (\S\ref{section:cancellations}, \S\ref{section:yield}).
 \end{itemize}
 
 \subsection{Resizing}
 
+The work stealing queue has been extended to allow resizing. It lets the owner of the queue increase the size of the local structure rather than push overflowing elements into a separate queue. This, in theory, may translate to better work distribution. Such a functionality may seem daunting to implement in the lock-free world but, curiously, the implementation of FIFO work stealing lets the owner lock out all other users. 
+
+The mechanism relies on the fact that non-owners do not speculate when stealing. Therefore, owner can simply overshoot the \textit{head} index to ensure that no new stealers appear. Once the \textit{head} is higher than \textit{tail}, owner needs to wait for all in-flight stealers to terminate. It can detect it by checking whether all \textit{claimed} elements have been removed from the array. Once that's done, the elements are transferred to a new array, the array and mask are updated in the record, and then \textit{head}, \textit{tail} indices are carefully corrected.
+
 \subsection{Sharded Queue}
 
-Performance of staged architecture (\S\ref{section:design-staged}) and overflow queue (\S\ref{section:design_overflow_queue}) depends on the scalability of the underlying queue. Using a lock-free MPMC queue allows two threads to work in parallel, in contrast with locked structure, but it does not guarantee scaling beyond that as shown by figure \todo{fig}. 
+Performance of staged architecture (\S\ref{section:design-staged}) and overflow queue (\S\ref{section:design_overflow_queue}) depends on the scalability of the underlying queue. Lock-free MPMC queue (\S\ref{section:blocking_mpmc}) allows enqueuers and dequeuers to work faster and more independently than with a locked structure. However, as shown by figure \todo{fig}, the throughput hardly improves for more than a few workers.  
 
-Using fine-grained concurrency does not  
-
+A common technique used to extend the scalability in such circumstances is horizontal scaling. Instead of a single queue with two points of contention (indices), the structure can encapsulate multiple queues and load balance across them. Such a construction is called multi queue and can alone constitute a core structure of a scheduler \cite{Postnikova2022}. This dissertation uses a simple multiqueue wherein enqueuers insert items into randomly selected MPMC queue, and dequeurs start with random queue and iterate until a non-empty queue is found (or all queues have been checked).
 
 \subsection{False sharing}
+A common optimization pattern in low-level programming involves separating contended variables into separate cache lines to ensure they can be owned independently. This was taken into consideration only in the places where it was natural (e.g. size of runqueue). Conversely, OCaml does not allow to explicitely specify padding or memory layout of a record type, and that cannot be ensured. Likely, there are ways to coerce the compiler into some particular layout by adding unusued variables and reverse engineering compiler logic but that would be very sensitive to e.g. compiler updates. Thus, implementations were not optimized for such subtle behavior. 
 
 \subsection{Validation}
 
@@ -812,9 +818,7 @@ The core lock-free queue and stack have been extensively load tested and verifie
 
 \subsection{Limitations}
 
-Since this project has a limited timescale, the schedulers were optimized in design (for e.g. scalability) but their implementations were not optimized 
-
-
+Since this project has a limited timescale, the schedulers were optimized for scalability but their implementations do not eliminate all constant factor overhead. In part since these overheads are not critical to the hypothesis (\S\ref{section:thesis}) but also because it requires a far more error-prone code in OCaml. 
 
 
 
@@ -832,6 +836,9 @@ This section describes details of the testing experimental setup: hardware, syst
 perf stat
 
 \subsection{Hardware}
+The 
+
+cache line size 64 bytes
 
 \subsection{System}
 \label{section:methods_system}
@@ -842,6 +849,7 @@ reject first sample lazy loading and caches
 how many times executed
 
 performance sensitive data was collected on thread-local counters
+
 \subsection{Statistical Methods}
 
 look for extra variance
