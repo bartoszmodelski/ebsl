@@ -151,8 +151,7 @@ let price_option_concurrent ~start_price ~volatility ~total_depth ~t ~call_price
     stock_layer;
   (* backpropagate *)
   let rec f i =
-    (Unix.sleepf 0.001; 
-    if i < total_depth 
+    (if i < total_depth 
     then (
       for j = 0 to total_depth - 1 - i do 
         let x = Array.get !forward_layer j in 
@@ -187,7 +186,7 @@ let finish start_time =
   in 
   Reporting.Success.local_incr ();
   Reporting.Histogram.(add_val_log 
-    (Per_thread.local_get_hist ()) (difference))
+    (Per_thread.local_get_hist ()) (difference));;
 
 let run_processor ~n () =
   Schedulr.Scheduler.yield ();
@@ -196,7 +195,7 @@ let run_processor ~n () =
     let total_depth =
       if _i mod 200 > 0
         then 2
-        else 1_000
+        else 2_000
     in  
     Schedulr.Scheduler.schedule (fun () ->
       price_option_concurrent 
@@ -206,6 +205,7 @@ let run_processor ~n () =
       |> Sys.opaque_identity |> ignore;
   done;
 ;;
+
 let items_total = ref 1_000
 
 let workload ~num_of_spawners () =
