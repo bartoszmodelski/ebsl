@@ -150,7 +150,8 @@ let price_option_concurrent ~start_price ~volatility ~total_depth ~t ~call_price
     Array.set !forward_layer index payout) 
     stock_layer;
   (* backpropagate *)
-  let rec f i = 
+  let rec f i =
+    (Unix.sleepf 0.001; 
     if i < total_depth 
     then (
       for j = 0 to total_depth - 1 - i do 
@@ -169,7 +170,7 @@ let price_option_concurrent ~start_price ~volatility ~total_depth ~t ~call_price
       Schedulr.Scheduler.schedule (fun () -> f (i+1)) |> ignore) 
     else 
       (let result = Array.get !forward_layer 0 in 
-      callback_f result);
+      callback_f result));
   in  
   Schedulr.Scheduler.schedule (fun () -> f 0) |> ignore;
 ;;
@@ -189,21 +190,20 @@ let finish start_time =
     (Per_thread.local_get_hist ()) (difference))
 
 let run_processor ~n () =
-  let start_time = Core.Time_ns.now () in 
-  for _i = 1 to n do 
+  Schedulr.Scheduler.yield ();
+  for _i = 0 to n-1 do 
+    let start_time = ref (Core.Time_ns.now ()) in
+    let total_depth =
+      if _i mod 200 > 0
+        then 2
+        else 1_000
+    in  
     Schedulr.Scheduler.schedule (fun () ->
-      let total_depth =
-        if Random.int 100 < 50
-        then 40 
-        else 20  
-      in 
       price_option_concurrent 
           ~start_price:100. ~volatility:0.02 
           ~total_depth ~t:1. ~call_price:110. ~rate:0.01
-        (fun _ -> finish start_time)) 
-      |> ignore;
-      if _i mod 10 == 0 
-      then Schedulr.Scheduler.yield ()
+        (fun _ -> finish !start_time)) 
+      |> Sys.opaque_identity |> ignore;
   done;
 ;;
 let items_total = ref 1_000
@@ -217,6 +217,7 @@ let workload ~num_of_spawners () =
       Schedulr.Scheduler.schedule (run_processor ~n:items_per_worker)
       |> ignore
     done;
+    Schedulr.Scheduler.yield ();
     while Reporting.Success.unsafe_sum () < num_of_spawners * items_per_worker do 
       (* Schedulr.Scheduler.yield () *) ()
     done; 
@@ -303,3 +304,4 @@ let () =
   benchmark ~num_of_domains ~num_of_spawners scheduler_module;;
 
 
+(* QUEUE_SIZE=13 dune build && ./_build/default/test/benchmark_options.exe  -scheduler LIFO -num-of-domains 5 -num-of-spawners 5*)
