@@ -188,10 +188,9 @@ let finish start_time =
   Reporting.Histogram.(add_val_log 
     (Per_thread.local_get_hist ()) (difference));;
 
-let run_processor ~n () =
+let run_processor ~start_time ~n () =
   Schedulr.Scheduler.yield ();
   for _i = 0 to n-1 do 
-    let start_time = ref (Core.Time_ns.now ()) in
     let total_depth =
       if _i mod 200 > 0
         then 2
@@ -201,7 +200,7 @@ let run_processor ~n () =
       price_option_concurrent 
           ~start_price:100. ~volatility:0.02 
           ~total_depth ~t:1. ~call_price:110. ~rate:0.01
-        (fun _ -> finish !start_time)) 
+        (fun _ -> finish start_time)) 
       |> Sys.opaque_identity |> ignore;
   done;
 ;;
@@ -214,7 +213,7 @@ let workload ~num_of_spawners () =
   let time_start = Core.Time_ns.now () in 
   let _ = 
     for _ = 1 to num_of_spawners do 
-      Schedulr.Scheduler.schedule (run_processor ~n:items_per_worker)
+      Schedulr.Scheduler.schedule (run_processor ~start_time:time_start ~n:items_per_worker)
       |> ignore
     done;
     Schedulr.Scheduler.yield ();
