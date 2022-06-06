@@ -53,19 +53,17 @@
 \contentsline {section}{\numberline {5.1}Schedulers}{36}{section.5.1}%
 \contentsline {subsection}{\numberline {5.1.1}Design Principles}{37}{subsection.5.1.1}%
 \contentsline {section}{\numberline {5.2}Methods}{38}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Hardware}{38}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}System}{38}{subsection.5.2.2}%
-\contentsline {subsection}{\numberline {5.2.3}Procedures}{38}{subsection.5.2.3}%
-\contentsline {subsection}{\numberline {5.2.4}Statistical Methods}{38}{subsection.5.2.4}%
-\contentsline {subsection}{\numberline {5.2.5}Probe Effect}{38}{subsection.5.2.5}%
+\contentsline {subsection}{\numberline {5.2.1}System}{38}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}Procedures}{38}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}Statistical Methods}{38}{subsection.5.2.3}%
 \contentsline {section}{\numberline {5.3}Server benchmark}{38}{section.5.3}%
 \contentsline {subsection}{\numberline {5.3.1}General Case}{38}{subsection.5.3.1}%
-\contentsline {subsubsection}{Degradation}{41}{section*.34}%
-\contentsline {subsubsection}{Work distribution extensions}{43}{section*.38}%
-\contentsline {subsubsection}{Extensions}{44}{section*.39}%
+\contentsline {subsubsection}{Degradation}{41}{section*.38}%
+\contentsline {subsubsection}{Work distribution extensions}{43}{section*.42}%
+\contentsline {subsubsection}{Extensions}{44}{section*.43}%
 \contentsline {subsection}{\numberline {5.3.2}Server benchmark with cache effects}{45}{subsection.5.3.2}%
 \contentsline {subsection}{\numberline {5.3.3}Server benchmark with multi-modal processing latency}{46}{subsection.5.3.3}%
-\contentsline {subsubsection}{LIFO heuristics}{47}{section*.40}%
+\contentsline {subsubsection}{LIFO heuristics}{47}{section*.44}%
 \contentsline {section}{\numberline {5.4}Mixer benchmark}{48}{section.5.4}%
 \contentsline {section}{\numberline {5.5}Options Pricer}{48}{section.5.5}%
 \contentsline {section}{\numberline {5.6}Comparison with Domainslib}{49}{section.5.6}%

@@ -709,37 +709,21 @@ Therefore, this thesis relies on lock-free structures inspired by \citet{Kappes2
 
 
 \section{Methods}
-
-This section describes details of the testing experimental setup: hardware, system and testing procedures. Afterwards, it justifies the statistical methods and discusses probe effect.
-
-perf stat
-
-\subsection{Hardware}
-The 
-
-cache line size 64 bytes
+This section describes details of the experimental setup, procedures and the statistical methods.
 
 \subsection{System}
 \label{section:methods_system}
-mention thread limit in ocaml
+The hardware features two AMD EPYC 7702 processors plugged into a dual-socket \todo{fill in} motherboard. It has \todo{128}GB of RAM and caches have the following sizes \todo{fill in}. Cache line is 64 bytes wide. 
+
+The installed system is Ubuntu \todo{version}. All the schedulers and benchmarks in this project have been compiled with OCaml 4.12.0+domains \cite{ocamlmul16:online}, which has a hard limit of 128 domains (OS threads, \S\ref{section:fibers}). 
+
 \subsection{Procedures}
-reject first sample lazy loading and caches
+Each benchmark has been run 11 times. The first sample has been dropped as it tends to be more noisy that others due to lazy loading of libraries, cold caches, etc. 
 
-how many times executed
-
-performance sensitive data was collected on thread-local counters
+Performance sensitive data was collected on thread-local counters. Benchmarking latency required many calls to clock, which were ensured to be served by vDSO \cite{vdso7Lin5:online} and take less than 50ns on average. 
 
 \subsection{Statistical Methods}
-
-look for extra variance
-use medians and quartiles as its h
-\subsection{Probe Effect}
-
-Story about vdso.
-
-
-
-
+Since it is quite hard to assume any particular distribution (esp. gaussian) when it comes to performance measurements, the statistical methods used throughtout this project are distribution agnostic. Charts feature medians, and 25th, 75th as error bards.
 
 
 
