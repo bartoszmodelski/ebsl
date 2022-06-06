@@ -33,45 +33,45 @@ Warning--empty year in bartoszm90:online
 Warning--empty journal in fad-cas-speed
 Warning--empty year in ocamlmul59:online
 Warning--empty year in Frequent1:online
-You've used 64 entries,
+You've used 65 entries,
             2773 wiz_defined-function locations,
-            1051 strings with 18479 characters,
-and the built_in function-call counts, 29586 in all, are:
-= -- 2726
-> -- 1691
-< -- 36
-+ -- 587
-- -- 522
-* -- 2405
-:= -- 4444
-add.period$ -- 291
-call.type$ -- 64
-change.case$ -- 362
-chr.to.int$ -- 63
-cite$ -- 169
-duplicate$ -- 1315
-empty$ -- 2450
-format.name$ -- 593
-if$ -- 6323
+            1060 strings with 18806 characters,
+and the built_in function-call counts, 30233 in all, are:
+= -- 2790
+> -- 1730
+< -- 37
++ -- 600
+- -- 534
+* -- 2461
+:= -- 4541
+add.period$ -- 297
+call.type$ -- 65
+change.case$ -- 369
+chr.to.int$ -- 64
+cite$ -- 171
+duplicate$ -- 1344
+empty$ -- 2497
+format.name$ -- 606
+if$ -- 6465
 int.to.chr$ -- 2
 int.to.str$ -- 1
-missing$ -- 47
-newline$ -- 411
-num.names$ -- 216
-pop$ -- 861
+missing$ -- 48
+newline$ -- 418
+num.names$ -- 220
+pop$ -- 875
 preamble$ -- 1
-purify$ -- 300
+purify$ -- 306
 quote$ -- 0
-skip$ -- 944
+skip$ -- 964
 stack$ -- 0
-substring$ -- 692
-swap$ -- 161
-text.length$ -- 8
+substring$ -- 713
+swap$ -- 168
+text.length$ -- 9
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 684
+type$ -- 695
 warning$ -- 30
-while$ -- 214
+while$ -- 220
 width$ -- 0
-write$ -- 973
+write$ -- 992
 (There were 30 warnings)

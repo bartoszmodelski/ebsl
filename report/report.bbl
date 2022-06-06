@@ -1,4 +1,4 @@
-\begin{thebibliography}{64}
+\begin{thebibliography}{65}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -315,6 +315,17 @@ C.~Lerche.
 G.~Maruzzelli.
 \newblock \emph{{FreeSWITCH} 1.8}.
 \newblock Packt Publishing, Birmingham, England, July 2017.
+
+\bibitem[McClure et~al.(2022)McClure, Ousterhout, Shenker, and
+  Ratnasamy]{workshed}
+S.~McClure, A.~Ousterhout, S.~Shenker, and S.~Ratnasamy.
+\newblock Efficient scheduling policies for {Microsecond-Scale} tasks.
+\newblock In \emph{19th USENIX Symposium on Networked Systems Design and
+  Implementation (NSDI 22)}, pages 1--18, Renton, WA, Apr. 2022. USENIX
+  Association.
+\newblock ISBN 978-1-939133-27-4.
+\newblock URL
+  \url{https://www.usenix.org/conference/nsdi22/presentation/mcclure}.
 
 \bibitem[Miller(1968)]{Miller1968}
 R.~B. Miller.

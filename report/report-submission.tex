@@ -479,7 +479,7 @@ First in, first out (FIFO, also FCFS) regime assumes running tasks in the order 
 
 Last in, first out (LIFO) order takes the opposite approach and always attempts to schedule the most recently added task. It results in a depth-first search traversal of the DAG, which hints at its potential for starvation if at least one of the scheduled workloads consist of an infinite graph. The main advantage, however, lies in LIFO scheduling respecting the principle of locality. Tasks tend to be related to each other and by running the most recently scheduled task, the scheduler maximizes the chance that required data is still in cache. Since memory is hierarchical, the benefits should be noticeable for a number of tasks executed in order and for a wide range of memory requirements. 
 
-These two fundamental strategies highlight the common trade-off between throughput and latency in scheduling (\ref{section:objectives}), which stems directly from policy on the lowest level: prioritising either oldest task (for latency) or newest (for locality). 
+These two fundamental strategies highlight the common trade-off between throughput and latency in scheduling (\S\ref{section:objectives}), which stems directly from policy on the lowest level: prioritising either oldest task (for latency) or newest (for locality). 
 
 
 \subsubsection{Fairness revisited}
@@ -498,7 +498,10 @@ A possible counterpoint to such example would say to simply run the entire reque
 
 \subsubsection{Allocations}
 
-Finally, memory does not scale linearly. Hardware is strictly hierarchical with latency increasing exponentialy at every stage. OCaml garbage collector is generational; minor heap is cheaper than major heap. Sometimes faster scheduling method is simply the one that minimizes allocations. For example, FIFO traversal of naive fibonacci implementation is going to quickly exhaust all available memory and experience a significant slowdown. The same workload under LIFO scheduling is trivial. Naturally, there are workloads that favour FIFO for the same reasons.
+Finally, it is worth noting that described effects may be overpowered if workload is simply more efficient to traverse in either depth-first (LIFO) or breadth-first manner. 
+
+
+memory does not scale linearly. Hardware is strictly hierarchical with latency increasing exponentialy at every stage. OCaml garbage collector is generational; minor heap is cheaper than major heap. Sometimes faster scheduling method is simply the one that minimizes allocations. For example, FIFO traversal of naive fibonacci implementation is going to quickly exhaust all available memory and experience a significant slowdown. The same workload under LIFO scheduling is trivial. Naturally, there are workloads that favour FIFO for the same reasons.
 
 
 \begin{wrapfigure}{r}{0.63\textwidth}
@@ -664,29 +667,169 @@ Paper a discusses this explicitely. In this work,
 \todo{batching would be faster but is generally bad for us!: BQ: A Lock-Free Queue with Batching}
 
 
-\chapter{Implementation}
+
+
+
+
+
+\chapter{Implementations and Evaluation}
+\label{chapter:evaluation}
+
+This chapter presents evidence gathered to verify the hypothesis (\S\ref{section:thesis}). First, it shows that some classic ideas like work stealing with an overflow queue (used in Go and Rust) do not scale to modern hardware and concurrency. This result is analyzed in depth (\S\ref{section:degradation}) and a number of extensions favoring fine-grained concurrency are evaluated (\S\ref{section:extensions}). Further, the section focuses on more complex workloads. First, web-server with cache effects (\S\ref{section:server-bench-with-cache-effects}) 
+and bimodal task processing time (\S\ref{section:server-bench-with-multi-modal}). Second, the audio mixer benchmark. 
+\todo{update}
 
 \section{Schedulers}
 \label{section:impl-schedulers}
-As described in \S\ref{section:ordering}, there is an inherent trade-off in scheduling between LIFO and FIFO. Therefore, these two mechanisms have been implemented for foundational schedulers using structures described in \todo{link to the queue/stack}. Their implementation follow a scheme with local data structures (\S\ref{section:core_struct_dist}) and rely on work stealing for work distribution (\S\ref{section:work-distribution}) in the base case. On top of these two core structures, the project features a resizable FIFO scheduler, which can automatically scale to required workload, and a staged architecture. The staged architecture is not implemented from first principles. Instead, it utilizes the underlying schedulers as micropools and provides scalable means for scheduling tasks across different micropools. With this choice, it is less efficient but still brings its core benefits and provides another way to compose schedulers (\S\ref{section:staged-as-composition}).
+As explained in \S\ref{section:ordering}, there is an inherent trade-off between FIFO and LIFO scheduling. These two mechanisms have been implemented from scratch as baseline choice. Their design follows the scheme with local data structures (\S\ref{section:core_struct_dist}) and relies on work stealing for work distribution (\S\ref{section:work-distribution}). They are built from first principles and supported by high-performance lock-free structure (\S\ref{section:lock-free-design-principle}). 
 
-\label{paragraph:lifo-heuristics}
-Pure LIFO scheduling is prone to poor tail latencies. Therefore, a number of heuristic has been implemented. They aim to integrate FIFO and LIFO ordering in a way that improves upon both, or at least provides a new point in the trade-off space.
+As shown by \S\ref{section:server-bench-with-multi-modal}, \S\ref{section:benchmark-general-case} the fundamental FIFO and LIFO schedulers can be limiting or outright fall short of expectation. Thus a large number of alternatives, modifications and extensions has been tested. They can be divided into 3 groups:
 \begin{itemize}
-    \item \textbf{Alternating}. LIFO and FIFO removal alternately. Simple combination of pro-latency and pro-locality choices. 
-    \item \textbf{Random}. Just as alternating, but the ratio does not have to be 50:50. Instead, it has been tested as 80\% LIFO, 20 \% FIFO and vice versa.  
-    \item \textbf{Temporary FIFO ordering}. To prevent any items from lingering at the bottom of the stack, every 256 items, do as many FIFO removals as was the number of elements in the stack. Such approach is commonly known as reversing the stack but this implementation avoids the edge case of an item getting stuck between two infinitely deep tasks.
-    \item \textbf{LIFO slot}. Rely on FIFO ordering but have a special slot for the most recently scheduled task. When looking for work, check this slot first. This violates FIFO and helps preserve locality between a chain of tasks. Featured in real-world projects, e.g. \ref{section:rel-work-go}. 
+    \item \textbf{Staged architecture.} The staged architecture utilizes the baseline schedulers as micropools and provides scalable means for scheduling tasks across them (\S\ref{section:staged-as-composition}). This implementation uses a scalable, lock-free multiqueue (\S
+    \ref{section:multiqueue_details}).
+    \item \textbf{Resizable FIFO.} Work stealing FIFO scheduler, which grows local queues to match the load rather than push items into an overflow queue. It uses the same lock-free queue as FIFO scheduler extended with resizing mechanism (\S\ref{section:resizing_details}).
+    \item \textbf{LIFO heuristics.} LIFO order may produce extremely bad tail latency for workloads with deep task graph. \S\ref{section:lifo-heuristics} evaluates a number of heuristics that try to capture the benefits of LIFO, while avoiding the edge case by doing FIFO removal at strategic times. They are implemented as a wrapper around LIFO scheduler.
+    \item \textbf{Work distribution extensions.} Work stealing is a classic work distribution method, which, nonetheless, has a number of disadvantages. A number of work distribution extensions has been considered.  
+    \S\ref{section:work-distribution-extensions} discusses both the disadvantages and proposed extensions. 
+\end{itemize} 
+
+\subsection{Design Principles}
+\label{section:lock-free-design-principles}
+
+Lock-free data structures tend to be difficult to use in the real-world. Firstly, all assumptions about their naive counterparts are off once fine-grained concurrency is in place. For example, such a trivial size() method may turn out to be non-trivial to make linearizable (\S\ref{section:linearizability}) when size of a linked-list or circular queue changes in multiple places at once. This makes the trade-off space far more complex and points in that space (algorithms) more varied than in the single-threaded world.
+
+Secondly, the effort required to add new features increases as a function of current complexity. With a single-threaded code, developer implementing a new function can focus solely on the state before and afters its execution. That alone is enough to examine whether the new function fits with the rest of the codebase. Moreover, if the code has no side effects and illegal states are not representable, even just a type check provides high confidence. Such a function is correct as long as its input and output pairs follow requirements. This could not be further from the truth with lock-free concurrency, wherein every new function has to be made safe to execute concurrently with entirety of existing codebase. Further, even if the new function is correct, it may render seemingly unrelated portions of existing code non-linearizable. 
+
+Therefore, this thesis relies on lock-free structures inspired by \citet{Kappes2021}. Their designs are described in detail in \S\ref{section:underlying_data_structures}. In general, they are optimized for the following properties rather than constant factors.  
+\begin{itemize}
+    \item \textbf{Scalability}. Prefer to use fetch and add operation (FAD) for modifying indices. CAS and FAD operations take approximately the same time \cite{fad-cas-speed} but traditional CAS-based queues scale poorly due to number of CAS retries growing proportionally with number of threads. Here, (despite additional item-level CAS) the contention is resolved by FAD and the whole structure scales similarly to state-of-the-art FAD queues (e.g. \cite{Yang2016}).
+    \item \textbf{Flexibility}. Lock-free implementations can be unwieldy and tricky to debug. This posed a particular threat to this dissertation. The described queue has the benefit of being extremely flexible for a lock-free algorithm and allowed exploration of many modifications at relative ease, e.g. LIFO pop operation, non-blocking returns, and single-producer relaxations. Extra features, e.g. immediate removal of cancelled items, are also very feasible.
+    \item \textbf{Simplicity}. The base case of this structure takes a little over 10 lines of lines of code. It is unusually concise for a practical multi-producer multi-consumer LF queue. 
 \end{itemize}
-Notably, these heuristic have been built as a wrapper around LIFO data structure but have no direct support. Thus, by design, they are slightly more costly to use. 
 
-Finally, work stealing does not provide optimal performance for highly concurrent workloads \ref{section:benchmark-general-case}. Thus, a number of extensions to aid work distribution have been evaluated. They are described in the next section.
 
-\subsection{Work distribution extensions}
+\section{Methods}
+
+This section describes details of the testing experimental setup: hardware, system and testing procedures. Afterwards, it justifies the statistical methods and discusses probe effect.
+
+perf stat
+
+\subsection{Hardware}
+The 
+
+cache line size 64 bytes
+
+\subsection{System}
+\label{section:methods_system}
+mention thread limit in ocaml
+\subsection{Procedures}
+reject first sample lazy loading and caches
+
+how many times executed
+
+performance sensitive data was collected on thread-local counters
+
+\subsection{Statistical Methods}
+
+look for extra variance
+use medians and quartiles as its h
+\subsection{Probe Effect}
+
+Story about vdso.
+
+
+
+
+
+
+
+\section{Server benchmark} 
+
+\subsection{General Case}
+\label{section:benchmark-general-case}
+
+\begin{figure}
+     \centering
+     \includegraphics[width=0.85\textwidth]{eval/packet-basic-with-steal-counts2std.png}
+     \caption{50k.}
+    \label{fig:packet-50k}
+\end{figure}
+
+The first benchmark mimics a minimal TCP packet processing scenario. The workload relies on a single spawner as it would be the case with a server listening on IP and port tuple. To minimise the noise, actual network is not used. Instead, the \textit{server} thread chooses one out of 10 pre-made packets, copies it and schedules a handler task by performing an appropriate effect. The benchmark focuses on max load scenario and spawns tasks as fast as only possible, until the requested total is reached. Then, it monitors an array of thread-local counters, which are increased by successfully terminating tasks. Notably, the packets are between 2 and 3 KiB, and the spawner thread focuses solely on task creation. Therefore, cache locality does not significantly affect the performance. Likewise, the performance advantage of LIFO stealing does not apply to stealing from the spawner, as spawner never removes elements from its local structure. Local structure sizes are held constant at 128 elements. (\todo{ref to justify queue size - generally, don't want too much waiting bc memory pressure, fiber recycling, should only resize when the queue bottoms out})
+
+The results of conducting a test with 50k packets in such a controlled setting are show by figure \ref{fig:packet-50k}. The first panel shows mean processing speed on a logarithmic scale. In the first part of the graph, between 5 and 20 domains, the performance rapidly accelerates with increase in the number of threads. 20 domains witness peak performance by LIFO scheduler and as more threads are added, the performance degrades. At first slowly, then faster beyond 80 domains. FIFO scheduler sees its peak at 80 domains but its performance is also relatively stable between 20 and 80, with a pronounced drop afterwards. This is surprising; adding more resources may not translate to a significant improvement \cite{amdahl} but it should not be detrimental either. Discussed further in \S\ref{section:degradation}. 
+
+The second panel shows actual time required to complete the benchmark. Next, the charts from three to five show 50\%, 99\% and 99.99\% latency percentiles. Again, up to 20 domains there is a steep decrease in all latencies. There are local differences around 20 domains, with FIFO offering a better median latency for one point and LIFO better tail latencies for 2-3 points. Afterwards, the results converge. The tail latencies are partly driven by LIFO simply being faster to process tasks but, likely, not as much as it looks since error bars indicate more noisy measurement than elsewhere. 
+
+Finally, the last panel shows number of retries of the main spawner (\textit{listener}) when trying to insert elements into the queue or stack. The retry loop is relatively cheap to execute \todo{link to the code in the repo}. Clearly, for lower core counts the spawner frequently throttles adding tasks due to lack of space. However, the number of busy-waiting cycles lowers with extra cores, quickly reaching point where magnitudes are too small to affect overall performance. At last, it ceases to occur in the median case beyond 45 cores. 
+ 
+Notably, both FIFO and LIFO perform very similarly on all metrics and exhibit similar phenomenons. As hinted in the first paragraph, the workload is so simple that it does not let some of the individual advantages prevail. There are slight differences, i.e. LIFO peaks at 20 domains, while FIFO at 80. But their overall performances (throughput and latencies) in ranges 0-20, 20-80, 80-115 are comparable. 
+
+Overall, it shows that both implementation are fairly balanced and a good foundation for benchmarking more complicated workloads.
+
+\subsubsection{Degradation}
+\label{section:degradation}
+In line with Amdahl's law \cite{amdahl}, it is expected that an application may not perform noticeably better with more resources. After all, scalability is something to explicitely design for and even then, may not always be possible \todo{ref to hash chain example}. However, there is no justification for more workers actually causing harm to the performance. Such a characteristic is highly undesirable in such a foundational system as scheduler. However, why would it arise in such a battle-tested idea as work stealing? 
+
+\begin{figure} 
+     \centering
+     \includegraphics[width=0.85\textwidth]{eval/packet-basic-with-steal-counts2.png}
+     \caption{The throughput achieved on 50k tasks over varying number of domains.}
+    \label{fig:packet-with-steal-counts}
+\end{figure}
+
+In the LIFO case, as shown by \ref{fig:packet-with-steal-counts}, the scheduler is unable to maintain the increase in stealing attempts. Such increase is necessary for scalability, as each worker will need more stealing attempts to find the tasks. For example, if 1 out of 2 threads is spawning, the other thread has 100\% hit rate. On the other hand, if it is 1 out of 10 threads, then there are are likely going to be some misses or inefficiencies (minimal amount of work acquired). The diagram shows, that above 80 domains, as the information becomes more dispersed, the scheduler does not increase stealing attempts. In theory, there should be no scalability issues since each new worker also adds a new queue but in practise contention increases significantly as starved cores keep retrying and impeding the actual useful attempts. Conversely, if there is significantly more work and more time, the tasks saturate the system enough to prevent excessive stealing and observed negative effect ceases to exist (\ref{fig:packet-10m-throughput}).
+
+\begin{figure} 
+     \centering 
+     \includegraphics[width=0.85\textwidth]{eval/packet-basic-counters.png}
+     \caption{The throughput achieved on 50k tasks over varying number of domains.}
+    \label{fig:packet-counters}
+\end{figure}
+
+In the FIFO case, the problem also relates to work distribution. Generally, FIFO is not able to steal as much as LIFO because all steals compete with local dequeues, and, by design, those steals tend to lose the race \todo{ref to implementation}. Therefore, while stealing alone is not maxed out, it significantly affects the rest of the logic. As shown by figure \ref{fig:packet-counters}, FIFO reaches over 2.5 stalls per instruction beyond 80 domains and this number keeps raising. The effect is also visible for LIFO but its pressure on the entire caching subsystem is much subtler.
+
+
+Finally, it is worth stating that this result should not be interpreted as work stealing being generally inappropriate for saturating 100 cores. Packet benchmark creates a short burst of 50k items, which reaches a throughput of over 1.5m items per second. Each task has its own logic and requires allocations but it does constitute a very fine-grained concurrency. That puts a high pressure on the scheduler and exposes its inefficiencies. Further, there is an unusual amount of distribution required. It is far easier to distribute tasks onto 10 threads than 100 due to e.g. atomic operations taking constant time and load information is being less dispersed. If the workload is simplified just a little, the scalability improves. 
+
+\begin{figure} 
+     \centering
+     \includegraphics[width=0.85\textwidth]{eval/packet-basic-10million-just-throughput.png}
+     \caption{The throughput achieved on 10 million tasks over varying number of domains.}
+    \label{fig:packet-10m-throughput}
+\end{figure}
+
+
+\begin{figure} 
+     \centering
+     \includegraphics[width=0.85\textwidth]{eval/packet-basic-slowed_2.png}
+     \caption{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}
+    \label{fig:packet-slowed}
+\end{figure}
+
+
+\begin{figure} 
+     \centering 
+     \includegraphics[width=0.85\textwidth]{eval/packet-basic-4spawners-just-throughput.png}
+     \caption{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case.}
+    \label{fig:packet-4spawners}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Heavier task}. See figure \ref{fig:packet-slowed} for the performance when each task has had an extra 500ns sleep to perform. This is enough time to extend the stability beyond 100 domains.
+        
+    \item \textbf{Higher workload}. In fact, increasing the number of tasks also stabilizes the scaling. See figure \ref{fig:packet-10m-throughput} for the case with 10 million task instead of 50k. This case saturates many more workers, and while overall throughput is lower, the performance overall remains stable beyond 30 cores. \todo{say long-running, which is unusual in e.g. http traffic}
+    
+    \item \textbf{More spawners}. See figure \ref{fig:packet-4spawners} for the performance under more spawners, i.e. developer made an explicit change to help the scheduler.
+\end{itemize}
+
+
+
+
+\subsubsection{Work distribution extensions}
 \label{section:work-distribution-extensions}
 
-As robust as work stealing is, it does have its issues, e.g. blind victim selection, the scalability ceiling describes in the previous section (\S\ref{section:degradation}). 
-As described in \S\ref{section:work-distribution}, regardles of primary work distribution mechanism, some sort of work stealing is necessary to prevent starvation in non-preemptive design with local structure. Otherwise, with a purely cooperative scheduling, any long tasks is deemed to significantly increase latency of all awaiting items. Therefore, a number of extensions to the core work stealing have been considered. They are motivated by the following observations.
+Work stealing is robust but not perfect, e.g. the scalability ceiling describes in the \S\ref{section:degradation} or blind victim selection. As described in \S\ref{section:work-distribution}, regardles of primary work distribution mechanism, some sort of work stealing is necessary to prevent starvation in non-preemptive design with local structure. Otherwise, with a purely cooperative scheduling, any long tasks is going to significantly increase latency of all awaiting items. Therefore, a number of extensions to the core work stealing have been considered. They are motivated by the following observations.
 
 \begin{itemize}
     \item \textbf{Contention.} The scalability of atomic operations and inter-processor communication is limited. Therefore, the design of stealing should be wary of those budgets as additional threads are added. 
@@ -694,37 +837,189 @@ As described in \S\ref{section:work-distribution}, regardles of primary work dis
     \item \textbf{Blindness.} Random exploration of other threads local structures is inefficient. It causes contention and suboptimal steals. Instead, busiest threads should request help. 
 \end{itemize}
 
+
 The aforementioned observations translated into the following implementations. 
 
 \begin{itemize}
     \item Reduce the contention on critical threads by having each thread only target its \textit{n} nearest neighbours in threads array. That creates a hierarchy along which tasks move and prevents the underloaded threads at the bottom of hierarchy from contending in the hotspots. Implemented with nearest 15 and 20 threads.
     \item \textbf{Steal at least 10.} Do not steal less than 10 elements as they will be efficiently processed by owner. Instead, look for work elsewhere. 
-    \item \textbf{Work-shedding}. A polar opposite of work stealing. Busy worker randomly chooses another thread, which is forced to steal some of the busy thread's load. Notably, \ref{workshed} found improvement of tail latency stemming from extending work-stealing with work-shedding on a 32-core machine. Implemented as non-sticky, only a single steal is forced, and sticky, in which the victim keeps the target until another thread overrides it. 
+    \item \textbf{Work-shedding}. A polar opposite of work stealing. Busy worker randomly chooses another thread, which is forced to steal some of the busy thread's load. Notably, \cite{workshed} found improvement of tail latency stemming from extending work-stealing with work-shedding on a 32-core machine. Implemented as non-sticky, only a single steal is forced, and sticky, in which the victim keeps the target until another thread overrides it. 
     \item \textbf{Work-sharing from busy to free}. Requestor publishes its id in a highly-scalable lock-free queue. Threads looking for work picks up the id from the queue and steals work. This has the benefit of closing the information gap of pure work stealing or work-shedding. Only the overloaded and underloaded threads participate, while others remain unaffected.
     \item \textbf{Overflow queues}. Use extra structure for work distribution and put some tasks into a global queue. Here, spawner thread has a chance of inserting a tasks into global structure. Both Tokio \cite{Makingth53:online} and Go \cite{goprocgo14:online} feature global, locked queues for any tasks overflowing local queue. Three queues have been implemented: locked, lock-free, lock-free, 5-multi-queue. 
     \item \textbf{Local resizing}. Stealers aims to take half of its victims tasks. Increasing the size of local structure and the number of awaiting itmes may in turn lead to higher number of items distributed per steal. 
 \end{itemize}
 
-\todo{could try doing horizontal scaling}
 
-\todo{mention the study that showed that WS+WR were theb est}
+
+\subsubsection{Extensions}
+\label{section:extensions}
+
+\begin{figure} 
+     \centering
+     \includegraphics[width=0.85\textwidth]{eval/packet-basic-distribution10-granular.png}
+     \caption{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}
+    \label{fig:packet-extenstions}
+\end{figure}
+
+
+\S\ref{section:work-distribution-extensions} discussed a number of alternative work distribution mechanisms. The positive results are shown in figure \ref{fig:packet-extenstions}. Only neighbourhood stealing has shown a clear improvement over the baseline, which is in line with the diagnosis stated in the previous section \S\ref{section:degradation}. It is worth pointing out that such an optimization is going to have a negative effect on coarse-grained workload, where threads higher in the hierarchy are going to be stuck processing tasks for longer and thus not replenish its local structure quick enough. 
+
+\label{paragraph:overflow-queue-bad-1}
+Only stealing at least 10 elements had a strong negative effect, as it paradoxically increased the number of underloaded threads and contention on the loaded ones. Similarly, work-shedding approaches (sticky and non-sticky) resulted in other threads overloading the spawner and causing less efficient work distribution than random work-stealing. In pure work-stealing case tasks often flow through multiple hops, thus reducing the contention in the hotspot. The same effect was observed for simple locked overflow queues (as in Go and Rust) as the spawner has to compete with the workers for the lock.
+
+Finally, scalable overflow structures (lock-free queue, multi-queue) and work-sharing from busy to free had an insignifcant positive effect. They would likely yield a stronger benefit for less heterogenous workload. Likewise, local resizing would be beneficial if starting size of the local structure was small enough.
+
+\subsection{Server benchmark with cache effects}
+\label{section:server-bench-with-cache-effects}
+
+\begin{figure} 
+    \centering 
+    \includegraphics[width=0.85\textwidth]{eval/packet-basic-lifo-better.png}
+    \caption{The throughput achieved on packet processing benchmark with 500k packets and 10 spawners. The benchmark was modified to have a non-trivial cache effect. Once the task was processed as in the original benchmark, it would spawn a chain of 10 tasks. Each task reads 20 with each reading 20 random bytes from the packet buffer, what simulates picking out different parts of the received data at different stages. LIFO offers a very clear throughput advantage (shown in the figure) and median-tail latency improvement.}
+   \label{fig:packet-lifo-better}
+\end{figure}
+
+This section presents results of a more complicated workload, wherein once the packet is parsed, its contents are passed to the business logic. Namely, each packet from the general case benchmark (\S\ref{section:benchmark-general-case}) also spawns a 10-sequence of consecutive tasks. Each reads 20 random locations in the packet or does a simple computation (checksum), and spawns its child. That's until the depth of 10 is reached. Moreover, there are 5 spawners instead of 1, and individual queue sizes have been increased to 1024 to accommodate that. The results are shown by figure \ref{fig:packet-lifo-better}. Such a workload naturally favours LIFO, which can make a much better use of hierarchical memory and reduce cache misses. Thus, achieved throughput is far superior with LIFO ordering. Further, in line with the mechanics described in \S\ref{section:fairness-revisited}, using LIFO also significantly improves tail latencies.
+
+Notably, extra care is required to replicate this result on modern architecture. For example, simple iteration over the packet in consecutive task does not experience memory inefficiencies due automatic memory prefetching. After a few first cache fails, the rest of the packet is going to be loaded into cache preemptively. This effect breaks down with any more complex memory patterns, which microarchitecture cannot predict.   
+
+\subsection{Server benchmark with multi-modal processing latency}
+\label{section:server-bench-with-multi-modal}
+
+\begin{figure} 
+    \centering 
+    \includegraphics[width=0.85\textwidth]{eval/packet-basic-fifo-better.png}
+    \caption{The throughput achieved on packet processing benchmark with 100k packets and 10 spawners. The benchmark has a weaker cache effect than \ref{fig:packet-lifo-better} but still significant enough for LIFO to have a better throughput. However, there is a 0.1\% chance that packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO clearly offers a much better tail latency for most domain-counts in such a scenario. For example, at 115 domains LIFO saves over 30\% of tail latency.}
+   \label{fig:packet-fifo-better}
+\end{figure}
+
+Figure \ref{fig:packet-fifo-better} shows results of an alternative twist. Here, instead of spawning 10-sequence, only 3-sequence is spawned and the last task has a 0.1\% chance to spawn another task with lengthy operation. The 3-sequence still has cache-dependcies, which favour LIFO, but optional final task sets a trap. If scheduler processes the lengthy operations without care, it risks massively increasing latency of all awaiting tasks. This favour FIFO, which is able to process lightweight sequences concurrenctly with the heavy ones, and have the lightweight tasks terminate early. The heavy operations wait longer but in their case the processing time is big enough for extra waiting to have a minimal impact. 
+
+
+\textbf{alternative explanation:}
+that strongly favours FIFO. Notably, the workload is still locality-sensitive but now, it also features a variance in depth of task-graphs spawned by packets and cost of processing individual tasks. Suddenly, FIFO is able to offer a significantly better tail latency as it actively seeks to process the oldest tasks. Conversely, LIFO lets lightweight tasks remain stuck behind random heavy jobs. 
+
+
+
+\subsubsection{LIFO heuristics}
+\label{section:lifo-heuristics}
+
+Pure LIFO scheduling is prone to poor tail latencies. Therefore, a number of heuristic has been implemented. They aim to integrate FIFO and LIFO ordering in a way that improves upon both, or at least provides a new point in the trade-off space.
+\begin{itemize}
+    \item \textbf{Alternating}. LIFO and FIFO removal alternately. Simple combination of pro-latency and pro-locality choices. 
+    \item \textbf{Random}. Just as alternating, but the ratio does not have to be 50:50. Instead, it has been tested as 80\% LIFO, 20 \% FIFO and vice versa.  
+    \item \textbf{Temporary FIFO ordering}. To prevent any items from lingering at the bottom of the stack, every 256 items, do as many FIFO removals as was the number of elements in the stack. Such approach is commonly known as reversing the stack but this implementation avoids the edge case of an item getting stuck between two infinitely deep tasks.
+    \item \textbf{LIFO slot}. Rely on FIFO ordering but have a special slot for the most recently scheduled task. When looking for work, check this slot first. This violates FIFO and helps preserve locality between a chain of tasks. Featured in real-world projects, e.g. \ref{section:rel-work-go}. 
+\end{itemize}
+Notably, these heuristic have been built as a wrapper around LIFO data structure but have no direct support. Thus, by design, they are costlier to use. 
+
+\begin{figure} 
+    \centering 
+    \includegraphics[width=0.85\textwidth]{eval/packet-basic-base-hybrids.png}
+    \caption{The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits.}
+   \label{fig:packet-hybrids}
+\end{figure}
+
+The baseline approaches described in \S\ref{section:impl-schedulers} and a number of heuristics decribed above have been tested. See figure \ref{fig:packet-hybrids}. Staged architecture was the only one to offer a useful point in the trade-off space, in the form of significantly superior tail latency at the cost of throughput. This gain stems from having a pool of threads dedicated directly to the lightweight tasks. The fall in throughput is difficult to avoid in a workload that work stealing is able to scale efficiently. Nonetheless, if the final task was lighter, it is possible for staged architecture to improve on both metrics, as observed with artifical benchmarks. 
+
+\section{Mixer benchmark}
+\label{section:mixer-benchmark}
+
+\begin{figure} 
+    \centering 
+    \includegraphics[width=0.85\textwidth]{eval/mixer-base8.png}
+    \caption{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}
+   \label{fig:mixer-bench}
+\end{figure}
+
+The mixer benchmark represents a complicated real-world use case. It derives from architecture of a VoIP softswitch (\cite{Maruzzelli2017-ou}), which heavily relies on OS threading and scheduler. FreeSWITCH runs multiple OS threads for a single call. Firstly, there is a thread per call-leg, which links network with the conference. It listens to packets, decompresses codecs and passes raw audio to the conference thread. \todo{more} 
+
+Such a workload is particularly difficult to optimize for due to its complexity. It features short-lived and long-lived tasks. Some tasks benefit from cache locality, while others not. Many details will vary over time, e.g. distribution of number of people in mixers (as conference could have anywhere from 3 to hundreds people), length of calls, codec selection, media routes (IP-to-IP) \cite{Frequent1:online}, etc. Moreover, the workload makes heavy use of many high-level features such as yielding (\S\ref{section:yield}) and promises (\S\ref{section:promise}), which are not the typical targets of high-performance optimizations. Therefore, in this case, the robustness is just as important as overall performance. 
+
+
+\label{paragraph:overflow-queue-bad-2}
+\todo{mention overflow queue}
+
+\section{Options Pricer}
+Option contracts are financial derivative instruments, which provide the holder with an option (but not an obligation) to make a trade as specified by the contract. For example, a european call option on Google with strike price of \$2600 and expiration date of 2022-03-06 lets the holder buy a specified number of Google shares at the specified price and on the specified date only \cite{Hull_John}. Value of an option depends on the value of its underlying at expiration. If the underlying is more expensive than strke price, holder can exercise the option and sell the underlying with profit equal to the difference. Conversley, if strike price is higher than the underlying, value of option is zero.  
+
+Binomial model estimates value of an option in multiple steps. First, it simulates price changes of the underlying in time, e.g. for the next year, in a number of steps. Each step assumes that price of the underlying can increase or decrease by set amount. Once the future prices are known, it calculates the option payoffs for every possible path taken by the underlying's price. Finally, knowing the expected value of each path and its likelihood, it can calculate overall expectation at present time. Despite its simplicity, this model is still widely used in practise as it is e.g. easier to include additional contract features than in the Black-Scholes model \todo{binomial better}. 
+
+\todo{could simplify this to monte carlo options pricer for the benefit of the reader}
+
+It is known to be hard to parallilze \todo{the two citations.}. Therefore, it was only made concurrent. Therefore, a simple parallelizaiton technique was applied. 
+
+Trading shops tend to be organized around 3 feedback loops. s
+Continous option pricing. 
+Any options trading shop has multiple pricing mechanisms. Hot loop, warm loop, cold loop
+
+\section{Comparison with Domainslib}
+\label{section:result_with_domainslib}
+Two benchmarks have been selected 
+
+
+Domainslib:
+- Far more optimized (use of magic, force inline, unsafe array operations)
+- Stronger LF optimization - only one atomic operation per enqueue/dequeue/steal 
+
+Those optimizations are possible to apply to this project but were deemed too risky, as they can produce bugs that are extremely difficult to trace. 
+
+This project: 
+- More scalable steal 
+
+Try adding cpu relax, which may not be best placed inside the structure itself.f
+
+
+\chapter{Summary and conclusions}
+
+\todo{mention that core devs wants some algos merged}
+
+\todo{highlight the difference between before adn after the thesis}
+\todo{LIFO is v. good for some workloads but could not be used in the past due to very bad edge case. But OCaml allows us to isolate homogenous workloads.}
+
+\todo{- summarize the work in the consequences and compare iwth Go and Rust }
+\todo{signpost itnro and conclusion to particular result}
+
+This dissertation focused on exploring the trade-offs between various real-world scheduling policies. The core of the work has produced lock-free FIFO and LIFO schedulers, which were then later extended in various ways (\S\ref{paragraph:lifo-heuristics}, \S\ref{section:work-distribution-extensions}) and composed (\S\ref{section:staged-as-composition}). The evaluation used real-world benchmarks to evaluate the implementations focusing on common industrial metrics: throughput and tail latency (\S
+\ref{section:objectives}). 
+
+The results highlight vast differences in latency and throughput between different scheduling policies, that is different ordering of core structure, different extensions, diffent ways to compose schedulers. Mostly importantly, there is no single optimal scheduling policy. Instead, it depends on the workload and desired metrics. Other findings include: 
+\begin{itemize}
+    \item The selection of optimal policy is non-trivial. For example, there is no clear-cut answer for whether FIFO or LIFO is better for latency. It depends on the interaction of a number of factors such as shape of the task-graph and locality benefits. In one case, staged architecture was shown to improve above both (\S\ref{section:mixer-benchmark}). 
+    \item Scaling fine-grained workloads to high-core machines is non-trivial. In fact, an algorithm that scales well up to 20 cores can in fact lose perfomance as more resources are added due to to contention (\S\ref{section:benchmark-general-case}).
+    \item Locked overflow queue used in Go and Tokio limits performance (\S\ref{paragraph:overflow-queue-bad-1}, \S\ref{paragraph:overflow-queue-bad-2}).
+\end{itemize}
+Therefore, there are clear benefits from customization and composition of schedulers and the hypothesis stated in the introduction is accepted (\S\ref{section:thesis}). 
+
+Historically, built-in scheduling necessitated FIFO ordering to avoid the bad latency characteristics of LIFO under very heterogenous workloads. LIFO is, nonetheless, the optimal choice for many homogenous workloads (e.g. \S\ref{fig:mixer-bench}). The newfound capabilities of OCaml let developers tap into the benefits of using custom scheduling policies. In the case of mixer benchmark, the homogenous workload can be isolated on LIFO scheduler, while other diverse work remains on traditional FIFO discipline.
+
+\todo{do I have to mention future work?}
+
+\label{lastcontentpage} % end page count here
+
+
+\bibliography{refs}
+
+
+\appendix
+
+
+\chapter{Technical details, proofs, etc.}
+
+\todo{microbenchmarks - queues, etc.}
+
+\section{ommited sections}
+
+\begin{itemize}
+    \item Memory model. OCaml features a novdel memory model.
+    Other languages depend on global data race freedom. That does not facilitate reasoning about programs if a race in one library may cause undefined behavior in a different one. 
+    OCaml Multicore features a local data race freedom property, which guarantees that races are bound in space and time. 
+\end{itemize}
 
 \section{Underlying Data Structures}
+\label{section:underlying_data_structures}
 
-This section describes the implemented schedulers and, briefly, underlying lock-free structures. 
-
-\subsection{Core Data Structure}
-
-Lock-free data structures tend to be difficult to use in the real-world. Firstly, all assumptions about their naive counterparts are off once fine-grained concurrency is in place. For example, such a simple method as size() often turns out to be non-trivial to make linearizable (\S\ref{section:linearizability}) when size of a linked-list or circular queue changes in multiple places at once. This makes the trade-off space far more complex and points in that space (algorithms) more varied than in the single-thread world.
-
-Secondly, the effort required to add new features increases as a function of current complexity. With a single-threaded code, developer implementing a new function can focus solely on the state before and afters its execution. That alone is enough to examine whether the new function fits with the rest of the codebase. Moreover, if the code has no side effects and illegal states are not representable, even just a type check provides high confidence. Thus, such function is correct as long as its internals follow requirement. This could not be further from the truth with lock-free concurrency. In fact, a new function has to be made safe to execute concurrently with entirety of existing codebase. Even if the function is trivial, it may render some seemingly unrelated portion of the code non-linearizable. 
-
-Therefore, this thesis relies on lock-free structures inspired by \citet{Kappes2021}. The design is described in detail in the next section. Before that, it is worth touching on the main advantages of such approach. 
-\begin{itemize}
-    \item \textbf{Scalability}. It uses fetch and add (FAD) operations for modifying indices. CAS and FAD operations take approximately the same time \cite{fad-cas-speed}, but traditional CAS-based queues scale poorly due to number of CAS retries growing proportionally with number of threads. Here, (despite additional item-level CAS) the contention is resolved by FAD and the whole structure scales similarly to state-of-the-art FAD queues (e.g. \cite{Yang2016}).
-    \item \textbf{Flexibility}. Lock-free implementation can be unwieldy. This posed a particular threat to this thesis, as ultimately, the experiments should aim to evaluate scheduling methodologies rather than just show which underlying data structure can be implemented in the fastest way on existing architecture. The described queue has the benefit of being extremely flexible for a LF algorithm and was adapted to support LIFO, non-blocking returns on full or empty and single-producer scenarios with relative ease.
-    \item \textbf{Simplicity}. The base case of this structure takes a little over 10 lines of lines of code. It is unusually concise for a practical multi-producer multi-consumer LF queue. 
-\end{itemize}
+This section describes the underlying lock-free structures. 
 
 \subsection{MPMC Queue on Infinite Array}
 \label{section:mpmc_queue_on_inf}
@@ -821,12 +1116,14 @@ This design is similar to the classic work stealing deque \cite{Chase2005}. Howe
 \end{itemize}
 
 \subsection{Resizing}
+\label{section:resizing_details}
 
 The work stealing queue has been extended to allow resizing. It lets the owner of the queue increase the size of the local structure rather than push overflowing elements into a separate queue. This, in theory, may translate to better work distribution. Such a functionality may seem daunting to implement in the lock-free world but, curiously, the implementation of FIFO work stealing lets the owner lock out all other users. 
 
 The mechanism relies on the fact that non-owners do not speculate when stealing. Therefore, owner can simply overshoot the \textit{head} index to ensure that no new stealers appear. Once the \textit{head} is higher than \textit{tail}, owner needs to wait for all in-flight stealers to terminate. It can detect it by checking whether all \textit{claimed} elements have been removed from the array. Once that's done, the elements are transferred to a new array, the array and mask are updated in the record, and then \textit{head}, \textit{tail} indices are carefully corrected.
 
 \subsection{Sharded Queue}
+\label{section:multiqueue_details}
 
 Performance of staged architecture (\S\ref{section:design-staged}) and overflow queue (\S\ref{section:design_overflow_queue}) depends on the scalability of the underlying queue. Lock-free MPMC queue (\S\ref{section:blocking_mpmc}) allows enqueuers and dequeuers to work faster and more independently than with a locked structure. However, as shown by figure \todo{fig}, the throughput hardly improves for more than a few workers.  
 
@@ -842,282 +1139,6 @@ The core lock-free queue and stack have been extensively load tested and verifie
 \subsection{Limitations}
 
 Since this project has a limited timescale, the schedulers were optimized for scalability but their implementations do not eliminate all constant factor overhead. In part since these overheads are not critical to the hypothesis (\S\ref{section:thesis}) but also because it requires a far more error-prone code in OCaml. 
-
-
-
-\chapter{Evaluation}
-\label{chapter:evaluation}
-
-This chapter presents evidence gathered to verify the hypothesis (\S\ref{section:thesis}). First, it shows that some classic ideas like work stealing with an overflow queue (used in Go and Rust) do not scale to modern hardware and concurrency. This result is analyzed in depth (\S\ref{section:degradation}) and a number of extensions favoring fine-grained concurrency are evaluated (\S\ref{section:extensions}). Further, the section focuses on more complex workloads. First, web-server with cache effects (\S\ref{section:server-bench-with-cache-effects}) 
-and bimodal task processing time (\S\ref{section:server-bench-with-multi-modal}). Second, the audio mixer benchmark. 
-
-
-\section{Methods}
-
-This section describes details of the testing experimental setup: hardware, system and testing procedures. Afterwards, it justifies the statistical methods and discusses probe effect.
-
-perf stat
-
-\subsection{Hardware}
-The 
-
-cache line size 64 bytes
-
-\subsection{System}
-\label{section:methods_system}
-mention thread limit in ocaml
-\subsection{Procedures}
-reject first sample lazy loading and caches
-
-how many times executed
-
-performance sensitive data was collected on thread-local counters
-
-\subsection{Statistical Methods}
-
-look for extra variance
-use medians and quartiles as its h
-\subsection{Probe Effect}
-
-Story about vdso.
-
-
-
-
-
-
-
-\section{Server benchmark} 
-
-\subsection{General Case}
-\label{section:benchmark-general-case}
-
-\begin{figure}
-     \centering
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-with-steal-counts2std.png}
-     \caption{50k.}
-    \label{fig:packet-50k}
-\end{figure}
-
-The first benchmark mimics a minimal TCP packet processing scenario. The workload relies on a single spawner as it would be the case with a server listening on IP and port tuple. To minimise the noise, actual network is not used. Instead, the \textit{server} thread chooses one out of 10 pre-made packets, copies it and schedules a handler task by performing an appropriate effect. The benchmark focuses on max load scenario and spawns tasks as fast as only possible, until the requested total is reached. Then, it monitors an array of thread-local counters, which are increased by successfully terminating tasks. Notably, the packets are between 2 and 3 KiB, and the spawner thread focuses solely on task creation. Therefore, cache locality does not significantly affect the performance. Likewise, the performance advantage of LIFO stealing does not apply to stealing from the spawner, as spawner never removes elements from its local structure. Local structure sizes are held constant at 128 elements. (\todo{ref to justify queue size - generally, don't want too much waiting bc memory pressure, fiber recycling, should only resize when the queue bottoms out})
-
-The results of conducting a test with 50k packets in such a controlled setting are show by figure \ref{fig:packet-50k}. The first panel shows mean processing speed on a logarithmic scale. In the first part of the graph, between 5 and 20 domains, the performance rapidly accelerates with increase in the number of threads. 20 domains witness peak performance by LIFO scheduler and as more threads are added, the performance degrades. At first slowly, then faster beyond 80 domains. FIFO scheduler sees its peak at 80 domains but its performance is also relatively stable between 20 and 80, with a pronounced drop afterwards. This is surprising; adding more resources may not translate to a significant improvement \cite{amdahl} but it should not be detrimental either. Discussed further in \S\ref{section:degradation}. 
-
-The second panel shows actual time required to complete the benchmark. Next, the charts from three to five show 50\%, 99\% and 99.99\% latency percentiles. Again, up to 20 domains there is a steep decrease in all latencies. There are local differences around 20 domains, with FIFO offering a better median latency for one point and LIFO better tail latencies for 2-3 points. Afterwards, the results converge. The tail latencies are partly driven by LIFO simply being faster to process tasks but, likely, not as much as it looks since error bars indicate more noisy measurement than elsewhere. 
-
-Finally, the last panel shows number of retries of the main spawner (\textit{listener}) when trying to insert elements into the queue or stack. The retry loop is relatively cheap to execute \todo{link to the code in the repo}. Clearly, for lower core counts the spawner frequently throttles adding tasks due to lack of space. However, the number of busy-waiting cycles lowers with extra cores, quickly reaching point where magnitudes are too small to affect overall performance. At last, it ceases to occur in the median case beyond 45 cores. 
- 
-Notably, both FIFO and LIFO perform very similarly on all metrics and exhibit similar phenomenons. As hinted in the first paragraph, the workload is so simple that it does not let some of the individual advantages prevail. There are slight differences, i.e. LIFO peaks at 20 domains, while FIFO at 80. But their overall performances (throughput and latencies) in ranges 0-20, 20-80, 80-115 are comparable. 
-
-Overall, it shows that both implementation are fairly balanced and a good foundation for benchmarking more complicated workloads.
-
-\subsubsection{Degradation}
-\label{section:degradation}
-In line with Amdahl's law \cite{amdahl}, it is generally expected that an application may not perform better with more resources. After all, scalability is something to explicitely design for and even then, may not always be possible \todo{ref to hash chain example}. However, there is no justification for more workers actually causing harm to the performance. Such a characteristic is highly undesirable in such a foundational system as scheduler. However, why would it arise in such a battle-tested idea as work stealing? 
-
-\begin{figure} 
-     \centering
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-with-steal-counts2.png}
-     \caption{The throughput achieved on 50k tasks over varying number of domains.}
-    \label{fig:packet-with-steal-counts}
-\end{figure}
-
-In the LIFO case, as shown by \ref{fig:packet-with-steal-counts}, the scheduler is unable to maintain the increase in stealing attempts. Such increase is necessary for scalability, as each worker will need more stealing attempts to find the tasks. For example, if 1 out of 2 threads is spawning, the other thread has 100\% hit rate. On the other hand, if it is 1 out of 10 threads, then there are are likely going to be some misses or inefficiencies (minimal amount of work acquired). The diagram shows, that above 80 domains, as the information becomes more dispersed, the scheduler does not increase stealing attempts. In theory, there should be no scalability issues since each new worker also adds a new queue but in practise contention increases significantly as starved cores keep retrying and impeding the actual useful attempts. Conversely, if there is significantly more work and more time, the tasks saturate the system enough to prevent excessive stealing and observed negative effect ceases to exist (\ref{fig:packet-10m-throughput}).
-
-\begin{figure} 
-     \centering 
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-counters.png}
-     \caption{The throughput achieved on 50k tasks over varying number of domains.}
-    \label{fig:packet-counters}
-\end{figure}
-
-In the FIFO case, the problem also relates to work distribution. Generally, FIFO is not able to steal as much as LIFO because all steals compete with local dequeues, and, by design, those steals tend to lose the race \todo{ref to implementation}. Therefore, while stealing alone is not maxed out, it significantly affects the rest of the logic. As shown by figure \ref{fig:packet-counters}, FIFO reaches over 2.5 stalls per instruction beyond 80 domains and this number keeps raising. The effect is also visible for LIFO but its pressure on the entire caching subsystem is much subtler.
-
-
-Finally, it is worth stating that this result should not be interpreted as work stealing being generally inappropriate for saturating 100 cores. Packet benchmark creates a short burst of 50k items, which reaches a throughput of over 1.5m items per second. Each task has its own logic and requires allocations but it does constitute a very fine-grained concurrency. That puts a high pressure on the scheduler and exposes its inefficiencies. Further, there is an unusual amount of distribution required. It is far easier to distribute tasks onto 10 threads than 100 due to e.g. atomic operations taking constant time and load information is being less dispersed. If the workload is simplified just a little, the scalability improves. 
-
-\begin{figure} 
-     \centering
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-10million-just-throughput.png}
-     \caption{The throughput achieved on 10 million tasks over varying number of domains.}
-    \label{fig:packet-10m-throughput}
-\end{figure}
-
-
-\begin{figure} 
-     \centering
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-slowed_2.png}
-     \caption{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}
-    \label{fig:packet-slowed}
-\end{figure}
-
-
-\begin{figure} 
-     \centering 
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-4spawners-just-throughput.png}
-     \caption{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case.}
-    \label{fig:packet-4spawners}
-\end{figure}
-
-\begin{itemize}
-    \item \textbf{Heavier task}. See figure \ref{fig:packet-slowed} for the performance when each task has had an extra 500ns sleep to perform. This is enough time to extend the stability beyond 100 domains.
-        
-    \item \textbf{Higher workload}. In fact, increasing the number of tasks also stabilizes the scaling. See figure \ref{fig:packet-10m-throughput} for the case with 10 million task instead of 50k. This case saturates many more workers, and while overall throughput is lower, the performance overall remains stable beyond 30 cores. \todo{say long-running, which is unusual in e.g. http traffic}
-    
-    \item \textbf{More spawners}. See figure \ref{fig:packet-4spawners} for the performance under more spawners, i.e. developer made an explicit change to help the scheduler.
-\end{itemize}
-
-
-
-\subsubsection{Extensions}
-\label{section:extensions}
-
-\begin{figure} 
-     \centering
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-distribution10-granular.png}
-     \caption{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}
-    \label{fig:packet-extenstions}
-\end{figure}
-
-
-\S\ref{section:work-distribution-extensions} discussed a number of alternative work distribution mechanisms. The positive results are shown in \ref{fig:packet-extenstions}. Only neighbourhood stealing has shown a clear improvement over the baseline, which is in line with the diagnosis stated in the previous section \S\ref{section:degradation}. It is worth pointing out that such an optimization is going to have a negative effect on coarse-grained workload, where threads higher in the hierarchy are going to be stuck processing tasks for longer and thus not replenish its local structure regularly. 
-
-\label{paragraph:overflow-queue-bad-1}
-Only stealing at least 10 elements had a strong negative effect, as it paradoxically increased the number of underloaded threads and contention on the loaded ones. Similarly, work-shedding approaches (sticky and non-sticky) resulted in other threads overloading the spawner and causing less efficient work distribution than random work-stealing. In pure work-stealing case tasks often flow through multiple hops, thus reducing the contention in the hotspot. The same effect was observed for simple locked overflow queues (as in Go and Rust) as the spawner has to compete with the workers for the lock.
-
-Finally, scalable overflow structures (lock-free queue, multi-queue) and work-sharing from busy to free had an insignifcant positive effect. They would likely yield a stronger benefit for less heterogenous workload. Likewise, local resizing would be beneficial if starting size of the local structure was small enough.
-
-\subsection{Server benchmark with cache effects}
-\label{section:server-bench-with-cache-effects}
-
-\begin{figure} 
-    \centering 
-    \includegraphics[width=0.85\textwidth]{eval/packet-basic-lifo-better.png}
-    \caption{The throughput achieved on packet processing benchmark with 500k packets and 10 spawners. The benchmark was modified to have a non-trivial cache effect. Once the task was processed as in the original benchmark, it would spawn a chain of 10 tasks. Each task reads 20 with each reading 20 random bytes from the packet buffer, what simulates picking out different parts of the received data at different stages. LIFO offers a very clear throughput advantage (shown in the figure) and median-tail latency improvement.}
-   \label{fig:packet-lifo-better}
-\end{figure}
-
-This section presents results of a more complicated workload, wherein once the packet is parsed, its contents are passed to the business logic. Namely, each packet from the general case benchmark (\S\ref{section:benchmark-general-case}) also spawns a 10-sequence of consecutive tasks. Each reads 20 random locations in the packet or does a simple computation (checksum), and spawns its child. That's until the depth of 10 is reached. Moreover, there are 5 spawners instead of 1, and individual queue sizes have been increased to 1024 to accommodate that. The results are shown by figure \ref{fig:packet-lifo-better}. Such a workload naturally favours LIFO, which can make a much better use of hierarchical memory and reduce cache misses. Thus, achieved throughput is far superior with LIFO ordering. Further, in line with the mechanics described in \S\ref{section:fairness-revisited}, using LIFO also significantly improves tail latencies.
-
-Notably, extra care is required to replicate this result on modern architecture. For example, simple iteration over the packet in consecutive task does not experience memory inefficiencies due automatic memory prefetching. After a few first cache fails, the rest of the packet is going to be loaded into cache preemptively. This effect breaks down with any more complex memory patterns, which microarchitecture cannot predict.   
-
-\subsection{Server benchmark with multi-modal processing latency}
-\label{section:server-bench-with-multi-modal}
-
-\begin{figure} 
-    \centering 
-    \includegraphics[width=0.85\textwidth]{eval/packet-basic-fifo-better.png}
-    \caption{The throughput achieved on packet processing benchmark with 100k packets and 10 spawners. The benchmark has a weaker cache effect than \ref{fig:packet-lifo-better} but still significant enough for LIFO to have a better throughput. However, there is a 0.1\% chance that packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO clearly offers a much better tail latency for most domain-counts in such a scenario. For example, at 115 domains LIFO saves over 30\% of tail latency.}
-   \label{fig:packet-fifo-better}
-\end{figure}
-
-Figure \ref{fig:packet-fifo-better} shows results of an alternative twist. Here, instead of spawning 10-sequence, only 3-sequence is spawned and the last task has a 0.1\% chance to spawn another task with lengthy operation. The 3-sequence still has cache-dependcies, which favour LIFO, but optional final task sets a trap. If scheduler processes the lengthy operations without care, it risks massively increasing latency of all awaiting tasks. This favour FIFO, which is able to process lightweight sequences concurrenctly with the heavy ones, and have the lightweight tasks terminate early. The heavy operations wait longer but in their case the processing time is big enough for extra waiting to have a minimal impact. 
-
-
-\textbf{alternative explanation:}
-that strongly favours FIFO. Notably, the workload is still locality-sensitive but now, it also features a variance in depth of task-graphs spawned by packets and cost of processing individual tasks. Suddenly, FIFO is able to offer a significantly better tail latency as it actively seeks to process the oldest tasks. Conversely, LIFO lets lightweight tasks remain stuck behind random heavy jobs. 
-
-
-
-\subsubsection{Other schedulers}
-
-\begin{figure} 
-    \centering 
-    \includegraphics[width=0.85\textwidth]{eval/packet-basic-base-hybrids.png}
-    \caption{The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits.}
-   \label{fig:packet-hybrids}
-\end{figure}
-
-Finally, a number of other approaches described in \S\ref{section:impl-schedulers} has been tested. See figure \ref{fig:packet-hybrids}. Staged architecture was the only one to offer a useful point in the trade-off space, in the form of significantly superior tail latency at the cost of throughput. This gain stems from having a pool of threads dedicated directly to processing the lightweight tasks. The fall in throughput is difficult to avoid in a workload that work stealing is able to scale efficiently. Nonetheless, if the final task was lighter, it is possible for staged architecture to improve on both metrics, as observed with artifical benchmarks. 
-
-\section{Mixer benchmark}
-\label{section:mixer-benchmark}
-
-\begin{figure} 
-    \centering 
-    \includegraphics[width=0.85\textwidth]{eval/mixer-base8.png}
-    \caption{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}
-   \label{fig:mixer-bench}
-\end{figure}
-
-The mixer benchmark represents a complicated real-world use case. It derives from architecture of a VoIP softswitch (\cite{Maruzzelli2017-ou}), which heavily relies on OS threading and scheduler. FreeSWITCH runs multiple OS threads for a single call. Firstly, there is a thread per call-leg, which links network with the conference. It listens to packets, decompresses codecs and passes raw audio to the conference thread. \todo{more} 
-
-
-Such a workload is particularly difficult to optimize for due to its complexity. It features short-lived and long-lived tasks. Some tasks benefit from cache locality, while others not. Many details will vary over time, e.g. distribution of number of people in mixers (as conference could have anywhere from 3 to hundreds people), length of calls, codec selection, media routes (IP-to-IP) \cite{Frequent1:online}, etc. Moreover, the workload makes heavy use of many high-level features such as yielding (\S\ref{section:yield}) and promises (\S\ref{section:promise}), which are not the typical targets of high-performance optimizations. Therefore, in this case, the robustness is just as important as overall performance. 
-
-
-\label{paragraph:overflow-queue-bad-2}
-\todo{mention overflow queue}
-
-\section{Options Pricer}
-Option contracts are financial derivative instruments, which provide the holder with an option (but not an obligation) to make a trade as specified by the contract. For example, a european call option on Google with strike price of \$2600 and expiration date of 2022-03-06 lets the holder buy a specified number of Google shares at the specified price and on the specified date only \cite{Hull_John}. Value of an option depends on the value of its underlying at expiration. If the underlying is more expensive than strke price, holder can exercise the option and sell the underlying with profit equal to the difference. Conversley, if strike price is higher than the underlying, value of option is zero.  
-
-Binomial model estimates value of an option in multiple steps. First, it simulates price changes of the underlying in time, e.g. for the next year, in a number of steps. Each step assumes that price of the underlying can increase or decrease by set amount. Once the future prices are known, it calculates the option payoffs for every possible path taken by the underlying's price. Finally, knowing the expected value of each path and its likelihood, it can calculate overall expectation at present time. Despite its simplicity, this model is still widely used in practise as it is e.g. easier to include additional contract features than in the Black-Scholes model \todo{binomial better}. 
-
-\todo{could simplify this to monte carlo options pricer for the benefit of the reader}
-
-It is known to be hard to parallilze \todo{the two citations.}. Therefore, it was only made concurrent. Therefore, a simple parallelizaiton technique was applied. 
-
-Trading shops tend to be organized around 3 feedback loops. s
-Continous option pricing. 
-Any options trading shop has multiple pricing mechanisms. Hot loop, warm loop, cold loop
-
-\section{Comparison with Domainslib}
-\label{section:result_with_domainslib}
-Two benchmarks have been selected 
-
-
-Domainslib:
-- Far more optimized (use of magic, force inline, unsafe array operations)
-- Stronger LF optimization - only one atomic operation per enqueue/dequeue/steal 
-
-Those optimizations are possible to apply to this project but were deemed too risky, as they can produce bugs that are extremely difficult to trace. 
-
-This project: 
-- More scalable steal 
-
-Try adding cpu relax, which may not be best placed inside the structure itself.f
-
-
-\chapter{Summary and conclusions}
-
-\todo{mention that core devs wants some algos merged}
-
-This dissertation focused on exploring the trade-offs between various real-world scheduling policies. The core of the work has produced lock-free FIFO and LIFO schedulers, which were then later extended in various ways (\S\ref{paragraph:lifo-heuristics}, \S\ref{section:work-distribution-extensions}) and composed (\S\ref{section:staged-as-composition}). The evaluation used real-world benchmarks to evaluate the implementations focusing on common industrial metrics: throughput and tail latency (\S
-\ref{section:objectives}). 
-
-The results highlight vast differences in latency and throughput between different scheduling policies, that is different ordering of core structure, different extensions, diffent ways to compose schedulers. Mostly importantly, there is no single optimal scheduling policy. Instead, it depends on the workload and desired metrics. Other findings include: 
-\begin{itemize}
-    \item The selection of optimal policy is non-trivial. For example, there is no clear-cut answer for whether FIFO or LIFO is better for latency. It depends on the interaction of a number of factors such as shape of the task-graph and locality benefits. In one case, staged architecture was shown to improve above both (\S\ref{section:mixer-benchmark}). 
-    \item Scaling fine-grained workloads to high-core machines is non-trivial. In fact, an algorithm that scales well up to 20 cores can in fact lose perfomance as more resources are added due to to contention (\S\ref{section:benchmark-general-case}).
-    \item Locked overflow queue used in Go and Tokio limits performance (\S\ref{paragraph:overflow-queue-bad-1}, \S\ref{paragraph:overflow-queue-bad-2}).
-\end{itemize}
-Therefore, there are clear benefits from customization and composition of schedulers and the hypothesis stated in the introduction is accepted (\S\ref{section:thesis}). 
-
-Historically, built-in scheduling necessitated FIFO ordering to avoid the bad latency characteristics of LIFO under very heterogenous workloads. LIFO is, nonetheless, the optimal choice for many homogenous workloads (e.g. \S\ref{fig:mixer-bench}). The newfound capabilities of OCaml let developers tap into the benefits of using custom scheduling policies. In the case of mixer benchmark, the homogenous workload can be isolated on LIFO scheduler, while other diverse work remains on traditional FIFO discipline.
-
-\todo{do I have to mention future work?}
-
-\label{lastcontentpage} % end page count here
-
-
-\bibliography{refs}
-
-
-\appendix
-
-
-\chapter{Technical details, proofs, etc.}
-
-\todo{microbenchmarks - queues, etc.}
-
-\section{ommited sections}
-
-\begin{itemize}
-    \item Memory model. OCaml features a novdel memory model.
-    Other languages depend on global data race freedom. That does not facilitate reasoning about programs if a race in one library may cause undefined behavior in a different one. 
-    OCaml Multicore features a local data race freedom property, which guarantees that races are bound in space and time. 
-\end{itemize}
 
 
 
