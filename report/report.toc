@@ -35,52 +35,53 @@
 \contentsline {section}{\numberline {4.3}Ordering}{26}{section.4.3}%
 \contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{26}{subsection.4.3.1}%
 \contentsline {subsubsection}{Fairness revisited}{27}{section*.14}%
+\contentsline {subsubsection}{Allocations}{28}{section*.15}%
 \contentsline {subsection}{\numberline {4.3.2}Hybrid}{28}{subsection.4.3.2}%
-\contentsline {section}{\numberline {4.4}Contention and locality}{28}{section.4.4}%
+\contentsline {section}{\numberline {4.4}Contention and locality}{29}{section.4.4}%
 \contentsline {subsection}{\numberline {4.4.1}Core Structure Distribution}{29}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}Staged}{29}{subsection.4.4.2}%
-\contentsline {section}{\numberline {4.5}Other design choices}{30}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}Work distribution}{30}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {4.5.2}Overflow Queue}{31}{subsection.4.5.2}%
-\contentsline {subsection}{\numberline {4.5.3}Resizing}{31}{subsection.4.5.3}%
-\contentsline {subsection}{\numberline {4.5.4}Blocking operations}{32}{subsection.4.5.4}%
-\contentsline {subsection}{\numberline {4.5.5}Yield}{32}{subsection.4.5.5}%
-\contentsline {subsection}{\numberline {4.5.6}Promise}{33}{subsection.4.5.6}%
+\contentsline {subsection}{\numberline {4.4.2}Staged}{30}{subsection.4.4.2}%
+\contentsline {section}{\numberline {4.5}Other design choices}{31}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Work distribution}{31}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Overflow Queue}{32}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.3}Resizing}{32}{subsection.4.5.3}%
+\contentsline {subsection}{\numberline {4.5.4}Blocking operations}{33}{subsection.4.5.4}%
+\contentsline {subsection}{\numberline {4.5.5}Yield}{33}{subsection.4.5.5}%
+\contentsline {subsection}{\numberline {4.5.6}Promise}{34}{subsection.4.5.6}%
 \contentsline {subsection}{\numberline {4.5.7}Backpressure}{34}{subsection.4.5.7}%
-\contentsline {subsection}{\numberline {4.5.8}Cancellations}{34}{subsection.4.5.8}%
-\contentsline {chapter}{\numberline {5}Implementation}{35}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Schedulers}{35}{section.5.1}%
-\contentsline {subsection}{\numberline {5.1.1}Work distribution extensions}{36}{subsection.5.1.1}%
-\contentsline {section}{\numberline {5.2}Underlying Data Structures}{37}{section.5.2}%
-\contentsline {subsection}{\numberline {5.2.1}Core Data Structure}{37}{subsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.2.2}MPMC Queue on Infinite Array}{38}{subsection.5.2.2}%
-\contentsline {subsection}{\numberline {5.2.3}MPMC Queue Blocking}{39}{subsection.5.2.3}%
-\contentsline {subsection}{\numberline {5.2.4}MPMC Queue Non-blocking Dequeue}{39}{subsection.5.2.4}%
-\contentsline {subsection}{\numberline {5.2.5}MPMC Queue Non-blocking Enqueue}{40}{subsection.5.2.5}%
-\contentsline {subsection}{\numberline {5.2.6}Work Stealing Queue}{40}{subsection.5.2.6}%
-\contentsline {subsection}{\numberline {5.2.7}Work Stealing Stack}{41}{subsection.5.2.7}%
-\contentsline {subsection}{\numberline {5.2.8}Resizing}{42}{subsection.5.2.8}%
-\contentsline {subsection}{\numberline {5.2.9}Sharded Queue}{42}{subsection.5.2.9}%
-\contentsline {subsection}{\numberline {5.2.10}False sharing}{43}{subsection.5.2.10}%
-\contentsline {subsection}{\numberline {5.2.11}Validation}{43}{subsection.5.2.11}%
-\contentsline {subsection}{\numberline {5.2.12}Limitations}{43}{subsection.5.2.12}%
-\contentsline {chapter}{\numberline {6}Evaluation}{44}{chapter.6}%
-\contentsline {section}{\numberline {6.1}Methods}{44}{section.6.1}%
-\contentsline {subsection}{\numberline {6.1.1}Hardware}{44}{subsection.6.1.1}%
-\contentsline {subsection}{\numberline {6.1.2}System}{44}{subsection.6.1.2}%
-\contentsline {subsection}{\numberline {6.1.3}Procedures}{44}{subsection.6.1.3}%
-\contentsline {subsection}{\numberline {6.1.4}Statistical Methods}{45}{subsection.6.1.4}%
-\contentsline {subsection}{\numberline {6.1.5}Probe Effect}{45}{subsection.6.1.5}%
-\contentsline {section}{\numberline {6.2}Server benchmark}{45}{section.6.2}%
-\contentsline {subsection}{\numberline {6.2.1}General Case}{45}{subsection.6.2.1}%
-\contentsline {subsubsection}{Degradation}{47}{section*.37}%
-\contentsline {subsubsection}{Extensions}{50}{section*.41}%
-\contentsline {subsection}{\numberline {6.2.2}Server benchmark with cache effects}{51}{subsection.6.2.2}%
-\contentsline {subsection}{\numberline {6.2.3}Server benchmark with multi-modal processing latency}{52}{subsection.6.2.3}%
-\contentsline {subsubsection}{Other schedulers}{52}{section*.42}%
-\contentsline {section}{\numberline {6.3}Mixer benchmark}{53}{section.6.3}%
-\contentsline {section}{\numberline {6.4}Options Pricer}{53}{section.6.4}%
-\contentsline {section}{\numberline {6.5}Comparison with Domainslib}{54}{section.6.5}%
-\contentsline {chapter}{\numberline {7}Summary and conclusions}{55}{chapter.7}%
-\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{62}{appendix.A}%
-\contentsline {section}{\numberline {A.1}ommited sections}{62}{section.A.1}%
+\contentsline {subsection}{\numberline {4.5.8}Cancellations}{35}{subsection.4.5.8}%
+\contentsline {chapter}{\numberline {5}Implementation}{36}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Schedulers}{36}{section.5.1}%
+\contentsline {subsection}{\numberline {5.1.1}Work distribution extensions}{37}{subsection.5.1.1}%
+\contentsline {section}{\numberline {5.2}Underlying Data Structures}{38}{section.5.2}%
+\contentsline {subsection}{\numberline {5.2.1}Core Data Structure}{38}{subsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.2.2}MPMC Queue on Infinite Array}{39}{subsection.5.2.2}%
+\contentsline {subsection}{\numberline {5.2.3}MPMC Queue Blocking}{40}{subsection.5.2.3}%
+\contentsline {subsection}{\numberline {5.2.4}MPMC Queue Non-blocking Dequeue}{40}{subsection.5.2.4}%
+\contentsline {subsection}{\numberline {5.2.5}MPMC Queue Non-blocking Enqueue}{41}{subsection.5.2.5}%
+\contentsline {subsection}{\numberline {5.2.6}Work Stealing Queue}{41}{subsection.5.2.6}%
+\contentsline {subsection}{\numberline {5.2.7}Work Stealing Stack}{42}{subsection.5.2.7}%
+\contentsline {subsection}{\numberline {5.2.8}Resizing}{43}{subsection.5.2.8}%
+\contentsline {subsection}{\numberline {5.2.9}Sharded Queue}{43}{subsection.5.2.9}%
+\contentsline {subsection}{\numberline {5.2.10}False sharing}{44}{subsection.5.2.10}%
+\contentsline {subsection}{\numberline {5.2.11}Validation}{44}{subsection.5.2.11}%
+\contentsline {subsection}{\numberline {5.2.12}Limitations}{44}{subsection.5.2.12}%
+\contentsline {chapter}{\numberline {6}Evaluation}{45}{chapter.6}%
+\contentsline {section}{\numberline {6.1}Methods}{45}{section.6.1}%
+\contentsline {subsection}{\numberline {6.1.1}Hardware}{45}{subsection.6.1.1}%
+\contentsline {subsection}{\numberline {6.1.2}System}{45}{subsection.6.1.2}%
+\contentsline {subsection}{\numberline {6.1.3}Procedures}{45}{subsection.6.1.3}%
+\contentsline {subsection}{\numberline {6.1.4}Statistical Methods}{46}{subsection.6.1.4}%
+\contentsline {subsection}{\numberline {6.1.5}Probe Effect}{46}{subsection.6.1.5}%
+\contentsline {section}{\numberline {6.2}Server benchmark}{46}{section.6.2}%
+\contentsline {subsection}{\numberline {6.2.1}General Case}{46}{subsection.6.2.1}%
+\contentsline {subsubsection}{Degradation}{48}{section*.38}%
+\contentsline {subsubsection}{Extensions}{51}{section*.42}%
+\contentsline {subsection}{\numberline {6.2.2}Server benchmark with cache effects}{52}{subsection.6.2.2}%
+\contentsline {subsection}{\numberline {6.2.3}Server benchmark with multi-modal processing latency}{53}{subsection.6.2.3}%
+\contentsline {subsubsection}{Other schedulers}{53}{section*.43}%
+\contentsline {section}{\numberline {6.3}Mixer benchmark}{54}{section.6.3}%
+\contentsline {section}{\numberline {6.4}Options Pricer}{55}{section.6.4}%
+\contentsline {section}{\numberline {6.5}Comparison with Domainslib}{55}{section.6.5}%
+\contentsline {chapter}{\numberline {7}Summary and conclusions}{56}{chapter.7}%
+\contentsline {chapter}{\numberline {A}Technical details, proofs, etc.}{63}{appendix.A}%
+\contentsline {section}{\numberline {A.1}ommited sections}{63}{section.A.1}%

@@ -498,7 +498,10 @@ A possible counterpoint to such example would say to simply run the entire reque
 
 \subsubsection{Allocations}
 
-Finally, memory does not scale linearly. Hardware is strictly hierarchical with latency increasing exponentialy at every stage. OCaml garbage collector is generational; minor heap is cheaper than major heap. Sometimes faster scheduling method is simply the one that minimizes allocations. For example, FIFO traversal of naive fibonacci implementation is going to quickly exhaust all available memory and experience a significant slowdown. The same workload under LIFO scheduling is trivial. Naturally, there are workloads that favour FIFO for the same reasons.
+Finally, it is worth noting that described effects may be overpowered if workload is simply more efficient to traverse in either depth-first (LIFO) or breadth-first manner. 
+
+
+memory does not scale linearly. Hardware is strictly hierarchical with latency increasing exponentialy at every stage. OCaml garbage collector is generational; minor heap is cheaper than major heap. Sometimes faster scheduling method is simply the one that minimizes allocations. For example, FIFO traversal of naive fibonacci implementation is going to quickly exhaust all available memory and experience a significant slowdown. The same workload under LIFO scheduling is trivial. Naturally, there are workloads that favour FIFO for the same reasons.
 
 
 \begin{wrapfigure}{r}{0.63\textwidth}
@@ -506,19 +509,17 @@ Finally, memory does not scale linearly. Hardware is strictly hierarchical with 
     \begin{verbatim}
 
     let rec fib n = 
-    match n with 
-    | 0 | 1 -> 1 
-    | _ -> 
-        let a = schedule (fun () -> fib (n-1)) in
+      if n < 2 
+      then 1 
+      else
+        (let a = schedule (fun () -> fib (n-1)) in
         let b = schedule (fun () -> fib (n-2)) in 
-        await a + await b;;
+        await a + await b);;
 
     \end{verbatim}
     \caption{Naive Fibonacci implementation.}
     \label{fig:fib-pure}
 \end{wrapfigure}
-
-
 
 
 \subsection{Hybrid}
@@ -1042,7 +1043,8 @@ Finally, a number of other approaches described in \S\ref{section:impl-scheduler
    \label{fig:mixer-bench}
 \end{figure}
 
-The mixer benchmark represents a complicated real-world use case. It derives from architecture of a VoIP softswitch (\cite{Maruzzelli2017-ou}), which heavily relies on threading and linux scheduler. \todo{add more}
+The mixer benchmark represents a complicated real-world use case. It derives from architecture of a VoIP softswitch (\cite{Maruzzelli2017-ou}), which heavily relies on OS threading and scheduler. FreeSWITCH runs multiple OS threads for a single call. Firstly, there is a thread per call-leg, which links network with the conference. It listens to packets, decompresses codecs and passes raw audio to the conference thread. \todo{more} 
+
 
 Such a workload is particularly difficult to optimize for due to its complexity. It features short-lived and long-lived tasks. Some tasks benefit from cache locality, while others not. Many details will vary over time, e.g. distribution of number of people in mixers (as conference could have anywhere from 3 to hundreds people), length of calls, codec selection, media routes (IP-to-IP) \cite{Frequent1:online}, etc. Moreover, the workload makes heavy use of many high-level features such as yielding (\S\ref{section:yield}) and promises (\S\ref{section:promise}), which are not the typical targets of high-performance optimizations. Therefore, in this case, the robustness is just as important as overall performance. 
 
@@ -1083,6 +1085,12 @@ Try adding cpu relax, which may not be best placed inside the structure itself.f
 \chapter{Summary and conclusions}
 
 \todo{mention that core devs wants some algos merged}
+
+\todo{highlight the difference between before adn after the thesis}
+\todo{LIFO is v. good for some workloads but could not be used in the past due to very bad edge case. But OCaml allows us to isolate homogenous workloads.}
+
+\todo{- summarize the work in the consequences and compare iwth Go and Rust }
+\todo{signpost itnro and conclusion to particular result}
 
 This dissertation focused on exploring the trade-offs between various real-world scheduling policies. The core of the work has produced lock-free FIFO and LIFO schedulers, which were then later extended in various ways (\S\ref{paragraph:lifo-heuristics}, \S\ref{section:work-distribution-extensions}) and composed (\S\ref{section:staged-as-composition}). The evaluation used real-world benchmarks to evaluate the implementations focusing on common industrial metrics: throughput and tail latency (\S
 \ref{section:objectives}). 

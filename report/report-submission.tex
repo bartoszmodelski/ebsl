@@ -496,6 +496,29 @@ Previous section (\S\ref{section:ordering}) describes a common understanding of 
 
 A possible counterpoint to such example would say to simply run the entire request as a single task. Thus making the task-latency and request-latency overlap, what makes FIFO the optimal choice for this metric. However, the workload does not have to be sequential. It might be better expressed as an actual graph of tasks. Splitting the task is also the only way to take advantage of parallelism when system is less loaded. Finally, splitting the request into multiple tasks just lets the scheduler make the decision. This is desired as the scheduler has more information to make the correct call for entire system. Further, a real scheduler is likely far more sophisticated than just FIFO/LIFO and application should not need to make such assumptions. 
 
+\subsubsection{Allocations}
+
+Finally, memory does not scale linearly. Hardware is strictly hierarchical with latency increasing exponentialy at every stage. OCaml garbage collector is generational; minor heap is cheaper than major heap. Sometimes faster scheduling method is simply the one that minimizes allocations. For example, FIFO traversal of naive fibonacci implementation is going to quickly exhaust all available memory and experience a significant slowdown. The same workload under LIFO scheduling is trivial. Naturally, there are workloads that favour FIFO for the same reasons.
+
+
+\begin{wrapfigure}{r}{0.63\textwidth}
+    \centering
+    \begin{verbatim}
+
+    let rec fib n = 
+      if n < 2 
+      then 1 
+      else
+        (let a = schedule (fun () -> fib (n-1)) in
+        let b = schedule (fun () -> fib (n-2)) in 
+        await a + await b);;
+
+    \end{verbatim}
+    \caption{Naive Fibonacci implementation.}
+    \label{fig:fib-pure}
+\end{wrapfigure}
+
+
 \subsection{Hybrid}
 As discussed in the previous section (\ref{section:ordering}), FIFO and LIFO regimes prioritize fundamentally different metrics. A natural next step is an attempt at amalgamation of the two approaches to identify new points in the trade-off plane and, perhaps, generalize or move towards an adaptable policy. The following heuristic were chosen for evaluation: 
 
@@ -1017,7 +1040,8 @@ Finally, a number of other approaches described in \S\ref{section:impl-scheduler
    \label{fig:mixer-bench}
 \end{figure}
 
-The mixer benchmark represents a complicated real-world use case. It derives from architecture of a VoIP softswitch (\cite{Maruzzelli2017-ou}), which heavily relies on threading and linux scheduler. \todo{add more}
+The mixer benchmark represents a complicated real-world use case. It derives from architecture of a VoIP softswitch (\cite{Maruzzelli2017-ou}), which heavily relies on OS threading and scheduler. FreeSWITCH runs multiple OS threads for a single call. Firstly, there is a thread per call-leg, which links network with the conference. It listens to packets, decompresses codecs and passes raw audio to the conference thread. \todo{more} 
+
 
 Such a workload is particularly difficult to optimize for due to its complexity. It features short-lived and long-lived tasks. Some tasks benefit from cache locality, while others not. Many details will vary over time, e.g. distribution of number of people in mixers (as conference could have anywhere from 3 to hundreds people), length of calls, codec selection, media routes (IP-to-IP) \cite{Frequent1:online}, etc. Moreover, the workload makes heavy use of many high-level features such as yielding (\S\ref{section:yield}) and promises (\S\ref{section:promise}), which are not the typical targets of high-performance optimizations. Therefore, in this case, the robustness is just as important as overall performance. 
 
