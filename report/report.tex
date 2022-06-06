@@ -747,9 +747,7 @@ The second panel shows actual time required to complete the benchmark. Next, the
 
 Finally, the last panel shows number of retries of the main spawner (\textit{listener}) when trying to insert elements into the queue or stack. The retry loop is relatively cheap to execute \todo{link to the code in the repo}. Clearly, for lower core counts the spawner frequently throttles adding tasks due to lack of space. However, the number of busy-waiting cycles lowers with extra cores, quickly reaching point where magnitudes are too small to affect overall performance. At last, it ceases to occur in the median case beyond 45 cores. 
  
-Notably, both FIFO and LIFO perform very similarly on all metrics and exhibit similar phenomenons. As hinted in the first paragraph, the workload is so simple that it does not let some of the individual advantages prevail. There are slight differences, i.e. LIFO peaks at 20 domains, while FIFO at 80. But their overall performances (throughput and latencies) in ranges 0-20, 20-80, 80-115 are comparable. 
-
-Overall, it shows that both implementation are fairly balanced and a good foundation for benchmarking more complicated workloads.
+Both FIFO and LIFO perform very similarly on all metrics and exhibit similar phenomenons. As hinted in the first paragraph, the workload is so simple that it does not let some of the individual advantages prevail. There are slight differences, i.e. LIFO peaks at 20 domains, while FIFO at 80. But their overall performances (throughput and latencies) in ranges 0-20, 20-80, 80-115 are comparable.  Overall, it shows that both implementation are fairly balanced and a good foundation for benchmarking more complicated workloads.
 
 \subsubsection{Degradation}
 \label{section:degradation}
