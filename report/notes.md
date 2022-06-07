@@ -1,0 +1,4 @@
+- summarize the work in the consequences and compare iwth Go and Rust 
+- try to explain implementation details along hte results. 
+- sned SSH key! 
+- - signpost introduction and conclusion 

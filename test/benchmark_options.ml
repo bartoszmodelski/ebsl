@@ -192,7 +192,7 @@ let run_processor ~start_time ~n () =
   Schedulr.Scheduler.yield ();
   for _i = 0 to n-1 do 
     let total_depth =
-      if _i mod 200 > 0
+      if Random.int 200 > 0
         then 20
         else 5000
     in  
@@ -205,7 +205,7 @@ let run_processor ~start_time ~n () =
   done;
 ;;
 
-let items_total = ref 1_000
+let items_total = ref 30_000
 
 let workload ~num_of_spawners () =
   let items_per_worker = !items_total / num_of_spawners in 
@@ -253,11 +253,11 @@ let benchmark ~num_of_domains ~num_of_spawners (module Sched : Schedulr.Schedule
         let open Reporting.Histogram in 
         let hist = Per_thread.all () in 
         (dump hist);
-        Printf.printf "\"latency_median\":%d,\n\"latency_three_nine\":%d\n" 
+        Printf.printf "\"latency_median\":%d,\n\"latency_three_nine\":%d,\n" 
           (quantile ~quantile:0.5 hist)
           (quantile ~quantile:0.999 hist);
-        Printf.printf "two nine: %d\n " (quantile ~quantile:0.99 hist);
-        Printf.printf "four nine: %d\n " (quantile ~quantile:0.9999 hist);
+        Printf.printf "\"latency_two_nine\": %d,\n " (quantile ~quantile:0.99 hist);
+        Printf.printf "\"latency_four_nine\": %d\n " (quantile ~quantile:0.9999 hist);
         Reporting.Histogram.Per_thread.zero_out ();
       in
       Printf.printf "}";

@@ -386,7 +386,7 @@ As touched on in \ref{section:intr_ocaml-multicore}, OCaml introduces a new flav
 
 \subsection{Threading}
 \label{section:fibers}
-Starting with version 5.0, OCaml will offer access to OS threading through the domain interface. System threads are widely considered heavyweight due to high memory footprint and the overhead of systemcalls \todo{citation}. Domains are similar, in that a single domain consist of an OS thread and additional OCaml structures such as local minor heap \cite{Sivaramakrishnan2020}. Generally, domains offer course-grained parallelism and are optimized for the number of domains to not exceed number of processing units (\url{https://github.com/ocaml-multicore/ocaml-multicore/wiki/Concurrency-and-parallelism-design-notes}).
+Starting with version 5.0, OCaml will offer access to OS threading through the domain interface. System threads are heavy due to high memory footprint, the overhead of systemcalls and context-switching. Domains are similar, in that a single domain consist of an OS thread and additional OCaml structures such as local minor heap \cite{Sivaramakrishnan2020}. Generally, domains offer course-grained parallelism and are optimized for the number of domains to not exceed number of processing units (\url{https://github.com/ocaml-multicore/ocaml-multicore/wiki/Concurrency-and-parallelism-design-notes}).
 
 To use system threads efficiently, we also need concurrency. Historically, OCaml did not provide any explicit support for writing concurrent programs. Thus, developers using Lwt/Async were forced to divide programs into small functions, which are then scheduled dynamically and executed on the same stack. 
 
@@ -747,9 +747,7 @@ The second panel shows actual time required to complete the benchmark. Next, the
 
 Finally, the last panel shows number of retries of the main spawner (\textit{listener}) when trying to insert elements into the queue or stack. The retry loop is relatively cheap to execute \todo{link to the code in the repo}. Clearly, for lower core counts the spawner frequently throttles adding tasks due to lack of space. However, the number of busy-waiting cycles lowers with extra cores, quickly reaching point where magnitudes are too small to affect overall performance. At last, it ceases to occur in the median case beyond 45 cores. 
  
-Notably, both FIFO and LIFO perform very similarly on all metrics and exhibit similar phenomenons. As hinted in the first paragraph, the workload is so simple that it does not let some of the individual advantages prevail. There are slight differences, i.e. LIFO peaks at 20 domains, while FIFO at 80. But their overall performances (throughput and latencies) in ranges 0-20, 20-80, 80-115 are comparable. 
-
-Overall, it shows that both implementation are fairly balanced and a good foundation for benchmarking more complicated workloads.
+Both FIFO and LIFO perform very similarly on all metrics and exhibit similar phenomenons. As hinted in the first paragraph, the workload is so simple that it does not let some of the individual advantages prevail. There are slight differences, i.e. LIFO peaks at 20 domains, while FIFO at 80. But their overall performances (throughput and latencies) in ranges 0-20, 20-80, 80-115 are comparable.  Overall, it shows that both implementation are fairly balanced and a good foundation for benchmarking more complicated workloads.
 
 \subsubsection{Degradation}
 \label{section:degradation}
@@ -772,7 +770,6 @@ In the LIFO case, as shown by \ref{fig:packet-with-steal-counts}, the scheduler 
 \end{figure}
 
 In the FIFO case, the problem also relates to work distribution. Generally, FIFO is not able to steal as much as LIFO because all steals compete with local dequeues, and, by design, those steals tend to lose the race \todo{ref to implementation}. Therefore, while stealing alone is not maxed out, it significantly affects the rest of the logic. As shown by figure \ref{fig:packet-counters}, FIFO reaches over 2.5 stalls per instruction beyond 80 domains and this number keeps raising. The effect is also visible for LIFO but its pressure on the entire caching subsystem is much subtler.
-
 
 Finally, it is worth stating that this result should not be interpreted as work stealing being generally inappropriate for saturating 100 cores. Packet benchmark creates a short burst of 50k items, which reaches a throughput of over 1.5m items per second. Each task has its own logic and requires allocations but it does constitute a very fine-grained concurrency. That puts a high pressure on the scheduler and exposes its inefficiencies. Further, there is an unusual amount of distribution required. It is far easier to distribute tasks onto 10 threads than 100 due to e.g. atomic operations taking constant time and load information is being less dispersed. If the workload is simplified just a little, the scalability improves. 
 
@@ -925,17 +922,31 @@ Such a workload is particularly difficult to optimize for due to its complexity.
 \todo{mention overflow queue}
 
 \section{Options Pricer}
+
+\begin{figure} 
+    \centering 
+    \includegraphics[width=0.85\textwidth]{eval/options-base.png}
+    \caption{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}
+   \label{fig:options-bench}
+\end{figure}
+
 Option contracts are financial derivative instruments, which provide the holder with an option (but not an obligation) to make a trade as specified by the contract. For example, a european call option on Google with strike price of \$2600 and expiration date of 2022-03-06 lets the holder buy a specified number of Google shares at the specified price and on the specified date only \cite{Hull_John}. Value of an option depends on the value of its underlying at expiration. If the underlying is more expensive than strke price, holder can exercise the option and sell the underlying with profit equal to the difference. Conversley, if strike price is higher than the underlying, value of option is zero.  
 
 Binomial model estimates value of an option in multiple steps. First, it simulates price changes of the underlying in time, e.g. for the next year, in a number of steps. Each step assumes that price of the underlying can increase or decrease by set amount. Once the future prices are known, it calculates the option payoffs for every possible path taken by the underlying's price. Finally, knowing the expected value of each path and its likelihood, it can calculate overall expectation at present time. Despite its simplicity, this model is still widely used in practise as it is e.g. easier to include additional contract features than in the Black-Scholes model \todo{binomial better}. 
-
-\todo{could simplify this to monte carlo options pricer for the benefit of the reader}
 
 It is known to be hard to parallilze \todo{the two citations.}. Therefore, it was only made concurrent. Therefore, a simple parallelizaiton technique was applied. 
 
 Trading shops tend to be organized around 3 feedback loops. s
 Continous option pricing. 
 Any options trading shop has multiple pricing mechanisms. Hot loop, warm loop, cold loop
+
+Such a workload highlights the effects occuring when the cost of individual requests is multi-modal and expressed through varying size of task-tree. In the limit, if depth of some particular task-tree is infinite, the stuck task's latency also becomes infinite as they never get to execute.
+
+\begin{itemize}
+    \item Despite an overall comparable throughput the latenyc is much better with FIFO
+    \item The latency improves because more workers mean that queues are overall shorter, which means fewer items are stuck behind heavy tasks. Moreover, there is more stealing and the stealing always takes the oldest elements. 
+    \item Increasing the number of spawners is tragic for latency on LIFO as that leads to more tasks being processed locally and in a more LIFO manner. 
+\end{itemize}
 
 \section{Comparison with Domainslib}
 \label{section:result_with_domainslib}
@@ -988,24 +999,12 @@ Historically, built-in scheduling necessitated FIFO ordering to avoid the bad la
 \appendix
 
 
-\chapter{Technical details, proofs, etc.}
-
-\todo{microbenchmarks - queues, etc.}
-
-\section{ommited sections}
-
-\begin{itemize}
-    \item Memory model. OCaml features a novdel memory model.
-    Other languages depend on global data race freedom. That does not facilitate reasoning about programs if a race in one library may cause undefined behavior in a different one. 
-    OCaml Multicore features a local data race freedom property, which guarantees that races are bound in space and time. 
-\end{itemize}
-
-\section{Underlying Data Structures}
+\chapter{Underlying Data Structures}
 \label{section:underlying_data_structures}
 
 This section describes the underlying lock-free structures. 
 
-\subsection{MPMC Queue on Infinite Array}
+\section{MPMC Queue on Infinite Array}
 \label{section:mpmc_queue_on_inf}
 As the first step, it is crucial to understand the main idea behind any multi-producer or multi-consumer FAD-based queue. A particularly intuitive exposition is offered by \cite{Yang2016} (which takes a wait-free direction afterwards). The key simplification is to assume that said queue is built on top of an array of infinite length. 
 
@@ -1042,14 +1041,14 @@ With such a setup both enqueue and dequeue must do two atomic operations (FAD+GE
     \label{fig:basic-deque}
 \end{wrapfigure}
 
-\subsection{MPMC Queue Blocking}
+\section{MPMC Queue Blocking}
 \label{section:blocking_mpmc}
 
 While the infinite array is a powerful idea and some designs actually simulate that using a linked list of arrays (e.g. \cite{Sundell2011}), use of circular buffer is far more common. Luckily, the design described in the previous section almost works on a circular array. The major difference is that now enqueuer wraps around the array and may encounter a full slot, thus enqueue function requires some mechanism to not overwrite another item, e.g. a busy wait akin to that in figure \ref{fig:basic-deque}. Secondly, both enqueuer and dequeuer must use CAS to edit the item slot as the queue can overlap multiple times. 
 
 Such an implementation constitutes a fully-functional multi-producer multi-consumer unbounded queue as described in \cite{Kappes2021}. Importantly, such an implementation remains somewhat inconvenient for a modern system. Busy waiting is generally bad for performance. Especially since this busy waiting is not the typical busy waiting in lock-free algorithm, which is expected to take a few tens of cycles. Further, such a structure is no longer strictly FIFO as two overlapping enqueuers or dequeuers are essentially racing on the same slot. Both issues are fixed in the following sections. 
 
-\subsection{MPMC Queue Non-blocking Dequeue}
+\section{MPMC Queue Non-blocking Dequeue}
 \label{section:mpmc_non_blocking_dequeue}
 
 Using FAD eliminates the contention in dequeue() but it trades-off consistency. Now, dequeue() may increment the \textit{head} only to discover that is has over overshot the \textit{tail}. In fact, multiple threads can overshoot at once causing the \textit{head} to be multiple slots higher than \textit{tail}, where the maximum discrepancy is bounded by number of independent processing units. There is a number of possible ways to recover from an overshoot.
@@ -1062,13 +1061,13 @@ Using FAD eliminates the contention in dequeue() but it trades-off consistency. 
 
 The implementations in this project rely on the first solution. The third one is useful in the wait-free algorithms as it helps bound maximal number of retries of other methods. 
 
-\subsection{MPMC Queue Non-blocking Enqueue}
+\section{MPMC Queue Non-blocking Enqueue}
 
 Similar rollback methods apply as to the dequeue. Moreover, items can be queued up as a linked list in a single slot (what may also be used to bring back strict FIFO order) or the enqueuer may simply resize the queue. There is perhaps an additional consideration from the perspective of work-distribution, if the queue is already overloaded, one should not cause additional rollback synchronisation and cause further slowdown (in e.g. passing the tasks to overflow queue). 
 
 For the purpose of this dissertation there was no need to use any of these methods. MPMC is only used as the global overflow structure, which generally means that it is not commonly full and at that point putting halt on the spawner is likely better than letting it allocate endless memory. The local work stealing queues, on the other hand, are single-producer, which means that the enqueuer is able to use additional assumptions to avoid the need to rollback.
 
-\subsection{Work Stealing Queue}
+\section{Work Stealing Queue}
 \label{section:wss-queue}
 
 In the case of work stealing, there is no need to employ a full MPMC queue. Local queues only have a single enqueuer and that eliminates the possibility of races on the \textit{tail} index. This has two important benefits.
@@ -1087,7 +1086,7 @@ Possible rollback methods have been described in \S\ref{section:mpmc_non_blockin
 
 Such a design gives rise to a practical implementation of SPMC structure. It is scalable and follows the philosophy of work stealing by prioritising local operations. 
 
-\subsection{Work Stealing Stack}
+\section{Work Stealing Stack}
 Assume that a stack with synchronized local functions exists. A natural question to ask is whether the steal should also follow LIFO ordering or just take the elements from the top of the stack (FIFO). The latter has two considerable benefits over LIFO. Firstly, FIFO steal means that stealers contend for the bottom of the stack, while local thread works only the top. Such a setup is very convenient since local and global methods work on different indices, what reduces complexity and contention. Secondly, the alleged benefit of LIFO is locality. However, a different thread is not going to benefit from that as much as the owner. Thus, instead, it can take the oldest elements in the stack (FIFO) and significantly improve tail latencies. 
 
 Fast local push and FIFO steal are already implemented in the previous section (\S\ref{section:wss-queue}). The only missing bit is local (FIFO) pop. One way to implement it is akin to the FIFO push, i.e. firstly act on the array and only update the \textit{top} pointer afterwards. With such a procedure, local pop simply tries to remove item from the array. It either succeeds (and updates \textit{top}) or not, and terminates. Stealer, on the other hand, may have its item taken by pop operation, and needs to be able to roll back.
@@ -1099,28 +1098,28 @@ This design is similar to the classic work stealing deque \cite{Chase2005}. Howe
     \item Has the extra flexibility coming from atomic slots (\S\ref{section:cancellations}, \S\ref{section:yield}).
 \end{itemize}
 
-\subsection{Resizing}
+\section{Resizing}
 \label{section:resizing_details}
 
 The work stealing queue has been extended to allow resizing. It lets the owner of the queue increase the size of the local structure rather than push overflowing elements into a separate queue. This, in theory, may translate to better work distribution. Such a functionality may seem daunting to implement in the lock-free world but, curiously, the implementation of FIFO work stealing lets the owner lock out all other users. 
 
 The mechanism relies on the fact that non-owners do not speculate when stealing. Therefore, owner can simply overshoot the \textit{head} index to ensure that no new stealers appear. Once the \textit{head} is higher than \textit{tail}, owner needs to wait for all in-flight stealers to terminate. It can detect it by checking whether all \textit{claimed} elements have been removed from the array. Once that's done, the elements are transferred to a new array, the array and mask are updated in the record, and then \textit{head}, \textit{tail} indices are carefully corrected.
 
-\subsection{Sharded Queue}
+\section{Sharded Queue}
 \label{section:multiqueue_details}
 
 Performance of staged architecture (\S\ref{section:design-staged}) and overflow queue (\S\ref{section:design_overflow_queue}) depends on the scalability of the underlying queue. Lock-free MPMC queue (\S\ref{section:blocking_mpmc}) allows enqueuers and dequeuers to work faster and more independently than with a locked structure. However, as shown by figure \todo{fig}, the throughput hardly improves for more than a few workers.  
 
 A common technique used to extend the scalability in such circumstances is horizontal scaling. Instead of a single queue with two points of contention (indices), the structure can encapsulate multiple queues and load balance across them. Such a construction is called multi queue and can alone constitute a core structure of a scheduler \cite{Postnikova2022}. This dissertation uses a simple multiqueue wherein enqueuers insert items into randomly selected MPMC queue, and dequeurs start with random queue and iterate until a non-empty queue is found (or all queues have been checked).
 
-\subsection{False sharing}
+\section{False sharing}
 A common optimization pattern in low-level programming involves separating contended variables into separate cache lines to ensure they can be owned independently. This was taken into consideration only in the places where it was natural (e.g. size of runqueue). Conversely, OCaml does not allow to explicitely specify padding or memory layout of a record type, and that cannot be ensured. Likely, there are ways to coerce the compiler into some particular layout by adding unusued variables and reverse engineering compiler logic but that would be very sensitive to e.g. compiler updates. Thus, implementations were not optimized for such subtle behavior. 
 
-\subsection{Validation}
+\section{Validation}
 
 The core lock-free queue and stack have been extensively load tested and verified using DSCheck (\S\ref{section:background_dscheck}). DSCheck has been modified to put a hard limit on exploration of infinite loops in algorithms requiring busy-waiting. The modified version is vendored in the main repository \cite{bartoszm90:online}.
 
-\subsection{Limitations}
+\section{Limitations}
 
 Since this project has a limited timescale, the schedulers were optimized for scalability but their implementations do not eliminate all constant factor overhead. In part since these overheads are not critical to the hypothesis (\S\ref{section:thesis}) but also because it requires a far more error-prone code in OCaml. 
 
