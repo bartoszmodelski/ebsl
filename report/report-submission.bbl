@@ -1,4 +1,4 @@
-\begin{thebibliography}{68}
+\begin{thebibliography}{73}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -61,6 +61,12 @@ memory\_order - cppreference.com.
 {Transmission Control Protocol}.
 \newblock RFC 793, Sept. 1981.
 \newblock URL \url{https://www.rfc-editor.org/info/rfc793}.
+
+\bibitem[Advanced Micro~Devices()]{2ndGenAM8:online}
+I.~Advanced Micro~Devices.
+\newblock 2nd gen amd epyc™ 7702 | server processor | amd.
+\newblock \url{https://www.amd.com/en/products/cpu/amd-epyc-7702}.
+\newblock (Accessed on 06/08/2022).
 
 \bibitem[Agastya et~al.(2009)Agastya, Mechanic, and Kothari]{voip-latency}
 C.~Agastya, D.~Mechanic, and N.~Kothari.
@@ -162,6 +168,12 @@ O.~Contributors.
 \newblock
   \url{https://github.com/ocaml-multicore/ocaml-multicore/tree/4.12+domains}.
 \newblock (Accessed on 06/06/2022).
+
+\bibitem[Corbet()]{Theright8:online}
+J.~Corbet.
+\newblock The right way to yield [lwn.net].
+\newblock \url{https://lwn.net/Articles/31462/}.
+\newblock (Accessed on 06/08/2022).
 
 \bibitem[Drebes et~al.(2016)Drebes, Pop, Heydemann, Drach, and
   Cohen]{Drebes2016}
@@ -397,6 +409,13 @@ M.~Pretnar.
 \newblock \doi{10.1016/j.entcs.2015.12.003}.
 \newblock URL \url{https://doi.org/10.1016/j.entcs.2015.12.003}.
 
+\bibitem[Rupp()]{karlrupp48:online}
+K.~Rupp.
+\newblock karlrupp/microprocessor-trend-data: Data repository for my blog
+  series on microprocessor trend data.
+\newblock \url{https://github.com/karlrupp/microprocessor-trend-data}.
+\newblock (Accessed on 06/08/2022).
+
 \bibitem[Schweizer et~al.(2020)Schweizer, Besta, and Hoefler]{fad-cas-speed}
 H.~Schweizer, M.~Besta, and T.~Hoefler.
 \newblock Evaluating the cost of atomic operations on modern architectures.
@@ -474,11 +493,25 @@ O.~Team.
   {\natexlab{a}}.
 \newblock (Accessed on 06/08/2022).
 
-\bibitem[Team({\natexlab{b}})]{ocamlmul59:online}
+\bibitem[Team({\natexlab{b}})]{ocamlmul5:online}
+O.~Team.
+\newblock ocaml-multicore/eio: Effects-based direct-style io for multicore
+  ocaml.
+\newblock \url{https://github.com/ocaml-multicore/eio}, {\natexlab{b}}.
+\newblock (Accessed on 06/08/2022).
+
+\bibitem[Team({\natexlab{c}})]{ocamlmul59:online}
 O.-M. Team.
 \newblock ocaml-multicore/domainslib: Parallel programming over domains.
-\newblock \url{https://github.com/ocaml-multicore/domainslib}, {\natexlab{b}}.
+\newblock \url{https://github.com/ocaml-multicore/domainslib}, {\natexlab{c}}.
 \newblock (Accessed on 06/01/2022).
+
+\bibitem[Technology()]{MD90FS0r76:online}
+G.~Technology.
+\newblock Md90-fs0 (rev. 1.1) | server motherboard - gigabyte u.k.
+\newblock
+  \url{https://www.gigabyte.com/uk/Enterprise/Server-Motherboard/MD90-FS0-rev-11}.
+\newblock (Accessed on 06/08/2022).
 
 \bibitem[Tennenhouse(1989)]{Tennenhouse89layeredmultiplexing}
 D.~L. Tennenhouse.

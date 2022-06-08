@@ -1,4 +1,4 @@
-\begin{thebibliography}{71}
+\begin{thebibliography}{73}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -409,6 +409,13 @@ M.~Pretnar.
 \newblock \doi{10.1016/j.entcs.2015.12.003}.
 \newblock URL \url{https://doi.org/10.1016/j.entcs.2015.12.003}.
 
+\bibitem[Rupp()]{karlrupp48:online}
+K.~Rupp.
+\newblock karlrupp/microprocessor-trend-data: Data repository for my blog
+  series on microprocessor trend data.
+\newblock \url{https://github.com/karlrupp/microprocessor-trend-data}.
+\newblock (Accessed on 06/08/2022).
+
 \bibitem[Schweizer et~al.(2020)Schweizer, Besta, and Hoefler]{fad-cas-speed}
 H.~Schweizer, M.~Besta, and T.~Hoefler.
 \newblock Evaluating the cost of atomic operations on modern architectures.
@@ -486,10 +493,17 @@ O.~Team.
   {\natexlab{a}}.
 \newblock (Accessed on 06/08/2022).
 
-\bibitem[Team({\natexlab{b}})]{ocamlmul59:online}
+\bibitem[Team({\natexlab{b}})]{ocamlmul5:online}
+O.~Team.
+\newblock ocaml-multicore/eio: Effects-based direct-style io for multicore
+  ocaml.
+\newblock \url{https://github.com/ocaml-multicore/eio}, {\natexlab{b}}.
+\newblock (Accessed on 06/08/2022).
+
+\bibitem[Team({\natexlab{c}})]{ocamlmul59:online}
 O.-M. Team.
 \newblock ocaml-multicore/domainslib: Parallel programming over domains.
-\newblock \url{https://github.com/ocaml-multicore/domainslib}, {\natexlab{b}}.
+\newblock \url{https://github.com/ocaml-multicore/domainslib}, {\natexlab{c}}.
 \newblock (Accessed on 06/01/2022).
 
 \bibitem[Technology()]{MD90FS0r76:online}

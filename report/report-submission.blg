@@ -24,57 +24,62 @@ Warning--empty year in golang
 Warning--empty year in gorout_vs_os_thread
 Warning--empty year in linux_cfs
 Warning--empty year in memoryor11:online
+Warning--empty year in 2ndGenAM8:online
 Warning--empty journal in voip-latency
 Warning--empty year in ocamlmul16:online
+Warning--empty year in Theright8:online
 Warning--empty year in NomadbyH95:online
 Warning--empty year in sadiqjds97:online
 Warning--empty year in vdso7Lin5:online
 Warning--empty year in Makingth53:online
 Warning--empty year in TokioAna8:online
 Warning--empty year in bartoszm90:online
+Warning--empty year in karlrupp48:online
 Warning--empty journal in fad-cas-speed
 Warning--empty year in Concurre37:online
+Warning--empty year in ocamlmul5:online
 Warning--empty year in ocamlmul59:online
+Warning--empty year in MD90FS0r76:online
 Warning--empty year in Frequent1:online
-You've used 68 entries,
+You've used 73 entries,
             2773 wiz_defined-function locations,
-            1076 strings with 19387 characters,
-and the built_in function-call counts, 31151 in all, are:
-= -- 2873
-> -- 1760
-< -- 40
-+ -- 613
-- -- 543
-* -- 2506
-:= -- 4681
-add.period$ -- 309
-call.type$ -- 68
-change.case$ -- 381
-chr.to.int$ -- 66
-cite$ -- 180
-duplicate$ -- 1389
-empty$ -- 2593
-format.name$ -- 618
-if$ -- 6662
-int.to.chr$ -- 3
+            1096 strings with 20066 characters,
+and the built_in function-call counts, 32667 in all, are:
+= -- 3009
+> -- 1810
+< -- 45
++ -- 634
+- -- 558
+* -- 2574
+:= -- 4911
+add.period$ -- 329
+call.type$ -- 73
+change.case$ -- 401
+chr.to.int$ -- 70
+cite$ -- 195
+duplicate$ -- 1464
+empty$ -- 2753
+format.name$ -- 638
+if$ -- 6988
+int.to.chr$ -- 4
 int.to.str$ -- 1
 missing$ -- 48
-newline$ -- 436
-num.names$ -- 232
-pop$ -- 921
+newline$ -- 466
+num.names$ -- 252
+pop$ -- 1000
 preamble$ -- 1
-purify$ -- 315
+purify$ -- 330
 quote$ -- 0
-skip$ -- 988
+skip$ -- 1032
 stack$ -- 0
-substring$ -- 719
-swap$ -- 173
+substring$ -- 729
+swap$ -- 179
 text.length$ -- 9
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 728
-warning$ -- 33
-while$ -- 229
+type$ -- 783
+warning$ -- 38
+while$ -- 244
 width$ -- 0
-write$ -- 1033
-(There were 33 warnings)
+write$ -- 1099
+(There were 38 warnings)
