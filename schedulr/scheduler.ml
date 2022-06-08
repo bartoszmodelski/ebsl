@@ -105,10 +105,10 @@ module Make (DS : DataStructure) = struct
       waited_for_space_on_enque := 0;;
 
     let take_from {steal_attempts; suggest_steal; _} global_requesting_queue = 
-      let force_use_queue = Random.int 100 < 50 in 
+      let force_use_queue = Random.int 100 < 3 in 
       let steal_or_f v = 
         steal_attempts := !steal_attempts + 1;
-        if !steal_attempts mod 4 == 0 then 
+        if !steal_attempts mod 10 == 0 then 
           v 
         else 
           `Steal `Random    
