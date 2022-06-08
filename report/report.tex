@@ -461,7 +461,7 @@ While 150ms round-trip time may seem like an undemanding deadline for a modern s
 
 Thus, the second benchmark imitates a VoIP server with a number of conferences and participants, and FreeSWITCH-like audio-processing, audio-mixing threads. This benchmark aims to simulate an enterprise application with extremely complex scheduling patterns and a perhaps not perfectly optimized code, where individual threads frequently need to yield to wait for others.
 
-\subsection{Option Pricing}
+\subsection{Binomial Option Pricing}
 \label{section:bench-option-pricing}
 
 Interesting task-spawning pattern here.
@@ -913,15 +913,19 @@ The baseline approaches described in \S\ref{section:impl-schedulers} and a numbe
    \label{fig:mixer-bench}
 \end{figure}
 
-The mixer benchmark represents a complicated real-world use case. It derives from architecture of a VoIP softswitch (\cite{Maruzzelli2017-ou}), which heavily relies on OS threading and scheduler. FreeSWITCH runs multiple OS threads for a single call. Firstly, there is a thread per call-leg, which links network with the conference. It listens to packets, decompresses codecs and passes raw audio to the conference thread. \todo{more} 
+The mixer benchmark represents a complicated real-world use case. It derives from architecture of a VoIP softswitch - FreeSWITCH (\cite{Maruzzelli2017-ou}), which heavily relies on threading. FreeSWITCH runs multiple OS threads for a single call. Firstly, there is a thread for the conference. It collects audio from all participants, mixes it (hence mixer), and passes the output to all participants. However, there is a number of things that needs to happen for every participant. At the minimum, each participant can have a different codec setting, thus the incoming audio has to be decompressed for mixing and outgoing audio has to be compressed before sending. In practise, there is a lot of other per-call-leg logic as well, e.g. signalling, jiter buffer. Therefore, there is also a single thread per participant. In such a setting, mixer thread only interacts with participant threads, which in turn interact with external world. 
 
 Such a workload is particularly difficult to optimize for due to its complexity. It features short-lived and long-lived tasks. Some tasks benefit from cache locality, while others not. Many details will vary over time, e.g. distribution of number of people in mixers (as conference could have anywhere from 3 to hundreds people), length of calls, codec selection, media routes (IP-to-IP) \cite{Frequent1:online}, etc. Moreover, the workload makes heavy use of many high-level features such as yielding (\S\ref{section:yield}) and promises (\S\ref{section:promise}), which are not the typical targets of high-performance optimizations. Therefore, in this case, the robustness is just as important as overall performance. 
+ 
+Crucially, participant and conference threads yield frequently. They simply cannot make progress witout data. As explained in \S\ref{section:yield}, yielding threads have to be placed in an external global structure (here a multi queue). This seems suboptimal because locality is not respected, and centralization of tasks is rarely the desired state. Therefore, on top of FIFO, LIFO and Staged, one more approach has been evaluated. It is a composition of 10 individual schedulers (FIFO or LIFO) in order to silo particular sets of conferences and participant threads. This imposes boundaries on stealing and yielding since whatever happens the task remains in its silo. Akin, in spirit, to neighbourhood stealing (\S\cite{section:extensions}).
 
 
 \label{paragraph:overflow-queue-bad-2}
-\todo{mention overflow queue}
+\todo{mention overflow queue - didn't even bother with locked queue}
 
-\section{Options Pricer}
+Figure \ref{fig:mixer-bench} shows the ratio of latency breaches of different schedulers over increasing number of conferences. This metric behaves similar tail latencies. LIFO performs the best as it is able to capitalize on mixed down audio by immediately sending data back. FIFO sees significant number of fails early, what is explained by the (effectively) constant depth of task graph (\S\ref{section:fairness-revisited}). Staged is unable to capitalize on having multiple stages because even in the base FIFO and LIFO case, most of the scheduling goes through the global multiqueue. In such a case, Staged only has extra overheads and adds another queue before sending out mixed down audio, where it is not beneficial to prioritise other work. Curiously, siloed FIFO and LIFO did not differ significantly from core implementations. Locality benefits are not big enough to make a difference in this case. It is also a point of in favour of scalability of the base designs.
+
+\section{Binomial Option Pricer}
 
 \begin{figure} 
     \centering 
@@ -930,16 +934,15 @@ Such a workload is particularly difficult to optimize for due to its complexity.
    \label{fig:options-bench}
 \end{figure}
 
-Option contracts are financial derivative instruments, which provide the holder with an option (but not an obligation) to make a trade as specified by the contract. For example, a european call option on Google with strike price of \$2600 and expiration date of 2022-03-06 lets the holder buy a specified number of Google shares at the specified price and on the specified date only \cite{Hull_John}. Value of an option depends on the value of its underlying at expiration. If the underlying is more expensive than strke price, holder can exercise the option and sell the underlying with profit equal to the difference. Conversley, if strike price is higher than the underlying, value of option is zero.  
+Option contracts are financial derivative instruments, which provide the holder with an option (but not an obligation) to enter a specific trade a some point in the future. For example, a european call option on Google with strike price of \$2600 and expiration date of 2022-03-06 lets the holder buy a specified number of Google shares at the strike price and on the expiration date \cite{Hull_John}. Value of an option at expiration depends strictly on the the price of its underlying.
 
-Binomial model estimates value of an option in multiple steps. First, it simulates price changes of the underlying in time, e.g. for the next year, in a number of steps. Each step assumes that price of the underlying can increase or decrease by set amount. Once the future prices are known, it calculates the option payoffs for every possible path taken by the underlying's price. Finally, knowing the expected value of each path and its likelihood, it can calculate overall expectation at present time. Despite its simplicity, this model is still widely used in practise as it is e.g. easier to include additional contract features than in the Black-Scholes model \todo{binomial better}. 
+\begin{center}
+$call\:option\:value = max(underlying\:price - strike\:price, 0)$.
+\end{center}
 
-It is known to be hard to parallilze \todo{the two citations.}. Therefore, it was only made concurrent. Therefore, a simple parallelizaiton technique was applied. 
+Binomial model first estimates value of the underlying by assuming that at each time step the price may either move up by a specific amount or down by the inverse, at specific probabilities. This creates a lattice, whose leaves represent prices at some final timestep. Then, the binomial pricer calculates payoff at every final timestep and propagates the expected value backwards using known probabilities of up and down moves. The first stage - stock prices at final timestep - can be computed analytically, while propagation of expectation must actually walk the lattice to take interest rates into account. Despite its simplicity, the binomial model is widely used in practise as it is far easier to include extra features than in the analytical approaches.
 
-Trading shops tend to be organized around 3 feedback loops. s
-Continous option pricing. 
-Any options trading shop has multiple pricing mechanisms. Hot loop, warm loop, cold loop
-
+In constrast with other asset classes, computation of option prices is computationally intensive due to sheer number of instruments. For example, NYSE has 2400 stock listings. Each of them has hundreds of options at different strike prices, expiration dates and contract terms. Thus, the benchmark recomputes values of 30k options. Differents instruments have varying importance to a trading company due to the size of current position, available infrastructure, other models, etc. Thus, most instruments are computed at a fairly low accuracy (20 timesteps) and 0.5\% at high accuracy (2k steps), what results in a bimodal distribution of work per instrument. Pricing of each option is not parallelized but each timestep of the lattice is computed concurrently to avoid long stalls. 
 
 \begin{itemize}
     \item Despite an overall comparable throughput the latenyc is much better with FIFO
@@ -947,13 +950,14 @@ Any options trading shop has multiple pricing mechanisms. Hot loop, warm loop, c
     \item Increasing the number of spawners is tragic for latency on LIFO as that leads to more tasks being processed locally and in a more LIFO manner. 
 \end{itemize}
 
+Figure \ref{fig:options-bench} shows the tail latency under FIFO and LIFO scheduling. Even though that the overall throughput is comparable, the latency is significantly better with LIFO. It follows from FIFO processing each task-tree concurrently and taking advantage of terminating the shallow ones early. This benchmark may seem specific and inconsequential to most workloads, yet this is what commonly occurs in complex systems. Distribution of tasks is not just bimodal but multimodal, and thus impact all range of tail latencies. In fact, in the limit, if some subtrees have infinite depth, other tasks may never get to run with LIFO. Practical runtime or systems schedulers typically follow FIFO to avoid starvation in heterogenous workloads.   
 
-Such a workload highlights the effects occuring when the cost of individual requests is multi-modal and expressed through varying size of task-tree. In the limit, if depth of some particular task-tree is infinite, the stuck task's latency also becomes infinite as they never get to execute.
+As more workers are added, the tail latency improves. Predominantly because the overall queue sizes are shorter (fewer items are stuck behind heavy tasks) and stealing always takes the oldest elements. However, as soon as more spawners are added, the spawning becomes more efficient and processing more local, what collapses the tail latency even with many domains. 
 
 \section{Comparison with Domainslib}
 \label{section:result_with_domainslib}
 
-
+Note, the LIFO in this section refers to the LIFO scheduler developed for this project. Domainslib (which is also locally-LIFO) is referred to explicitely.
 
 \begin{figure} 
     \centering 
@@ -962,23 +966,15 @@ Such a workload highlights the effects occuring when the cost of individual requ
    \label{fig:domainslib-comp}
 \end{figure}
 
+The performance with Domainslib has been compared using the last packet processing benchmark (\ref{section:server-bench-with-multi-modal}) as it features bimodal work distribution, cache effects and is assessed using a simple metric - throughput. Further, to highlight the effect, the benchmark was run with just 1 spawner. It is worth pointing out that Domainslib is able to auto-resize, while for LIFO, althought possible, auto-resizing has not been implemented. To account for that difference both Domainslib and LIFO were set to have a minimum size of 1024 items, which Domainslib can expand further if needed. 
 
+The results are shown in figure \ref{fig:domainslib-comp}. The Domainslib is significantly faster at low core counts. Between 20 and 40 cores the benefit vanishes and both implementations offer a similar performance. Beyond 40 cores the Domainslib is unable to scale. It peaks at 85 cores and sees a very strong reduction in throughput for more cores. The LIFO implementation, on the other hand, sees diminishing results but continues to improve all the way to the last data point at 115 cores.  
 
-
-Two benchmarks have been selected 
-
-
-Domainslib:
-- Far more optimized (use of magic, force inline, unsafe array operations)
-- Stronger LF optimization - only one atomic operation per enqueue/dequeue/steal 
-
-Those optimizations are possible to apply to this project but were deemed too risky, as they can produce bugs that are extremely difficult to trace. 
-
-This project: 
-- More scalable steal 
-
-Try adding cpu relax, which may not be best placed inside the structure itself.f
-
+The detailed analysis is beyond the scope of this section but the three key factors are described below.
+\begin{itemize}
+    \item \textbf{Optimization.} The constant factors of Domainslib are more optimized. It requires only a single atomic operation per insertion or removal. Moreover, Domainslib uses a number of advanced techniques that are possible to apply to the LIFO implementation, but are risky to use in the early development, e.g. \textit{Obj.magic}, forcing inlining, unsafe array operations. This aligns with figure \ref{fig:domainslib-comp} showing a constant improvement over LIFO in the 5-15 range. 
+    \item \textbf{Scalability.} Domainslib only steals a single element at the time, while LIFO steals half of the items. LIFO only needs a single index operation per steal, thus the actual number of atomic operations per steal of both implementations converges as mor elements are stolen. But all Domainslib's atomic operations focus on the \textit{head} index. LIFO, on the other hand, in proportion uses the \textit{head} less and less. Furthermore, stealing multiple elements creates a load-balancing network, where elements propagate through multiple hops and ease stress on the spawner. With the steal-one policy, load on the spawner incrases linearly with the number of domains.
+\end{itemize} 
 
 \chapter{Summary and conclusions}
 
@@ -1128,7 +1124,7 @@ Performance of staged architecture (\S\ref{section:design-staged}) and overflow 
 A common technique used to extend the scalability in such circumstances is horizontal scaling. Instead of a single queue with two points of contention (indices), the structure can encapsulate multiple queues and load balance across them. Such a construction is called multi queue and can alone constitute a core structure of a scheduler \cite{Postnikova2022}. This dissertation uses a simple multiqueue wherein enqueuers insert items into randomly selected MPMC queue, and dequeurs start with random queue and iterate until a non-empty queue is found (or all queues have been checked).
 
 \section{False sharing}
-A common optimization pattern in low-level programming involves separating contended variables into separate cache lines to ensure they can be owned independently. This was taken into consideration only in the places where it was natural (e.g. size of runqueue). Conversely, OCaml does not allow to explicitely specify padding or memory layout of a record type, and that cannot be ensured. Likely, there are ways to coerce the compiler into some particular layout by adding unusued variables and reverse engineering compiler logic but that would be very sensitive to e.g. compiler updates. Thus, implementations were not optimized for such subtle behavior. 
+A common optimization pattern in low-level programming involves separating contended variables into separate cache lines to ensure they can be owned independently. This was taken into consideration only in the places where it was natural (e.g. size of runqueue). OCaml does not allow to explicitely specify padding or memory layout of a record type. It is possible to force some particular layout by adding unusued variables in crtitical places but that would be quite fragile as compiler updates or changes to the record itself may impact the layour in unpredictable ways. Thus, implementations were not optimized for such subtle behavior. 
 
 \section{Validation}
 

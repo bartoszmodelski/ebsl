@@ -31,7 +31,7 @@
 \contentsline {section}{\numberline {4.2}Benchmarks}{25}{section.4.2}%
 \contentsline {subsection}{\numberline {4.2.1}Packet Processing}{25}{subsection.4.2.1}%
 \contentsline {subsection}{\numberline {4.2.2}Audio Mixer}{25}{subsection.4.2.2}%
-\contentsline {subsection}{\numberline {4.2.3}Option Pricing}{26}{subsection.4.2.3}%
+\contentsline {subsection}{\numberline {4.2.3}Binomial Option Pricing}{26}{subsection.4.2.3}%
 \contentsline {section}{\numberline {4.3}Ordering}{26}{section.4.3}%
 \contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{26}{subsection.4.3.1}%
 \contentsline {subsubsection}{Fairness revisited}{27}{section*.13}%
@@ -65,18 +65,18 @@
 \contentsline {subsection}{\numberline {5.3.3}Server benchmark with multi-modal processing latency}{47}{subsection.5.3.3}%
 \contentsline {subsubsection}{LIFO heuristics}{47}{section*.43}%
 \contentsline {section}{\numberline {5.4}Mixer benchmark}{48}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Options Pricer}{49}{section.5.5}%
-\contentsline {section}{\numberline {5.6}Comparison with Domainslib}{50}{section.5.6}%
-\contentsline {chapter}{\numberline {6}Summary and conclusions}{51}{chapter.6}%
-\contentsline {chapter}{\numberline {A}Underlying Data Structures}{58}{appendix.A}%
-\contentsline {section}{\numberline {A.1}MPMC Queue on Infinite Array}{58}{section.A.1}%
-\contentsline {section}{\numberline {A.2}MPMC Queue Blocking}{59}{section.A.2}%
-\contentsline {section}{\numberline {A.3}MPMC Queue Non-blocking Dequeue}{59}{section.A.3}%
-\contentsline {section}{\numberline {A.4}MPMC Queue Non-blocking Enqueue}{60}{section.A.4}%
-\contentsline {section}{\numberline {A.5}Work Stealing Queue}{60}{section.A.5}%
-\contentsline {section}{\numberline {A.6}Work Stealing Stack}{61}{section.A.6}%
-\contentsline {section}{\numberline {A.7}Resizing}{62}{section.A.7}%
-\contentsline {section}{\numberline {A.8}Sharded Queue}{62}{section.A.8}%
-\contentsline {section}{\numberline {A.9}False sharing}{63}{section.A.9}%
-\contentsline {section}{\numberline {A.10}Validation}{63}{section.A.10}%
-\contentsline {section}{\numberline {A.11}Limitations}{63}{section.A.11}%
+\contentsline {section}{\numberline {5.5}Binomial Option Pricer}{50}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Comparison with Domainslib}{51}{section.5.6}%
+\contentsline {chapter}{\numberline {6}Summary and conclusions}{53}{chapter.6}%
+\contentsline {chapter}{\numberline {A}Underlying Data Structures}{60}{appendix.A}%
+\contentsline {section}{\numberline {A.1}MPMC Queue on Infinite Array}{60}{section.A.1}%
+\contentsline {section}{\numberline {A.2}MPMC Queue Blocking}{61}{section.A.2}%
+\contentsline {section}{\numberline {A.3}MPMC Queue Non-blocking Dequeue}{61}{section.A.3}%
+\contentsline {section}{\numberline {A.4}MPMC Queue Non-blocking Enqueue}{62}{section.A.4}%
+\contentsline {section}{\numberline {A.5}Work Stealing Queue}{62}{section.A.5}%
+\contentsline {section}{\numberline {A.6}Work Stealing Stack}{63}{section.A.6}%
+\contentsline {section}{\numberline {A.7}Resizing}{64}{section.A.7}%
+\contentsline {section}{\numberline {A.8}Sharded Queue}{64}{section.A.8}%
+\contentsline {section}{\numberline {A.9}False sharing}{65}{section.A.9}%
+\contentsline {section}{\numberline {A.10}Validation}{65}{section.A.10}%
+\contentsline {section}{\numberline {A.11}Limitations}{65}{section.A.11}%
