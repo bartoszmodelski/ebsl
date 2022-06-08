@@ -185,7 +185,15 @@ The following sections strengthen the thesis from the point of view of hardware 
 \subsection{Parallelism}
 \label{section:intr_hardware_par}
 
-Moore's law is an observation stating that number of transistors in integrated circuits tends to double every two years \cite{Moore2006}. Around the turn of the millennium, increasing single-core performance at exponential rate was no longer possible due to physical limits. Thus, manufacturers turned to stacking multiple processing units within a single chip \cite{Geer2005}. As shown by \todo{create figure} \url{https://github.com/karlrupp/microprocessor-trend-data}, the exponential growth of transistors continued, together with exponential increase in cores. While some researches conjecture this trend to slow down \cite{6307773}, \cite{mooremulti}, we still see rapid, if not exponential, growth in this area.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.85\textwidth]{50-years-processor-trend.png}
+    \caption{50 years of evolution of processors. The single-core performance sees diminishing returns but during the last 15 years CPU manufacturers turned to multicore architectures. Figure generated using \ref{karlrupp48:online}.}
+   \label{fig:50yrs}
+\end{figure}
+
+Moore's law is an observation stating that number of transistors in integrated circuits tends to double every two years \cite{Moore2006}. Around the turn of the millennium, increasing single-core performance at exponential rate was no longer possible due to physical limits. Thus, manufacturers turned to stacking multiple processing units within a single chip \cite{Geer2005}. As shown by figure \ref{fig:50yrs}, the exponential growth of transistors continued, together with exponential increase in cores. While some researches conjecture this trend to slow down \cite{6307773}, \cite{mooremulti}, we still see rapid, if not exponential, growth in this area.
 
 Hence, parallelism is here to stay. Naturally, in contrast with clock frequency increases, schedulers have to be carefully crafted in order to take full advantage of horizontal scaling of the underlying architecture. That's because:
 \begin{itemize}
@@ -255,7 +263,7 @@ System threads are a fundamental OS feature, which allows to detach the number o
 
 \subsection{Lightweight Threads}
 \label{section:lightweight-threads}
-System threading provides the fundamental mechanisms to execute concurrent workloads across parallel hardware. But programmers need to be wary of designed computations as the cost of interacting with kernel is non-trivial. It may vary from mode switching to full syscall overhead. System call logic requires a number of things to happen (such as a, b, c) and that easily thwarts the cost of a small task. Thus, the performance of highly concurrent workloads suffers significantly.
+System threading provides the fundamental mechanisms to execute concurrent workloads across parallel hardware. But programmers need to be wary of designed computations as the cost of interacting with kernel is non-trivial. It may vary from mode switching to full syscall overhead. System call logic requires a number of things to happen (e.g. context switch, capability check, audit), which thwart the cost of a small task. Thus, the performance of highly concurrent workloads suffers significantly.
 
 This is inconvenient for the developers. Spawning little concurrent tasks is the natural way to express many common server-side workloads, e.g. processing HTTP requests. Therefore, language designers started to construct lightweight threads, what stands for threading implemented entirely in the user space. They aim to be very cheap to use and they do deliver on that promise. Context switch in Go requires saving and restoring just 3 registers \cite{gorout_vs_os_thread}. In OCaml only 2 \cite{Sivaramakrishnan2021}. Conversely, a system scheduler needs to save and restore \textit{all} registers, and perform mode switching \cite{gorout_vs_os_thread}. Therefore, lightweight threads are naturally better suited to support fine-grained concurrency. The next section touches on a disadvantage of not having access to privileged mode \ref{section:preemption}. 
 
@@ -337,8 +345,7 @@ Core lock-free data structures of this dissertation have been validated using CD
 
 Scheduling is omnipresent in computer science. It may happen at multiple levels simultaneously: data-center orchestration \cite{NomadbyH95:online}, OS-level threading (\S\ref{section:system-threads}) and runtime threads (\S\ref{section:lightweight-threads}). The field is very rich in literature and applications. Therefore, instead of summarising all the related work (which would be beyond the scope of this report), this section takes a close look at the design of two modern runtime schedulers. Project work and design decisions tie back to this review. 
 
-The first analyzed runtime is part of the Go programming language (\S
-\ref{section:rel-work-go}). The excellent support for concurrency is one of its main features. Just like OCaml, it is a high-level language with features like garbage collection. However, OCaml also strives strongly to maintain high-performance, does not feature preemption or a built-in runtime scheduling. Therefore, the second reviewed scheduler is Tokio (\S\ref{section:rel-work-rust}), which is a Rust library. It covers all of the mentioned discrepancies.
+The first analyzed runtime is part of the Go programming language (\S\ref{section:rel-work-go}). The excellent support for concurrency is one of its main features. Just like OCaml, it is a high-level language with features like garbage collection. However, OCaml also strives strongly to maintain high-performance, does not feature preemption or a built-in runtime scheduling. Therefore, the second reviewed scheduler is Tokio (\S\ref{section:rel-work-rust}), which is a Rust library. It covers all of the mentioned discrepancies.
 
 Finally, OCaml's unique features for supporting concurrency and parallelism are discussed. 
 
@@ -386,11 +393,11 @@ As touched on in \ref{section:intr_ocaml-multicore}, OCaml introduces a new flav
 
 \subsection{Threading}
 \label{section:fibers}
-Starting with version 5.0, OCaml will offer access to OS threading through the domain interface. System threads are heavy due to high memory footprint, the overhead of systemcalls and context-switching. Domains are similar, in that a single domain consist of an OS thread and additional OCaml structures such as local minor heap \cite{Sivaramakrishnan2020}. Generally, domains offer course-grained parallelism and are optimized for the number of domains to not exceed number of processing units (\url{https://github.com/ocaml-multicore/ocaml-multicore/wiki/Concurrency-and-parallelism-design-notes}).
+Starting with version 5.0, OCaml will offer access to OS threading through the domain interface. System threads are heavy due to high memory footprint, the overhead of systemcalls and context-switching. Domains are similar, in that a single domain consist of an OS thread and additional OCaml structures such as local minor heap \cite{Sivaramakrishnan2020}. Generally, domains offer course-grained parallelism and they are optimized for the number of domains to not exceed number of processing units \cite{Concurre37:online}.
 
 To use system threads efficiently, we also need concurrency. Historically, OCaml did not provide any explicit support for writing concurrent programs. Thus, developers using Lwt/Async were forced to divide programs into small functions, which are then scheduled dynamically and executed on the same stack. 
 
-Multicore OCaml features fibers - light, heap-allocated, resizable stacks. Their count is mostly limited by memory and, in general, may exceed number of logical cores by orders of magnitude without any issues. Importantly, context-switching between fibers is extremely cheap. It requires saving stack and exception pointers of the fiber and loading ones of the target frame \cite{Sivaramakrishnan2021}. Therefore, they are a perfect foundation for efficient, fine-grained concurrency. 
+Multicore OCaml features fibers - light, heap-allocated, resizable stacks. They are non-preemptible. Number of concurrent fibers is limited by memory and may exceed number of logical cores by orders of magnitude without any issues. Furthemore, context-switching between fibers is extremely cheap. It requires saving stack and exception pointers of the fiber and loading ones of the target frame \cite{Sivaramakrishnan2021}. Therefore, they are a perfect foundation for efficient, fine-grained concurrency. 
 
 \subsection{Effects}
 \label{section:effects}
@@ -401,14 +408,10 @@ An imperative programmer may consider it a generalisation of exceptions \cite{Br
 In the case of threading, effects provide a composable mean of stopping and resuming execution. Once effects handlers are set up higher up the stack, any function may perform a yield effect, which immediately returns the control back to the handler. Up until now, the logic is implementable with exceptions. However, the handler also receives a \textit{delimited continuation}, which resumes execution of the yielding function. In the case of a scheduler, handler may put received continuation into a queue, take the oldest element and resume it instead. This logic is implemented efficiently using fibers described in the previous section (\ref{section:fibers}). Whenever effects handler is set up, it instantiates a new fiber for contained logic. If said logic performs an effect, said fiber is unchained from the top of the stack and a new one is created to execute the handler. Naturally, this harmony is by design, and fibers and effects have been strongly optimized to support high-performance concurrency. 
 
 \label{paragraph:ocaml_preemption}
-It is worth pointing out, that in the current shape, effects do not mix with preemption. Generally, true preemption is limited to OS-level scheduling and there is no way around this restriction, as running ordinary applications with higher privileges is not acceptable from security standpoint. Runtime systems typically simulate preemption by having compiler automatically insert optional yields into strategic places (checkpoints) in the code. Assuming that compiler provides us with a mean of registering a checkpoint-handler, there is no obvious solution for auto-yielding, as trying to yield within such a handler means that suddenly any line in the code may emit Yield effect - even a null function. Further, user may compose multiple schedulers and pollute all function types in the program, what defeats the point of effects system. 
-
-
-\todo{fill in}
+In the current shape, effects do not mix with preemption. True preemption is limited to OS-level scheduling. There is no way around this restriction as true preemption requires special privileges and it is not acceptable for ordinary applications to have them due to security concerns. In the case of Go \ref{section:rel-work-go}, runtime simulates preemption by having compiler automatically insert optional yields into strategic places (checkpoints) in the code. Similar solution does not really fit OCaml out of the box because it would pollute entire program with Yield effect, what defeats the purpose of effects system. In Go, such logic is hidden within the runtime and compiler. In the case of OCaml, suddenly pure or even no-op functions would emit effects. 
 
 \subsection{Garbage Collection}
-OCaml features a new garbage collector created with multicore in mind \cite{Sivaramakrishnan2020}. It has two generations: local minor heaps and a shared global major heap. Both require a stop-the-world pause to perform collection. 
-\todo{fix}
+OCaml features a new garbage collector created with multicore in mind \cite{Sivaramakrishnan2020}. It has two generations: local minor heaps and a shared global major heap. Both minor and major heap collections require stop-the-world pause. The minor collection is fully parallel \cite{Sivaramakrishnan2020}.
 
 \subsection{Domainslib}
 
@@ -431,8 +434,6 @@ Preemptive schedulers may also explicitely prioritize fairness. Naively, the low
 
 
 \section{Benchmarks}
-\todo{describe distributions?}
-
 \todo{design to evaluate realistic work-loads with respect to just described objectives}
 
 This section describes the three main benchmarks used to evaluate different designs of a scheduler. They aim to simulate some true characteristics of the core of each workload (e.g. branching factors, dependencies between tasks, memory patterns) but at the same time aggressively mock all dependencies such as networking and other IO. This significantly reduces noise in the benchmarks and improves replicability. 
@@ -530,7 +531,7 @@ As discussed in the previous section (\ref{section:ordering}), FIFO and LIFO reg
     \item \textbf{Stochastic}. Random selection between scheduling the youngest and oldest in the structure. 
     \item \textbf{Switch every n}. Toggle between LIFO and FIFO every n tasks.
     \item \textbf{LIFO, reverse stack every n}. It is derived from the observation that LIFO offers superior performance but tail latency suffers due to elements lingering at the bottom of the stack. Thus, every n elements the scheduler can simply reverse the stack, sacrificing locality in that particular moment to execute overdue work.    
-    \item \textbf{LIFO slot}. \todo{fill in}
+    \item \textbf{LIFO slot}. Have a special slot for the most recently scheduled task. When a new task is scheduled, the item in the slot gets pushed onto the stack. It has the disadvantage that either the item in the slot cannot be stolen without using expensive synchronised operations on all accesses.
 \end{itemize}
 
 
@@ -538,17 +539,16 @@ As discussed in the previous section (\ref{section:ordering}), FIFO and LIFO reg
 \label{section:global_local}
 
 
-Previous sections (\ref{section:objectives}, \ref{section:approaches}) describe global scheduling properties and mechanisms achieving them. However, as evidenced by \todo{queue scalability figure}, a simple queue (or stack) do not scale beyond a single core. Firstly, imposing thread-safety requires costlier primitives, which are then slower even in the single-core case.
-Secondly, actual insert/remove operation, which sets in pointer in the array, is significantly faster than fastest atomic operations requiring architecture lock or write buffer flushes. Thus, as the actual parallelizable portion of the work is small, in line with Amdahl's law \cite{amdahl}, little performance is gained as number of threads increases. 
+Previous sections (\S\ref{section:objectives}, \S\ref{section:approaches}) describe global scheduling properties and mechanisms achieving them. However, a simple locked queue (or stack) do not scale beyond a single core. Firstly, imposing thread-safety requires costlier primitives, which are then slower even in the single-core case. Secondly, actual insert/remove operation, which sets in pointer in the array, is significantly faster than fastest atomic operations requiring cache line lock. Thus, as the actual parallelizable portion of the work is small, in line with Amdahl's law \cite{amdahl}, little performance is gained as number of threads increases. 
 
 \subsection{Core Structure Distribution}
 \label{section:core_struct_dist}
 
 One way to fix the contention is through having multiple instances of the underlying structure and load balancing across them. In the case of FIFO, the multi-queue \cite{Postnikova2022}. Such a distributed structure is no longer strictly FIFO. But, looking at all pairs of processed elements, the number of reorderings from the precise order is small, and enforcement of a hard bound on reorderings possible \cite{Kirsch2013}. 
 
-Now, let's focus on multi-queue. There is no need to for load balancing on both ends. Instead of having all workers try to insert elements into all the queues and cause contention, each worker could fill its own designated queue. That also improves constant factors, as single-producer queue requires weaker synchronization than a multi-consumer one (\todo{ref to implementation}). The core properties of a structure are still maintained by the load balancing on the dequeue side. 
+Now, let's focus on multi-queue. There is no need to for load balancing on both ends. Instead of having all workers try to insert elements into all the queues and cause contention, each worker could fill its own designated queue. That also improves constant factors, as single-producer queue requires weaker synchronization than a multi-consumer one (\S\ref{section:wss-queue}). The core properties of a structure are still maintained by the load balancing on the dequeue side. 
 
-There is one more natural optimization in sight (\todo{ref to background}). Namely, if worker can take an item from multiple queues, it should prefer to run the work it has scheduled, as it is more likely to benefit from locality and finish faster. An implementation of such a bias is trivial, as worker simply needs prefer to take an element from its insertion queue. Such a local deque operation has a lower constant factor because it does not need to synchronize with insertion. Thus, we have arrived at a more distributed and scalable architecture, at the cost of enforcing strict ordering. This design forms the basis of many real-world schedulers, as described in \S\ref{section:background-work-stealing}. Similar optimization process applies to LIFO. 
+There is one more natural optimization in sight. Namely, if worker can take an item from multiple queues, it should prefer to run the work it has scheduled, as it is more likely to benefit from locality and finish faster. An implementation of such a bias is trivial, as worker simply needs prefer to take an element from its insertion queue. Such a local deque operation has a lower constant factor because it does not need to synchronize with insertion. Thus, we have arrived at a more distributed and scalable architecture, at the cost of enforcing strict ordering. This design forms the basis of many real-world schedulers, as described in \S\ref{section:background-work-stealing}. Similar optimization process applies to LIFO. 
 
 To summarize, sacrifice of the global order property for local, per-core structures aims to decrease contention and increase locality. While any deviation from global order acts to increase tail latencies, in this case, it may be balanced off by overall increase of throughput and tasks being finished sooner. Naturally, certain formal guarantees have been given up and that may become more pronounced under specific workloads and during system degradation. The next section discusses an alternative, more stable approach (\S\ref{section:design-staged}).
     
@@ -575,62 +575,42 @@ Finally, staged architecture does not have to be implemented from first principl
 
 \subsection{Work distribution}
 \label{section:work-distribution}
-A widely used specification of the algorithm described in the previous section (\ref{section:global_local}) is work stealing. Work-stealing assumes a thread working on the tasks in its local structure as long as there are any. Then, it randomly select another queue and steal half of its items. It has proven to be an effective and robust approach in the past. Nevertheless, this report argues that it is not enough for the present and future. 
+Work stealing is a widely used realisation of the idea described in the previous section (\ref{section:global_local}). It assumes a thread focusing on the tasks in its local structure for as long as possible. Then, it randomly select another queue and steals some of its items. Work stealing has proven to be an effective and robust approach in the past. Nevertheless, this report argues that work stealing alone is not enough for the present and future. 
 
-There are two cases in which work stealing helps a non-preemptive scheduler. Firstly, if only some cores spawn the work (e.g. single web-server), stealing helps to distribute the work among many cores. Secondly, it helps to reduce latency. In my practise of working with Async/Lwt, it is not uncommon for some tasks occupying CPU for much longer than they should be due to a developer's mistake or some IO or database query suddenly taking far longer than it used to, due to hitting scalability ceiling. With a work stealing scheduler in OCaml Multicore, the tasks stuck in the local queue of overtaken core are going to be rescued by other threads as long as they are not overly busy too. 
+Despite its simplicity work stealing can be assumed to serve two distinct roles in non-preemptive scheduling. Firstly, if only some cores spawn the work (e.g. single web-server), stealing helps to distribute the work among many cores. Secondly, it helps to reduce latency if a task unexpectedly occupies CPU for longer than expected. In theory, developer can prevent the latter. But in my experience of working with Async/Lwt, it still happens frequently as system evolves. Even assuming perfect code, once in a while an IO operation or database query hits scalability ceiling and suddenly becomes much slower (\textit{falls of a cliff}). Could be due to suddenly not fitting into some level of memory hierarchy or DBMS changing optimization plan as more data is processed. Multicore does not solve the problem of CPU-hogging tasks but offers tools alleviate the issue.
 
-The latter (latency reduction) case is difficult to improve upon. A thread simply cannot know when it is going to get blocked by a lengthy operation. Therefore, unless each thread does additional bookkeeping in some centralized structures for every task, the unoccupied threads have to conduct an active search for lingering work. Naturally, incurring a constant bookkeeping for every task is troublesome to justify, especially for a feature that is most important when overall system is not heavily loaded. Thus, a random search conducted by work stealing is, arguably, a reasonable mechanism to soften the impact of extensive blocking on latency. If predictable latency is necessary, the staged architecture designed in previous section might be a better choice (\S\ref{section:design-staged}).
+The latency reduction case is difficult to improve upon. A thread simply cannot know when it is going to get blocked by a lengthy operation. Therefore, the unoccupied threads have to conduct an active search for lingering work and \textit{stealing} needs to be non-cooperative. (Alternatively, some additional bookkeping could be imposed on every thread but incurring a constant penalty is troublesome to justify for a feature that is most important when overall system is not heavily loaded). Thus, a random search conducted by work stealing is, arguably, a reasonable mechanism to soften the impact of extensive blocking on latency. If predictable latency is necessary, the staged architecture might be a better choice (\S\ref{section:design-staged}).
 
-On the other hand, this same mechanism becomes harder to accept for regular work distribution case. Any increase in number of threads is balanced off with lowered chances of finding work created by the same number of spawners. Thus, software engineer needs to be increasingly cautious to achieve high utilization. Even more importantly, in this case the information is available and high-spawner can issue a call for help or simply offload accumulated tasks into a common data structure. Such mechanisms are called \textit{work-shedding}. In this report, the following work-shedding methods have been tested. 
-
-\todo{todo}
-\begin{itemize}
-    \item dump into overflow queue 
-    \item request random thread to steal \textbf{ref ot paper from the e-mail}
-    \item dump a ticket into an mpmc queue \textbf{need to be implemented}
-\end{itemize}
-
-dump into na mpmc queue is better than forcing a victimg because it will not act on another busy thread. 
-
-
-\todo{In the case of staged architecture this is not a problem.}
-
+On the other hand, this same mechanism becomes harder to accept for regular work distribution case. Any increase in number of threads is balanced off with lowered chances of finding work for an individual. Thus, a software engineer needs to be increasingly cautious to achieve high utilization. Even more importantly, in this case the information is available and high-spawner can issue a call for help, or offload accumulated tasks into a common data structure. A number of work distributions extensions and improvements have been developed and evaluted (\S\ref{section:extensions_result}).
 
 \subsection{Overflow Queue}
 \label{section:design_overflow_queue}
 
 \subsection{Resizing}
 \label{section:resizing}
-Having a runtime scheduler gives its users a freedom to express workloads concurrent far beyond what is reasonable with pure system threads. This leads to some algorithms creating large numbers of tasks, large enough to rapidly fill up their local data structures. Now, a common strategy is to simply send new tasks to a slower, global overflow queue \todo{link to background}.
+Having a runtime scheduler gives its users a freedom to express workloads concurrent far beyond what is reasonable with pure system threads. This leads to some algorithms creating large numbers of tasks, large enough to rapidly fill up their local data structures. Now, a common strategy is to simply send new tasks to a slower, global overflow queue (\S\ref{section:rel-work-go}, \S\ref{section:rel-work-rust}).
 
 In this report, I argue that this algorithm ultimately bottlenecks task creation as the creator is forced to do offloading. Ultimately, if the workload is imbalanced and there are others threads ready to help, high-spawner should focus entirely on creation and leave the distribution to others. Therefore, a different strategy has been tested: resizing of local structure. Here, spawner increases its local structure to a size that lets others steal work effectively. This takes the burden of transfer off the spawner and makes the process quicker, since it does not have to contend or even synchronize with any other writers on its local structure. 
 
-\todo{some graph of task-creation here?}
-
 Notably, the structure can scale either vertically or horizontally. The latter has the benefit of decreasing contention between stealers.  
 
-\todo{could still try this horizontal thing}
-
 \subsection{Blocking operations}
-As has been a theme multiple times (\todo{refs}), a developed should strive to create lightweight, fine-grained tasks for a non-preemptive scheduler to avoid latency issues. In some cases, however, it may not possible. A long system-call may not have an alternative, non-blocking API. While blocking is unavoidable, scheduler may offer still offer some support.
+As discussed (\S\ref{section:work-distribution}), developer should strive to create lightweight, fine-grained tasks for a non-preemptive scheduler to avoid latency issues. In some cases, however, it may not possible. A long system-call may not have an alternative, non-blocking API. While blocking is unavoidable, scheduler may offer still offer some support.
 \begin{itemize}
-    \item One approach is to simply let user manually specify long-running operations and have them scheduled on a new system thread (\textbf{ref to tokio}). Such approach suffers from the same disadvantage as Async/Lwt, as in developer will occasionally fail to annotate a function.
+    \item One approach is to simply let user manually specify long-running operations and have them scheduled on a new system thread (\S\ref{section:rel-work-rust}). Such approach suffers from the same disadvantage as Async/Lwt, as in developer will occasionally fail to annotate a function.
     \item Alternatively, scheduler may feature a monitoring thread, which automatically adds new threads to the pool whenever there is a risk of starvation.  
 \end{itemize}
 
-This has not been explicitely handled in the current implementation but both approaches are feasible. There is a question of how important is such a measure, given that the proposed IO library (eio \todo{cite}) tries to use the fast, non-blocking interfaces like io\_uring.
+This has not been explicitely handled in the current implementation but both approaches are feasible. There is a question of how important is such a measure, given that the proposed IO library (eio \ref{ocamlmul5:online}) tries to use the fast, non-blocking interfaces like io\_uring.
 
 \subsection{Yield}
 \label{section:yield}
 
-Yield operation allows fiber to request descheduling. Commonly, a well-behaved program is expected to explicitely call yield to leave CPU to avoid wasting resources while waiting for an event. However, if the event is a result of computation done by other thread, yield becomes a strictly necessary part of the logic, which allows both threads to terminate. Thus, the design decisions behind this small part of the mechanism have a profound effect on the usefulness of the entire scheduler. As described below, they are also not trivial.
+Yield operation allows fiber to request descheduling. Commonly, a well-behaved program is expected to call yield to leave CPU, while awaiting an event. That avoids wasting resources and blocking other threads, which are able to make program. However, if the event is a result of a computation done by another thread, yield is necessary to allow both threads to terminate and becomes a key part of the logic. Thus, the design decisions behind this small part of the mechanism have a profound effect on the usefulness of the entire scheduler. As described below, they are also not trivial.
 
-Firstly, pure LIFO-based scheduler is not practical as the underlying data structure prevents implementation of yield operation. LIFO can only operate on the top of the stack and thus yielded task is the only one that can be picked up afterwards. Thus, LIFO ordering needs to be relaxable when needed. Heuristics such as firstly popping the element and then pushing yielded task tend do not fix the underlying issue but increase the number of blocked threads required to deadlock. A more elaborate approach swaps yielded task with a random item in the stack and runs it instead (as shown in section \todo{ref}). That fixes the underlying issues but overall performance deteriorates if most tasks in the stack are blocked, and adding swap operation to complex lock-free stack implementations may not be possible. Further, a naive work stealing scheduler may still deadlock. Work-stealing mechanisms tend to bias strongly towards use of local, per-processor queues and steal only if necessary. Such construction improves locality of workload, limits contention and superfluous passing of tasks between processors. However, processor of such a scheduler prefers to keep spinning on a single yielding task rather than take more work from peers. Therefore, the final implementation puts yielded tasks into a completely separate, global queue, which is periodically checked by processor. Such an approach avoids described issues at a cost of small extra cost in handling yielded tasks, which is acceptable because yielded tasks are unlikely to be latency sensitive or constitute majority of the workload. If that was not the case, either the scheduler can decide whether slow or fast path should be used or, perhaps, more than one yielding mechanism should be exposed - one for fast yields (\textit{soft yield}) and one to be called every-n yields to break the deadlocks. 
+Firstly, pure LIFO-based scheduler is not practical as the underlying data structure prevents implementation of yield operation. LIFO can only operate on the top of the stack and thus yielded task is the only one that can be picked up afterwards. Thus, LIFO ordering needs to be relaxable when needed. Heuristics such as firstly popping the element and then pushing yielded task tend do not fix the underlying issue but increase the number of blocked threads required to deadlock. A more elaborate approach swaps yielded task with a random item in the stack and runs it instead. That fixes the underlying issues but overall performance deteriorates if most tasks in the stack are blocked, and adding swap operation to complex lock-free stack implementations may not be possible. Further, a naive work stealing scheduler may still deadlock. Work-stealing mechanisms tend to bias strongly towards use of local, per-processor queues and steal only if necessary. Such construction improves locality of workload, limits contention and superfluous passing of tasks between processors. However, processor of such a scheduler prefers to keep spinning on a single yielding task rather than take more work from peers. Therefore, the final implementation puts yielded tasks into a completely separate, global queue, which is periodically checked by processor. Such an approach avoids described issues at a cost of small extra cost in handling yielded tasks, which is acceptable because yielded tasks are unlikely to be latency sensitive or constitute majority of the workload. If that was not the case, either the scheduler can decide whether slow or fast path should be used or, perhaps, more than one yielding mechanism should be exposed - one for fast yields (\textit{soft yield}) and one to be called every-n yields to break the deadlocks. 
 
-Notably, Linux kernel developers have made a choice in a similar vein in 2003 when yielded tasks were changed to enqueue to expired queue rather than run queue  (https://lwn.net/Articles/31462/). 
-
-\todo{could be smarter about yielding and use this information to identify spawners}
-\todo{curiously, this forces existence of some form of external queue to put the yielding tasks there}
+Notably, Linux kernel developers have made a choice in a similar vein in 2003 when yielded tasks were changed to enqueue to expired queue rather than run queue \cite{Theright8:online}. 
 
 \subsection{Promise}
 \label{section:promise}
@@ -660,24 +640,17 @@ Implementing backpressure in the core of the scheduler would indisputably improv
 
 \subsection{Cancellations}
 \label{section:cancellations}
-Important as cancellations are common in modern workloads with requests with deadlines. Further, cancellations are critical to recovering from overloading and thus their implementation has to be particularly robust, as a large wave of propagating cancellations may be the actual event reaching breaking point and causing system meltdown.  
-
-Paper a discusses this explicitely. In this work,
-
-\todo{batching would be faster but is generally bad for us!: BQ: A Lock-Free Queue with Batching}
+Cancellations are common in modern workloads. It is a function of more thought being given to latency but also, a convenient programming model. Program may want to do multiple requests and only process the first one to return, or at some point determine that other results are not needed. Further, cancellations are critical to recovering from an overload. Their implementation has to be particularly robust since a large wave of propagating cancellations may be the actual event to tip a system over the edge and cause meltdown. While this problem has not been considered explicitely in this work, all the core lock-free implementations behind schedulers (\S\ref{section:impl-schedulers}) allow out-of-order eviction of cancelled items, what immediately helps reduce memory footprint.
 
 
-
-
-
-
+\subsection{Dynamic Pool Size}
 
 \chapter{Implementations and Evaluation}
 \label{chapter:evaluation}
 
-This chapter presents evidence gathered to verify the hypothesis (\S\ref{section:thesis}). First, it shows that some classic ideas like work stealing with an overflow queue (used in Go and Rust) do not scale to modern hardware and concurrency. This result is analyzed in depth (\S\ref{section:degradation}) and a number of extensions favoring fine-grained concurrency are evaluated (\S\ref{section:extensions}). Further, the section focuses on more complex workloads. First, web-server with cache effects (\S\ref{section:server-bench-with-cache-effects}) 
-and bimodal task processing time (\S\ref{section:server-bench-with-multi-modal}). Second, the audio mixer benchmark. 
-\todo{update}
+This chapter begins with an overview of implemented schedulers (\S\ref{section:impl-schedulers}) and the principles behind them (\S\ref{section:lock-free-design-principles}). The next section describes methods (\S\ref{section:methods}) and what follows is a detailed analysis of evidence gathered to verify the hypothesis (\S\ref{section:thesis}). 
+
+First, it shows that some classic ideas like work stealing with an overflow queue (used in Go and Rust) do not scale to modern hardware and concurrency (\S\ref{section:benchmark-general-case}). This result is analyzed in depth (\S\ref{section:degradation}) and a number of extensions favoring fine-grained concurrency are discussed (\S\ref{section:work-distribution-extensions}) and evaluated (\S\ref{section:extensions_result}). Further, the section focuses on more complex workloads and studies emerging trade-offs between schedulers: web-server with cache effects (\S\ref{section:server-bench-with-cache-effects}), bimodal task processing time (\S\ref{section:server-bench-with-multi-modal}) and LIFO heuristics (\S\ref{section:lifo-heuristics}), mixer benchmark (\S\ref{section:mixer-benchmark}), and binomial option pricer (\S\ref{section:binomial_option_pricer_result}).
 
 \section{Schedulers}
 \label{section:impl-schedulers}
@@ -703,19 +676,20 @@ Secondly, the effort required to add new features increases as a function of cur
 Therefore, this thesis relies on lock-free structures inspired by \citet{Kappes2021}. Their designs are described in detail in \S\ref{section:underlying_data_structures}. In general, they are optimized for the following properties rather than constant factors.  
 \begin{itemize}
     \item \textbf{Scalability}. Prefer to use fetch and add operation (FAD) for modifying indices. CAS and FAD operations take approximately the same time \cite{fad-cas-speed} but traditional CAS-based queues scale poorly due to number of CAS retries growing proportionally with number of threads. Here, (despite additional item-level CAS) the contention is resolved by FAD and the whole structure scales similarly to state-of-the-art FAD queues (e.g. \cite{Yang2016}).
-    \item \textbf{Flexibility}. Lock-free implementations can be unwieldy and tricky to debug. This posed a particular threat to this dissertation. The described queue has the benefit of being extremely flexible for a lock-free algorithm and allowed exploration of many modifications at relative ease, e.g. LIFO pop operation, non-blocking returns, and single-producer relaxations. Extra features, e.g. immediate removal of cancelled items, are also very feasible.
+    \item \textbf{Flexibility}. Lock-free implementations can be unwieldy and tricky to debug. This posed a particular threat to this dissertation. The described queue has the benefit of being extremely flexible for a lock-free algorithm and allowed exploration of many modifications at relative ease, e.g. LIFO pop operation, non-blocking returns, and single-producer relaxations. Extra features, e.g. immediate removal of cancelled items, are also feasible (\S\ref{section:cancellations}).
     \item \textbf{Simplicity}. The base case of this structure takes a little over 10 lines of lines of code. It is unusually concise for a practical multi-producer multi-consumer LF queue. 
 \end{itemize}
 
 
 \section{Methods}
+\label{section:methods}
 This section describes details of the experimental setup, procedures and the statistical methods.
 
 \subsection{System}
 \label{section:methods_system}
-The hardware features two AMD EPYC 7702 processors plugged into a dual-socket \todo{fill in} motherboard. It has \todo{128}GB of RAM and caches have the following sizes \todo{fill in}. Cache line is 64 bytes wide. 
+The hardware features two AMD EPYC 7702 processors (\cite{2ndGenAM8:online}) plugged into a dual-socket Gigabyte MZ92-FS0-00 motherboard (\cite{MD90FS0r76:online}). It has 1082 GiB of RAM and caches have the following sizes L1 64 KiB, L2 512 KiB and a shared L3 256 MiB. Cache line is 64 bytes wide. 
 
-The installed system is Ubuntu \todo{version}. All the schedulers and benchmarks in this project have been compiled with OCaml 4.12.0+domains \cite{ocamlmul16:online}, which has a hard limit of 128 domains (OS threads, \S\ref{section:fibers}). 
+The installed system is Ubuntu 22.04 LTS. All the schedulers and benchmarks in this project have been compiled with OCaml 4.12.0+domains \cite{ocamlmul16:online}, which has a hard limit of 128 domains (OS threads, \S\ref{section:fibers}). 
 
 \subsection{Procedures}
 Each benchmark has been run 11 times. The first sample has been dropped as it tends to be more noisy that others due to lazy loading of libraries, cold caches, etc. 
@@ -724,6 +698,9 @@ Performance sensitive data was collected on thread-local counters. Benchmarking 
 
 \subsection{Statistical Methods}
 Since it is quite hard to assume any particular distribution (esp. gaussian) when it comes to performance measurements, the statistical methods used throughtout this project are distribution agnostic. Charts feature medians, and 25th, 75th as error bards.
+
+
+
 
 
 
@@ -739,19 +716,19 @@ Since it is quite hard to assume any particular distribution (esp. gaussian) whe
     \label{fig:packet-50k}
 \end{figure}
 
-The first benchmark mimics a minimal TCP packet processing scenario. The workload relies on a single spawner as it would be the case with a server listening on IP and port tuple. To minimise the noise, actual network is not used. Instead, the \textit{server} thread chooses one out of 10 pre-made packets, copies it and schedules a handler task by performing an appropriate effect. The benchmark focuses on max load scenario and spawns tasks as fast as only possible, until the requested total is reached. Then, it monitors an array of thread-local counters, which are increased by successfully terminating tasks. Notably, the packets are between 2 and 3 KiB, and the spawner thread focuses solely on task creation. Therefore, cache locality does not significantly affect the performance. Likewise, the performance advantage of LIFO stealing does not apply to stealing from the spawner, as spawner never removes elements from its local structure. Local structure sizes are held constant at 128 elements. (\todo{ref to justify queue size - generally, don't want too much waiting bc memory pressure, fiber recycling, should only resize when the queue bottoms out})
+The first benchmark mimics a minimal TCP packet processing scenario. The workload relies on a single spawner as it would be the case with a server listening on IP and port tuple. To minimise the noise, actual network is not used. Instead, the \textit{server} thread chooses one out of 10 pre-made packets, copies it and schedules a handler task by performing an appropriate effect. The benchmark focuses on max load scenario and spawns tasks as fast as only possible, until the requested total is reached. Then, it monitors an array of thread-local counters, which are increased by successfully terminating tasks. Notably, the packets are between 2 and 3 KiB, and the spawner thread focuses solely on task creation. Therefore, cache locality does not significantly affect the performance. Likewise, the performance advantage of LIFO stealing does not apply to stealing from the spawner, as spawner never removes elements from its local structure. Local structure sizes are held constant at 128 elements, which is enough to keep the spawner from waiting with such small tasks.
 
 The results of conducting a test with 50k packets in such a controlled setting are show by figure \ref{fig:packet-50k}. The first panel shows mean processing speed on a logarithmic scale. In the first part of the graph, between 5 and 20 domains, the performance rapidly accelerates with increase in the number of threads. 20 domains witness peak performance by LIFO scheduler and as more threads are added, the performance degrades. At first slowly, then faster beyond 80 domains. FIFO scheduler sees its peak at 80 domains but its performance is also relatively stable between 20 and 80, with a pronounced drop afterwards. This is surprising; adding more resources may not translate to a significant improvement \cite{amdahl} but it should not be detrimental either. Discussed further in \S\ref{section:degradation}. 
 
 The second panel shows actual time required to complete the benchmark. Next, the charts from three to five show 50\%, 99\% and 99.99\% latency percentiles. Again, up to 20 domains there is a steep decrease in all latencies. There are local differences around 20 domains, with FIFO offering a better median latency for one point and LIFO better tail latencies for 2-3 points. Afterwards, the results converge. The tail latencies are partly driven by LIFO simply being faster to process tasks but, likely, not as much as it looks since error bars indicate more noisy measurement than elsewhere. 
 
-Finally, the last panel shows number of retries of the main spawner (\textit{listener}) when trying to insert elements into the queue or stack. The retry loop is relatively cheap to execute \todo{link to the code in the repo}. Clearly, for lower core counts the spawner frequently throttles adding tasks due to lack of space. However, the number of busy-waiting cycles lowers with extra cores, quickly reaching point where magnitudes are too small to affect overall performance. At last, it ceases to occur in the median case beyond 45 cores. 
+Finally, the last panel shows number of retries of the main spawner (\textit{listener}) when trying to insert elements into the queue or stack. The retry loop is cheap to execute. Clearly, for lower core counts the spawner frequently throttles adding tasks due to lack of space. However, the number of busy-waiting cycles lowers with extra cores, quickly reaching point where magnitudes are too small to affect overall performance. At last, it ceases to occur in the median case beyond 45 cores. 
  
 Both FIFO and LIFO perform very similarly on all metrics and exhibit similar phenomenons. As hinted in the first paragraph, the workload is so simple that it does not let some of the individual advantages prevail. There are slight differences, i.e. LIFO peaks at 20 domains, while FIFO at 80. But their overall performances (throughput and latencies) in ranges 0-20, 20-80, 80-115 are comparable.  Overall, it shows that both implementation are fairly balanced and a good foundation for benchmarking more complicated workloads.
 
 \subsubsection{Degradation}
 \label{section:degradation}
-In line with Amdahl's law \cite{amdahl}, it is expected that an application may not perform noticeably better with more resources. After all, scalability is something to explicitely design for and even then, may not always be possible \todo{ref to hash chain example}. However, there is no justification for more workers actually causing harm to the performance. Such a characteristic is highly undesirable in such a foundational system as scheduler. However, why would it arise in such a battle-tested idea as work stealing? 
+In line with Amdahl's law \cite{amdahl}, it is expected that any application will stop being able to take advantage of more resources at some point. After all, scalability is something to explicitely design for and even then, may not always be possible. However, there is no justification for more workers actually causing harm to the performance. Such a characteristic is highly undesirable in such a foundational system as scheduler. However, why would it arise in such a battle-tested idea as work stealing? 
 
 \begin{figure} 
      \centering
@@ -769,7 +746,7 @@ In the LIFO case, as shown by \ref{fig:packet-with-steal-counts}, the scheduler 
     \label{fig:packet-counters}
 \end{figure}
 
-In the FIFO case, the problem also relates to work distribution. Generally, FIFO is not able to steal as much as LIFO because all steals compete with local dequeues, and, by design, those steals tend to lose the race \todo{ref to implementation}. Therefore, while stealing alone is not maxed out, it significantly affects the rest of the logic. As shown by figure \ref{fig:packet-counters}, FIFO reaches over 2.5 stalls per instruction beyond 80 domains and this number keeps raising. The effect is also visible for LIFO but its pressure on the entire caching subsystem is much subtler.
+In the FIFO case, the problem also relates to work distribution. FIFO is not able to steal as much as LIFO because all steals compete with local dequeues, and, by design, those steals tend to lose the race \todo{ref to implementation}. Therefore, while stealing alone is not maxed out, it significantly affects the rest of the logic. As shown by figure \ref{fig:packet-counters}, FIFO reaches over 2.5 stalls per instruction beyond 80 domains and this number keeps raising. The effect is also visible for LIFO but its pressure on the entire caching subsystem is much subtler.
 
 Finally, it is worth stating that this result should not be interpreted as work stealing being generally inappropriate for saturating 100 cores. Packet benchmark creates a short burst of 50k items, which reaches a throughput of over 1.5m items per second. Each task has its own logic and requires allocations but it does constitute a very fine-grained concurrency. That puts a high pressure on the scheduler and exposes its inefficiencies. Further, there is an unusual amount of distribution required. It is far easier to distribute tasks onto 10 threads than 100 due to e.g. atomic operations taking constant time and load information is being less dispersed. If the workload is simplified just a little, the scalability improves. 
 
@@ -807,7 +784,7 @@ Finally, it is worth stating that this result should not be interpreted as work 
 
 
 
-\subsubsection{Work distribution extensions}
+\subsubsection{Work Distribution Extensions}
 \label{section:work-distribution-extensions}
 
 Work stealing is robust but not perfect, e.g. the scalability ceiling describes in the \S\ref{section:degradation} or blind victim selection. As described in \S\ref{section:work-distribution}, regardles of primary work distribution mechanism, some sort of work stealing is necessary to prevent starvation in non-preemptive design with local structure. Otherwise, with a purely cooperative scheduling, any long tasks is going to significantly increase latency of all awaiting items. Therefore, a number of extensions to the core work stealing have been considered. They are motivated by the following observations.
@@ -832,8 +809,8 @@ The aforementioned observations translated into the following implementations.
 
 
 
-\subsubsection{Extensions}
-\label{section:extensions}
+\subsubsection{Work Distribution Extensions Result} 
+\label{section:extensions_result}
 
 \begin{figure} 
      \centering
@@ -917,7 +894,7 @@ The mixer benchmark represents a complicated real-world use case. It derives fro
 
 Such a workload is particularly difficult to optimize for due to its complexity. It features short-lived and long-lived tasks. Some tasks benefit from cache locality, while others not. Many details will vary over time, e.g. distribution of number of people in mixers (as conference could have anywhere from 3 to hundreds people), length of calls, codec selection, media routes (IP-to-IP) \cite{Frequent1:online}, etc. Moreover, the workload makes heavy use of many high-level features such as yielding (\S\ref{section:yield}) and promises (\S\ref{section:promise}), which are not the typical targets of high-performance optimizations. Therefore, in this case, the robustness is just as important as overall performance. 
  
-Crucially, participant and conference threads yield frequently. They simply cannot make progress witout data. As explained in \S\ref{section:yield}, yielding threads have to be placed in an external global structure (here a multi queue). This seems suboptimal because locality is not respected, and centralization of tasks is rarely the desired state. Therefore, on top of FIFO, LIFO and Staged, one more approach has been evaluated. It is a composition of 10 individual schedulers (FIFO or LIFO) in order to silo particular sets of conferences and participant threads. This imposes boundaries on stealing and yielding since whatever happens the task remains in its silo. Akin, in spirit, to neighbourhood stealing (\S\cite{section:extensions}).
+Crucially, participant and conference threads yield frequently. They simply cannot make progress witout data. As explained in \S\ref{section:yield}, yielding threads have to be placed in an external global structure (here a multi queue). This seems suboptimal because locality is not respected, and centralization of tasks is rarely the desired state. Therefore, on top of FIFO, LIFO and Staged, one more approach has been evaluated. It is a composition of 10 individual schedulers (FIFO or LIFO) in order to silo particular sets of conferences and participant threads. This imposes boundaries on stealing and yielding since whatever happens the task remains in its silo. Akin, in spirit, to neighbourhood stealing (\S\ref{section:extensions_result}).
 
 
 \label{paragraph:overflow-queue-bad-2}
@@ -926,6 +903,7 @@ Crucially, participant and conference threads yield frequently. They simply cann
 Figure \ref{fig:mixer-bench} shows the ratio of latency breaches of different schedulers over increasing number of conferences. This metric behaves similar tail latencies. LIFO performs the best as it is able to capitalize on mixed down audio by immediately sending data back. FIFO sees significant number of fails early, what is explained by the (effectively) constant depth of task graph (\S\ref{section:fairness-revisited}). Staged is unable to capitalize on having multiple stages because even in the base FIFO and LIFO case, most of the scheduling goes through the global multiqueue. In such a case, Staged only has extra overheads and adds another queue before sending out mixed down audio, where it is not beneficial to prioritise other work. Curiously, siloed FIFO and LIFO did not differ significantly from core implementations. Locality benefits are not big enough to make a difference in this case. It is also a point of in favour of scalability of the base designs.
 
 \section{Binomial Option Pricer}
+\label{section:binomial_option_pricer_result}
 
 \begin{figure} 
     \centering 
@@ -986,7 +964,7 @@ The detailed analysis is beyond the scope of this section but the three key fact
 \todo{- summarize the work in the consequences and compare iwth Go and Rust }
 \todo{signpost itnro and conclusion to particular result}
 
-This dissertation focused on exploring the trade-offs between various real-world scheduling policies. The core of the work has produced lock-free FIFO and LIFO schedulers, which were then later extended in various ways (\S\ref{paragraph:lifo-heuristics}, \S\ref{section:work-distribution-extensions}) and composed (\S\ref{section:staged-as-composition}). The evaluation used real-world benchmarks to evaluate the implementations focusing on common industrial metrics: throughput and tail latency (\S
+This dissertation focused on exploring the trade-offs between various real-world scheduling policies. The core of the work has produced lock-free FIFO and LIFO schedulers, which were then later extended in various ways (\S\ref{section:lifo-heuristics}, \S\ref{section:work-distribution-extensions}) and composed (\S\ref{section:staged-as-composition}). The evaluation used real-world benchmarks to evaluate the implementations focusing on common industrial metrics: throughput and tail latency (\S
 \ref{section:objectives}). 
 
 The results highlight vast differences in latency and throughput between different scheduling policies, that is different ordering of core structure, different extensions, diffent ways to compose schedulers. Mostly importantly, there is no single optimal scheduling policy. Instead, it depends on the workload and desired metrics. Other findings include: 
@@ -1106,7 +1084,7 @@ This design is similar to the classic work stealing deque \cite{Chase2005}. Howe
 \begin{itemize}
     \item Steals half of the queue rather than a single element. Stolen elements are transferred directly into the thief's queue rather than returned.
     \item Local pop does never needs to rollback an index. Instead, it executes CAS on a less contended item slot.
-    \item Has the extra flexibility coming from atomic slots (\S\ref{section:cancellations}, \S\ref{section:yield}).
+    \item Has the extra flexibility coming from atomic slots. That helps with implementation of e.g. cancellations (\S\ref{section:cancellations}) and soft yields (\S\ref{section:yield}).
 \end{itemize}
 
 \section{Resizing}
@@ -1119,7 +1097,7 @@ The mechanism relies on the fact that non-owners do not speculate when stealing.
 \section{Sharded Queue}
 \label{section:multiqueue_details}
 
-Performance of staged architecture (\S\ref{section:design-staged}) and overflow queue (\S\ref{section:design_overflow_queue}) depends on the scalability of the underlying queue. Lock-free MPMC queue (\S\ref{section:blocking_mpmc}) allows enqueuers and dequeuers to work faster and more independently than with a locked structure. However, as shown by figure \todo{fig}, the throughput hardly improves for more than a few workers.  
+Performance of staged architecture (\S\ref{section:design-staged}) and overflow queue (\S\ref{section:design_overflow_queue}) depends on the scalability of the underlying queue. Lock-free MPMC queue (\S\ref{section:blocking_mpmc}) allows enqueuers and dequeuers to work faster and more independently than with a locked structure. However, the throughput of such a queue hardly improves beyond more than a few workers.  
 
 A common technique used to extend the scalability in such circumstances is horizontal scaling. Instead of a single queue with two points of contention (indices), the structure can encapsulate multiple queues and load balance across them. Such a construction is called multi queue and can alone constitute a core structure of a scheduler \cite{Postnikova2022}. This dissertation uses a simple multiqueue wherein enqueuers insert items into randomly selected MPMC queue, and dequeurs start with random queue and iterate until a non-empty queue is found (or all queues have been checked).
 

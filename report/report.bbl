@@ -1,4 +1,4 @@
-\begin{thebibliography}{65}
+\begin{thebibliography}{71}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -61,6 +61,12 @@ memory\_order - cppreference.com.
 {Transmission Control Protocol}.
 \newblock RFC 793, Sept. 1981.
 \newblock URL \url{https://www.rfc-editor.org/info/rfc793}.
+
+\bibitem[Advanced Micro~Devices()]{2ndGenAM8:online}
+I.~Advanced Micro~Devices.
+\newblock 2nd gen amd epyc™ 7702 | server processor | amd.
+\newblock \url{https://www.amd.com/en/products/cpu/amd-epyc-7702}.
+\newblock (Accessed on 06/08/2022).
 
 \bibitem[Agastya et~al.(2009)Agastya, Mechanic, and Kothari]{voip-latency}
 C.~Agastya, D.~Mechanic, and N.~Kothari.
@@ -155,6 +161,19 @@ D.~Cheng, Y.~Chen, X.~Zhou, D.~Gmach, and D.~Milojicic.
 \newblock In \emph{IEEE INFOCOM 2017 - IEEE Conference on Computer
   Communications}, pages 1--9, 2017.
 \newblock \doi{10.1109/INFOCOM.2017.8057206}.
+
+\bibitem[Contributors()]{ocamlmul16:online}
+O.~Contributors.
+\newblock ocaml-multicore/ocaml-multicore at 4.12+domains.
+\newblock
+  \url{https://github.com/ocaml-multicore/ocaml-multicore/tree/4.12+domains}.
+\newblock (Accessed on 06/06/2022).
+
+\bibitem[Corbet()]{Theright8:online}
+J.~Corbet.
+\newblock The right way to yield [lwn.net].
+\newblock \url{https://lwn.net/Articles/31462/}.
+\newblock (Accessed on 06/08/2022).
 
 \bibitem[Drebes et~al.(2016)Drebes, Pop, Heydemann, Drach, and
   Cohen]{Drebes2016}
@@ -267,6 +286,12 @@ R.~K. Karmani, G.~Agha, M.~S. Squillante, J.~Seiferas, M.~Brezina, J.~Hu,
   {US}, 2011.
 \newblock \doi{10.1007/978-0-387-09766-4_77}.
 \newblock URL \url{https://doi.org/10.1007/978-0-387-09766-4_77}.
+
+\bibitem[Kerrisk()]{vdso7Lin5:online}
+M.~Kerrisk.
+\newblock vdso(7) - linux manual page.
+\newblock \url{https://man7.org/linux/man-pages/man7/vdso.7.html}.
+\newblock (Accessed on 06/06/2022).
 
 \bibitem[Khan et~al.(2018)Khan, Hounshell, and Fuchs]{Khan2018}
 H.~N. Khan, D.~A. Hounshell, and E.~R.~H. Fuchs.
@@ -452,11 +477,27 @@ G.~Team.
   2022.
 \newblock (Accessed on 06/01/2022).
 
-\bibitem[Team()]{ocamlmul59:online}
+\bibitem[Team({\natexlab{a}})]{Concurre37:online}
+O.~Team.
+\newblock Concurrency and parallelism design notes ·
+  ocaml-multicore/ocaml-multicore wiki.
+\newblock
+  \url{https://github.com/ocaml-multicore/ocaml-multicore/wiki/Concurrency-and-parallelism-design-notes},
+  {\natexlab{a}}.
+\newblock (Accessed on 06/08/2022).
+
+\bibitem[Team({\natexlab{b}})]{ocamlmul59:online}
 O.-M. Team.
 \newblock ocaml-multicore/domainslib: Parallel programming over domains.
-\newblock \url{https://github.com/ocaml-multicore/domainslib}.
+\newblock \url{https://github.com/ocaml-multicore/domainslib}, {\natexlab{b}}.
 \newblock (Accessed on 06/01/2022).
+
+\bibitem[Technology()]{MD90FS0r76:online}
+G.~Technology.
+\newblock Md90-fs0 (rev. 1.1) | server motherboard - gigabyte u.k.
+\newblock
+  \url{https://www.gigabyte.com/uk/Enterprise/Server-Motherboard/MD90-FS0-rev-11}.
+\newblock (Accessed on 06/08/2022).
 
 \bibitem[Tennenhouse(1989)]{Tennenhouse89layeredmultiplexing}
 D.~L. Tennenhouse.

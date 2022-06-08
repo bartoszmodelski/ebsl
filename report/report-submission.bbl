@@ -1,4 +1,4 @@
-\begin{thebibliography}{64}
+\begin{thebibliography}{68}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -156,6 +156,13 @@ D.~Cheng, Y.~Chen, X.~Zhou, D.~Gmach, and D.~Milojicic.
   Communications}, pages 1--9, 2017.
 \newblock \doi{10.1109/INFOCOM.2017.8057206}.
 
+\bibitem[Contributors()]{ocamlmul16:online}
+O.~Contributors.
+\newblock ocaml-multicore/ocaml-multicore at 4.12+domains.
+\newblock
+  \url{https://github.com/ocaml-multicore/ocaml-multicore/tree/4.12+domains}.
+\newblock (Accessed on 06/06/2022).
+
 \bibitem[Drebes et~al.(2016)Drebes, Pop, Heydemann, Drach, and
   Cohen]{Drebes2016}
 A.~Drebes, A.~Pop, K.~Heydemann, N.~Drach, and A.~Cohen.
@@ -268,6 +275,12 @@ R.~K. Karmani, G.~Agha, M.~S. Squillante, J.~Seiferas, M.~Brezina, J.~Hu,
 \newblock \doi{10.1007/978-0-387-09766-4_77}.
 \newblock URL \url{https://doi.org/10.1007/978-0-387-09766-4_77}.
 
+\bibitem[Kerrisk()]{vdso7Lin5:online}
+M.~Kerrisk.
+\newblock vdso(7) - linux manual page.
+\newblock \url{https://man7.org/linux/man-pages/man7/vdso.7.html}.
+\newblock (Accessed on 06/06/2022).
+
 \bibitem[Khan et~al.(2018)Khan, Hounshell, and Fuchs]{Khan2018}
 H.~N. Khan, D.~A. Hounshell, and E.~R.~H. Fuchs.
 \newblock Science and research policy at the end of moore's law.
@@ -315,6 +328,17 @@ C.~Lerche.
 G.~Maruzzelli.
 \newblock \emph{{FreeSWITCH} 1.8}.
 \newblock Packt Publishing, Birmingham, England, July 2017.
+
+\bibitem[McClure et~al.(2022)McClure, Ousterhout, Shenker, and
+  Ratnasamy]{workshed}
+S.~McClure, A.~Ousterhout, S.~Shenker, and S.~Ratnasamy.
+\newblock Efficient scheduling policies for {Microsecond-Scale} tasks.
+\newblock In \emph{19th USENIX Symposium on Networked Systems Design and
+  Implementation (NSDI 22)}, pages 1--18, Renton, WA, Apr. 2022. USENIX
+  Association.
+\newblock ISBN 978-1-939133-27-4.
+\newblock URL
+  \url{https://www.usenix.org/conference/nsdi22/presentation/mcclure}.
 
 \bibitem[Miller(1968)]{Miller1968}
 R.~B. Miller.
@@ -441,10 +465,19 @@ G.~Team.
   2022.
 \newblock (Accessed on 06/01/2022).
 
-\bibitem[Team()]{ocamlmul59:online}
+\bibitem[Team({\natexlab{a}})]{Concurre37:online}
+O.~Team.
+\newblock Concurrency and parallelism design notes ·
+  ocaml-multicore/ocaml-multicore wiki.
+\newblock
+  \url{https://github.com/ocaml-multicore/ocaml-multicore/wiki/Concurrency-and-parallelism-design-notes},
+  {\natexlab{a}}.
+\newblock (Accessed on 06/08/2022).
+
+\bibitem[Team({\natexlab{b}})]{ocamlmul59:online}
 O.-M. Team.
 \newblock ocaml-multicore/domainslib: Parallel programming over domains.
-\newblock \url{https://github.com/ocaml-multicore/domainslib}.
+\newblock \url{https://github.com/ocaml-multicore/domainslib}, {\natexlab{b}}.
 \newblock (Accessed on 06/01/2022).
 
 \bibitem[Tennenhouse(1989)]{Tennenhouse89layeredmultiplexing}
