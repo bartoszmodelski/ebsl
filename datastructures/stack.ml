@@ -39,8 +39,8 @@ let local_push {top; bottom; array; mask; _} element =
   else 
     (let cell = Array.get array (top_val land mask) in
     while Option.is_some (Atomic.get cell) do () done; 
-    assert (Atomic.compare_and_set cell None (Some element));
-    Atomic.incr top;
+    Atomic.set cell (Some element);
+    Atomic.set top (top_val + 1);
     true);;
 
 (*failwith "remove atomic from local methods"*)
@@ -58,7 +58,7 @@ let local_pop {top; bottom; array; mask} =
     else if not (Atomic.compare_and_set cell value None) then 
       None
     else
-      (Atomic.decr top; 
+      (Atomic.set top (top_val - 1); 
       value));;
 
 let local_replace_with_a_random_item stack item =
@@ -132,7 +132,7 @@ let rec steal ?(auto_retry=false) ?(steal_size_limit=Int.max_int) ~from
           (let value = Atomic.exchange cell None in 
           match value with 
           | Some value -> 
-            (assert (local_push to_local value);
+            (local_push to_local value |> ignore;
             stolen := !stolen + 1)
           | None -> ())
         else 
