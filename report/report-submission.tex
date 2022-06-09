@@ -222,11 +222,11 @@ Finally, Multicore OCaml is a particularly interesting object of study as it inc
 \section{Findings}
 \label{section:findings}
 
-Numerous benchmarks show how complex the relationship between scheduling policy, workload, available resources and chosen metric (throughput, latency) really is. Numerous results support the need for customization (\S\ref{section:extensions_result}) and composition (\S\ref{section:mixer-benchmark}) of schedulers for optimal performance, and the need for new methods to handle highly parallel and concurrent workloads (\S\ref{section:degradation}). Finally, the last benchmark shows a significant improvement in scalability over current state-of-the-art scheduling library in OCaml (\S\ref{section:result_with_domainslib}).
+Numerous benchmarks show how complex the relationship between scheduling policy, workload, available resources and chosen metric (throughput, latency) really is. Numerous results support the need for customization (\S\ref{section:extensions_result}) and composition (\S\ref{section:mixer-benchmark}) of schedulers for optimal performance, and the need for new methods to handle highly parallel and concurrent workloads (\S\ref{section:degradation}). Finally, the last benchmark shows a significant improvement in scalability over current state-of-the-art scheduling library in OCaml (\S\ref{section:result_with_domainslib}). See \S\ref{section:summary_and_conclusion} for more details.
 
 \chapter{Background}
 
-This section begins by describing the general problem of scheduling, key concepts and two modern real-world runtime schedulers (\ref{section:background_schedulers}). Afterwards, it describes the tools of choice: important properties of OCaml programming environment (\ref{section:background_ocaml}) and details of fine-grained multicore programming (\ref{section:background_multiprocessing}).
+This section begins with description of the problem of scheduling (\S\ref{section:background_schedulers}), key concepts, and details of fine-grained multicore programming (\S\ref{section:background_multiprocessing}).
 
 \section{Scheduling}
 \label{section:background_schedulers}
@@ -242,13 +242,13 @@ Scheduling attempts to assign resources to tasks in a way that optimizes some me
 \end{figure}
 
 
-\subsection{System Threads}
+\subsection{System threads}
 \label{section:system-threads}
 System threads are a fundamental OS feature, which allows to detach the number of synchronous executions from the number of processing units. All kinds of program grew to rely on this abstraction heavily. For example, Google Chrome spawns a single process per tab \cite{Howwebbr64:online}, and depending on the logic, each such process spawns additional threads. This aggressive acquisition of resources leads to smooth operation of the web browser but puts significant pressure on the operating system, which has to ensure that in the sea of threads everything gets a fair share of the CPU time and their individual objectives are achieved, e.g. a heavy web browser and light but latency-sensitive audio driver.
 
 
 
-\subsection{Lightweight Threads}
+\subsection{Lightweight threads}
 \label{section:lightweight-threads}
 System threading provides the fundamental mechanisms to execute concurrent workloads across parallel hardware. But programmers need to be wary of designed computations as the cost of interacting with kernel is non-trivial. It may vary from mode switching to full syscall overhead. System call logic requires a number of things to happen (e.g. context switch, capability check, audit), which thwart the cost of a small task. Thus, the performance of highly concurrent workloads suffers significantly.
 
@@ -284,10 +284,9 @@ Multiprocessing is a crucial technique to take advantage of the modern processor
 This section introduces key multiprocessing concepts with a focus on the lock-free perspective. 
 
 \subsection{Amdahl's law}
-As already discussed, taking advantage of parallel hardware requires extra engineering effort. The actual amount of effort varies wildly between tasks. In some cases parallelization is trivial and almost boils down to using relevant threading API, e.g. computation of five independent hashes. In fact, system might automatically parallelize a computation specified by \textit{List.map} \cite{OCamllib90:online}. 
+As already discussed, taking advantage of parallel hardware requires extra engineering effort. The actual amount of effort varies wildly between tasks. In some cases parallelization is trivial and boils down to using relevant threading API, e.g. computation of five independent hashes. 
 
-However, on the other hand of the spectrum lie programs, for which parallelization yields marginal or no benefits. It is enough to slightly tweak the previous example to show that. Assume computation of a chain of 5 hashes, wherein each hash depends on the output of the previous one. In such a case, the hashes themselves need to happen in a sequential manner. There might still be opportunity for parallelization but it depends strictly on implementation of the hash operation. Moreover, even if hash operation is very parallelizable, the synchronisation will need to happen before and after every hash operation in the chain (10x), rather than just at the beginning and end of the workload. 
-
+However, on the other end of the spectrum lie programs for which effective parallelization is impossible. It is enough to slightly tweak the previous example to show that. Assume computation of a chain of 5 hashes, wherein each hash depends on the output of the previous one. The hashes need to happen in a sequential manner. There might still be opportunity for parallelization but it depends strictly on implementation of the hash operation. Moreover, even if hash operation is very parallelizable, the synchronisation will need to happen before and after every hash operation in the chain (10x), rather than just at the beginning and end of the workload. 
 
 The speedup coming from parallelization is described by Amdahl's law \cite{art_of_mult}.
 
@@ -295,7 +294,7 @@ The speedup coming from parallelization is described by Amdahl's law \cite{art_o
 $Speedup = \frac{1}{1 - p + \frac{p}{n}}$
 \end{center} 
 
-Where \textit{n} is the number of processors and \textit{p} portion of the program that is parallelizable. The law puts a strict bound on the gains coming from using multiple processors and hints why adding more cores yields diminishing returns, as observed in the latter sections. Namely, doubling the number of processing units halves the time spent in parallelizable portion of the workload. Thus, gains on parallelizable portion rapidly become smaller than any non-trivial sequential part of the program. 
+Where \textit{n} is the number of processors and \textit{p} portion of the program that is parallelizable. The law puts a strict bound on the gains from multiprocessing. It also hints why adding more cores may yield diminishing returns; doubling the number of processing units halves the time spent in parallelizable portion of the workload. Thus, gains on parallelizable portion rapidly become smaller than any non-trivial sequential part of the program. 
 
 \subsection{Lock-free algorithms}
 Lock-freedom characterizes algorithms, which guarantee that at least one of many threads is going to terminate in a finite number of steps \cite{art_of_mult}. This is not the case with locks; if thread holding a lock is not scheduled then no one is allowed to make progress. Lock-free algorithms are built with the same low-level primitives, that are used to build high-level blocking synchronization, but here they are applied to the problem at hand. Thus, absence of explicit lock objects does not guarantee lock-freedom, as in theory, blocking behavior can be reimplemented from scratch. 
@@ -328,13 +327,13 @@ CDSChecker \cite{Norris2013} is a novel approach to verification of lock-free al
 
 Core lock-free data structures of this dissertation have been validated using CDSChecker's adaptation to OCaml - DSCheck \cite{sadiqjds97:online}. 
 
+
+
 \chapter{Related work}
 
-Scheduling is omnipresent in computer science. It may happen at multiple levels simultaneously: data-center orchestration \cite{NomadbyH95:online}, OS-level threading (\S\ref{section:system-threads}) and runtime threads (\S\ref{section:lightweight-threads}). The field is very rich in literature and applications. Therefore, instead of summarising all the related work (which would be beyond the scope of this report), this section takes a close look at the design of two modern runtime schedulers. Project work and design decisions tie back to this review. 
+Scheduling is omnipresent in computer science. It may happen at multiple levels simultaneously: data-center orchestration \cite{NomadbyH95:online}, OS-level threading (\S\ref{section:system-threads}) and runtime threads (\S\ref{section:lightweight-threads}). The field is very rich in literature and applications. Therefore, instead of summarising all the related work (which would be beyond the scope of this report), this section takes a close look at the design of two modern, yet mature, runtime schedulers. Project work and design decisions tie back to this review. 
 
-The first analyzed runtime is part of the Go programming language (\S\ref{section:rel-work-go}). The excellent support for concurrency is one of its main features. Just like OCaml, it is a high-level language with features like garbage collection. However, OCaml also strives strongly to maintain high-performance, does not feature preemption or a built-in runtime scheduling. Therefore, the second reviewed scheduler is Tokio (\S\ref{section:rel-work-rust}), which is a Rust library. It covers all of the mentioned discrepancies.
-
-Finally, OCaml's unique features for supporting concurrency and parallelism are discussed. 
+The first analyzed scheduler is part of the Go programming language (\S\ref{section:rel-work-go}), whose excellent support for concurrency is one of its main selling points. Just like OCaml, it is a high-level language with features like garbage collection. However, OCaml strives to be more high-performant, does not feature preemption or a built-in runtime scheduling. Therefore, the second reviewed scheduler is Tokio (\S\ref{section:rel-work-rust}), which is a Rust library. It covers all of the mentioned discrepancies. Finally, OCaml's unique features for supporting concurrency and parallelism are discussed. 
 
 \section{Go}
 \label{section:rel-work-go}
@@ -417,8 +416,8 @@ Telecommunication is a relatively low latency endeavour. Research in human-compu
 While 150ms round-trip time may seem like an undemanding deadline for a modern server but there is a lot that can go wrong (and goes frequently, as we have experienced during the pandemic). 
 \begin{itemize}
     \item \textbf{Network latency}. In practise vast majority of the RTT budget is consumed by the transport. Packet may have to cross multiple carrier networks or simply a large geographical distance. In practise, the less latency is imposed by the server the better average user experience. 
-    \item \textbf{Throughput}. Typical VoIP call-leg sends 20ms frames, each containing a few hundred bytes of audio. In my professional experience, a typical FreeSWITCH \cite{Maruzzelli2017-ou} installation was expected to handle up to 1000 concurrent calls without quality loss. 1000 concurrent calls with 2 legs each and bidirectional media means processing 100k packets a second. Each with a real deadline much smaller than the mentioned 150ms. 
-    \item \textbf{Audio complexity}. Moreover, standard VoIP signalling protocol SIP allows every participant of a conference to negotiate different codecs. Thus, the server has to decompress all incoming audio, mix it together, compress, and only then send out. In the case of mentioned FreeSWITCH, each call-leg has a separate thread for IO and codecs, and another one per conference to mix audio. That results in audio being passed around and buffered a lot, potentially causing contention.   
+    \item \textbf{Throughput}. Typical VoIP call-leg sends 20ms frames, each containing a few hundred bytes of audio. A typical bare-metal FreeSWITCH \cite{Maruzzelli2017-ou} installation can handle up to 1000 concurrent calls without quality loss. 1000 concurrent call-legs with bidirectional media means processing 50k packets a second. Each with a real deadline much smaller than the mentioned 150ms. 
+    \item \textbf{Audio complexity}. Standard VoIP signalling protocol SIP lets every participant of a conference to negotiate different codecs. Thus, the server has to decompress all incoming audio, mix it together, compress, and only then send out. In the case of mentioned FreeSWITCH, each call-leg has a separate thread for IO and codecs, and another one per conference to mix audio. That results in audio being passed around and buffered a lot, potentially causing contention.   
 \end{itemize}
 
 Thus, the second benchmark imitates a VoIP server with a number of conferences and participants, and FreeSWITCH-like \cite{Maruzzelli2017-ou} audio-processing, audio-mixing threads. This benchmark aims to simulate an enterprise application with extremely complex scheduling patterns and a perhaps not perfectly optimized code, where individual threads frequently need to yield to wait for others.
@@ -886,6 +885,7 @@ The detailed analysis is beyond the scope of this section but the three key fact
 \end{itemize} 
 
 \chapter{Summary and conclusions}
+\ref{section:summary_and_conclusion}
 
 This dissertation focused on exploring the trade-offs between various real-world scheduling policies. The core of the work included lock-free FIFO and LIFO schedulers, which were then composed (\S\ref{section:staged-as-composition}) and extended in various ways (\S\ref{section:lifo-heuristics}, \S\ref{section:work-distribution-extensions}). The evaluation involved a number of real-world benchmarks and common industrial metrics: throughput and tail latency (\S\ref{section:objectives}). 
 

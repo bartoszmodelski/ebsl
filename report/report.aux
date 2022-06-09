@@ -65,31 +65,30 @@
 \@writefile{lot}{\addvspace {10\p@ }}
 \@writefile{toc}{\contentsline {section}{\numberline {2.1}Scheduling}{12}{section.2.1}\protected@file@percent }
 \newlabel{section:background_schedulers}{{2.1}{12}{Scheduling}{section.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.1}System Threads}{12}{subsection.2.1.1}\protected@file@percent }
-\newlabel{section:system-threads}{{2.1.1}{12}{System Threads}{subsection.2.1.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.1}System threads}{12}{subsection.2.1.1}\protected@file@percent }
+\newlabel{section:system-threads}{{2.1.1}{12}{System threads}{subsection.2.1.1}{}}
 \citation{gorout_vs_os_thread}
 \citation{Sivaramakrishnan2021}
 \citation{gorout_vs_os_thread}
 \@writefile{lof}{\contentsline {figure}{\numberline {2.1}{\ignorespaces A simplified graph of fine-grained tasks, which scheduler attempts to traverse in order to terminate. Green box represents executed task, blue boxes are currently enqueued tasks. The orange boxes are tasks that are going to be scheduled once their parent execute. They are not visible to the scheduler at the moment. This graph shows how little is actually known about the tasks, and scheduler-traps in the shape of infinite-depth subgraphs, which are prone to cause starvation.}}{13}{figure.2.1}\protected@file@percent }
 \newlabel{fig:sched-graph}{{2.1}{13}{A simplified graph of fine-grained tasks, which scheduler attempts to traverse in order to terminate. Green box represents executed task, blue boxes are currently enqueued tasks. The orange boxes are tasks that are going to be scheduled once their parent execute. They are not visible to the scheduler at the moment. This graph shows how little is actually known about the tasks, and scheduler-traps in the shape of infinite-depth subgraphs, which are prone to cause starvation}{figure.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.2}Lightweight Threads}{13}{subsection.2.1.2}\protected@file@percent }
-\newlabel{section:lightweight-threads}{{2.1.2}{13}{Lightweight Threads}{subsection.2.1.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1.2}Lightweight threads}{13}{subsection.2.1.2}\protected@file@percent }
+\newlabel{section:lightweight-threads}{{2.1.2}{13}{Lightweight threads}{subsection.2.1.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.3}Preemption}{13}{subsection.2.1.3}\protected@file@percent }
 \newlabel{section:preemption}{{2.1.3}{13}{Preemption}{subsection.2.1.3}{}}
 \citation{Blumofe1999}
 \citation{linux_cfs}
 \citation{Blumofe1995}
 \citation{golang}
+\citation{Chase2005}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.1.4}Work stealing}{14}{subsection.2.1.4}\protected@file@percent }
 \newlabel{section:background-work-stealing}{{2.1.4}{14}{Work stealing}{subsection.2.1.4}{}}
-\citation{Chase2005}
-\citation{OCamllib90:online}
+\newlabel{paragraph:deque}{{2.1.4}{14}{Work stealing}{subsection.2.1.4}{}}
 \citation{art_of_mult}
-\newlabel{paragraph:deque}{{2.1.4}{15}{Work stealing}{subsection.2.1.4}{}}
+\citation{art_of_mult}
 \@writefile{toc}{\contentsline {section}{\numberline {2.2}Multiprocessing}{15}{section.2.2}\protected@file@percent }
 \newlabel{section:background_multiprocessing}{{2.2}{15}{Multiprocessing}{section.2.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2.1}Amdahl's law}{15}{subsection.2.2.1}\protected@file@percent }
-\citation{art_of_mult}
 \citation{fad-cas-speed}
 \citation{memoryor11:online}
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2.2}Lock-free algorithms}{16}{subsection.2.2.2}\protected@file@percent }
@@ -104,189 +103,189 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {2.2.5}DSCheck}{17}{subsection.2.2.5}\protected@file@percent }
 \newlabel{section:background_dscheck}{{2.2.5}{17}{DSCheck}{subsection.2.2.5}{}}
 \citation{NomadbyH95:online}
-\@writefile{toc}{\contentsline {chapter}{\numberline {3}Related work}{19}{chapter.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {3}Related work}{18}{chapter.3}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {3.1}Go}{19}{section.3.1}\protected@file@percent }
-\newlabel{section:rel-work-go}{{3.1}{19}{Go}{section.3.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.1}Go}{18}{section.3.1}\protected@file@percent }
+\newlabel{section:rel-work-go}{{3.1}{18}{Go}{section.3.1}{}}
 \citation{goprocgo7:online}
 \citation{TokioAna8:online}
 \citation{tokiorsl53:online}
 \citation{stephen_effective_nodate}
-\@writefile{toc}{\contentsline {section}{\numberline {3.2}Tokio (Rust)}{20}{section.3.2}\protected@file@percent }
-\newlabel{section:rel-work-rust}{{3.2}{20}{Tokio (Rust)}{section.3.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.2}Tokio (Rust)}{19}{section.3.2}\protected@file@percent }
+\newlabel{section:rel-work-rust}{{3.2}{19}{Tokio (Rust)}{section.3.2}{}}
 \citation{Sivaramakrishnan2020}
 \citation{Concurre37:online}
 \citation{Sivaramakrishnan2021}
 \citation{Pretnar2015}
 \citation{Brachthuser2020}
 \citation{Sivaramakrishnan2021}
-\@writefile{toc}{\contentsline {section}{\numberline {3.3}OCaml}{21}{section.3.3}\protected@file@percent }
-\newlabel{section:background_ocaml}{{3.3}{21}{OCaml}{section.3.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Threading}{21}{subsection.3.3.1}\protected@file@percent }
-\newlabel{section:fibers}{{3.3.1}{21}{Threading}{subsection.3.3.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}Effects}{21}{subsection.3.3.2}\protected@file@percent }
-\newlabel{section:effects}{{3.3.2}{21}{Effects}{subsection.3.3.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.3}OCaml}{20}{section.3.3}\protected@file@percent }
+\newlabel{section:background_ocaml}{{3.3}{20}{OCaml}{section.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.1}Threading}{20}{subsection.3.3.1}\protected@file@percent }
+\newlabel{section:fibers}{{3.3.1}{20}{Threading}{subsection.3.3.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.2}Effects}{20}{subsection.3.3.2}\protected@file@percent }
+\newlabel{section:effects}{{3.3.2}{20}{Effects}{subsection.3.3.2}{}}
 \citation{Sivaramakrishnan2020}
 \citation{Sivaramakrishnan2020}
 \citation{ocamlmul59:online}
-\newlabel{paragraph:ocaml_preemption}{{3.3.2}{22}{Effects}{subsection.3.3.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.3}Garbage collection}{22}{subsection.3.3.3}\protected@file@percent }
-\newlabel{section:gc}{{3.3.3}{22}{Garbage collection}{subsection.3.3.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.4}Domainslib}{22}{subsection.3.3.4}\protected@file@percent }
+\newlabel{paragraph:ocaml_preemption}{{3.3.2}{21}{Effects}{subsection.3.3.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.3}Garbage collection}{21}{subsection.3.3.3}\protected@file@percent }
+\newlabel{section:gc}{{3.3.3}{21}{Garbage collection}{subsection.3.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3.4}Domainslib}{21}{subsection.3.3.4}\protected@file@percent }
 \citation{Kleppmann2017-en}
 \citation{8057206}
 \citation{latthrough}
 \citation{Sun2021}
 \citation{Kleppmann2017-en}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Design}{23}{chapter.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Design}{22}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Objectives}{23}{section.4.1}\protected@file@percent }
-\newlabel{section:objectives}{{4.1}{23}{Objectives}{section.4.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Objectives}{22}{section.4.1}\protected@file@percent }
+\newlabel{section:objectives}{{4.1}{22}{Objectives}{section.4.1}{}}
 \citation{Miller1968}
 \citation{Amin2013}
 \citation{voip-latency}
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Benchmarks}{24}{section.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Packet processing}{24}{subsection.4.2.1}\protected@file@percent }
-\newlabel{section:background_packet-processing}{{4.2.1}{24}{Packet processing}{subsection.4.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Audio mixer}{24}{subsection.4.2.2}\protected@file@percent }
-\newlabel{section:bench-audio-mixer}{{4.2.2}{24}{Audio mixer}{subsection.4.2.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Benchmarks}{23}{section.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Packet processing}{23}{subsection.4.2.1}\protected@file@percent }
+\newlabel{section:background_packet-processing}{{4.2.1}{23}{Packet processing}{subsection.4.2.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Audio mixer}{23}{subsection.4.2.2}\protected@file@percent }
+\newlabel{section:bench-audio-mixer}{{4.2.2}{23}{Audio mixer}{subsection.4.2.2}{}}
 \citation{Maruzzelli2017-ou}
 \citation{Maruzzelli2017-ou}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.3}Binomial option pricing}{25}{subsection.4.2.3}\protected@file@percent }
-\newlabel{section:bench-option-pricing}{{4.2.3}{25}{Binomial option pricing}{subsection.4.2.3}{}}
-\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ finish me}{25}{section*.3}\protected@file@percent }
-\pgfsyspdfmark {pgfid1}{4661699}{15475464}
-\pgfsyspdfmark {pgfid4}{37920833}{15490209}
-\pgfsyspdfmark {pgfid5}{40689729}{15221512}
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Ordering}{25}{section.4.3}\protected@file@percent }
-\newlabel{section:approaches}{{4.3}{25}{Ordering}{section.4.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces The figure shows two ways to traverse tasks graph. Boxes with blue shade represent task physically present in run queue, run stack. The grey boxes constitute tasks that are going to be spawned by their respective parents. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, 9, while using LIFO at 3, 6, 9. Thus, even though FIFO optimizes per-task latency, the latency of actual requests favors LIFO.}}{26}{figure.4.1}\protected@file@percent }
-\newlabel{fig:fifo-lifo-latency}{{4.1}{26}{The figure shows two ways to traverse tasks graph. Boxes with blue shade represent task physically present in run queue, run stack. The grey boxes constitute tasks that are going to be spawned by their respective parents. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, 9, while using LIFO at 3, 6, 9. Thus, even though FIFO optimizes per-task latency, the latency of actual requests favors LIFO}{figure.4.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{26}{subsection.4.3.1}\protected@file@percent }
-\newlabel{section:ordering}{{4.3.1}{26}{FIFO and LIFO}{subsection.4.3.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Fairness revisited}{27}{section*.4}\protected@file@percent }
-\newlabel{section:fairness-revisited}{{4.3.1}{27}{Fairness revisited}{section*.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Allocations}{27}{section*.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Naive Fibonacci implementation.}}{27}{figure.4.2}\protected@file@percent }
-\newlabel{fig:fib-pure}{{4.2}{27}{Naive Fibonacci implementation}{figure.4.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.3}Binomial option pricing}{24}{subsection.4.2.3}\protected@file@percent }
+\newlabel{section:bench-option-pricing}{{4.2.3}{24}{Binomial option pricing}{subsection.4.2.3}{}}
+\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ finish me}{24}{section*.3}\protected@file@percent }
+\pgfsyspdfmark {pgfid1}{4661699}{15907166}
+\pgfsyspdfmark {pgfid2}{1204675}{15921911}
+\pgfsyspdfmark {pgfid3}{3973571}{15653214}
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Ordering}{24}{section.4.3}\protected@file@percent }
+\newlabel{section:approaches}{{4.3}{24}{Ordering}{section.4.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces The figure shows two ways to traverse tasks graph. Boxes with blue shade represent task physically present in run queue, run stack. The grey boxes constitute tasks that are going to be spawned by their respective parents. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, 9, while using LIFO at 3, 6, 9. Thus, even though FIFO optimizes per-task latency, the latency of actual requests favors LIFO.}}{25}{figure.4.1}\protected@file@percent }
+\newlabel{fig:fifo-lifo-latency}{{4.1}{25}{The figure shows two ways to traverse tasks graph. Boxes with blue shade represent task physically present in run queue, run stack. The grey boxes constitute tasks that are going to be spawned by their respective parents. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, 9, while using LIFO at 3, 6, 9. Thus, even though FIFO optimizes per-task latency, the latency of actual requests favors LIFO}{figure.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{25}{subsection.4.3.1}\protected@file@percent }
+\newlabel{section:ordering}{{4.3.1}{25}{FIFO and LIFO}{subsection.4.3.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Fairness revisited}{26}{section*.4}\protected@file@percent }
+\newlabel{section:fairness-revisited}{{4.3.1}{26}{Fairness revisited}{section*.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Allocations}{26}{section*.5}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Naive Fibonacci implementation.}}{26}{figure.4.2}\protected@file@percent }
+\newlabel{fig:fib-pure}{{4.2}{26}{Naive Fibonacci implementation}{figure.4.2}{}}
 \citation{amdahl}
 \citation{Postnikova2022}
 \citation{Kirsch2013}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Hybrid}{28}{subsection.4.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Contention and locality}{28}{section.4.4}\protected@file@percent }
-\newlabel{section:global_local}{{4.4}{28}{Contention and locality}{section.4.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}Core structure distribution}{28}{subsection.4.4.1}\protected@file@percent }
-\newlabel{section:core_struct_dist}{{4.4.1}{28}{Core structure distribution}{subsection.4.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Hybrid}{27}{subsection.4.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Contention and locality}{27}{section.4.4}\protected@file@percent }
+\newlabel{section:global_local}{{4.4}{27}{Contention and locality}{section.4.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}Core structure distribution}{27}{subsection.4.4.1}\protected@file@percent }
+\newlabel{section:core_struct_dist}{{4.4.1}{27}{Core structure distribution}{subsection.4.4.1}{}}
 \citation{Welsh2001}
 \citation{Kleppmann2017-en}
 \citation{Welsh2001}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}Staged}{29}{subsection.4.4.2}\protected@file@percent }
-\newlabel{section:design-staged}{{4.4.2}{29}{Staged}{subsection.4.4.2}{}}
-\newlabel{section:staged-as-composition}{{4.4.2}{30}{Staged}{subsection.4.4.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}Other design choices}{30}{section.4.5}\protected@file@percent }
-\newlabel{section:other_design_choices}{{4.5}{30}{Other design choices}{section.4.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Work distribution}{30}{subsection.4.5.1}\protected@file@percent }
-\newlabel{section:work-distribution}{{4.5.1}{30}{Work distribution}{subsection.4.5.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}Overflow queue}{31}{subsection.4.5.2}\protected@file@percent }
-\newlabel{section:design_overflow_queue}{{4.5.2}{31}{Overflow queue}{subsection.4.5.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.3}Resizing}{31}{subsection.4.5.3}\protected@file@percent }
-\newlabel{section:resizing}{{4.5.3}{31}{Resizing}{subsection.4.5.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.4}Yield}{31}{subsection.4.5.4}\protected@file@percent }
-\newlabel{section:yield}{{4.5.4}{31}{Yield}{subsection.4.5.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}Staged}{28}{subsection.4.4.2}\protected@file@percent }
+\newlabel{section:design-staged}{{4.4.2}{28}{Staged}{subsection.4.4.2}{}}
+\newlabel{section:staged-as-composition}{{4.4.2}{29}{Staged}{subsection.4.4.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}Other design choices}{29}{section.4.5}\protected@file@percent }
+\newlabel{section:other_design_choices}{{4.5}{29}{Other design choices}{section.4.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Work distribution}{29}{subsection.4.5.1}\protected@file@percent }
+\newlabel{section:work-distribution}{{4.5.1}{29}{Work distribution}{subsection.4.5.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}Overflow queue}{30}{subsection.4.5.2}\protected@file@percent }
+\newlabel{section:design_overflow_queue}{{4.5.2}{30}{Overflow queue}{subsection.4.5.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.3}Resizing}{30}{subsection.4.5.3}\protected@file@percent }
+\newlabel{section:resizing}{{4.5.3}{30}{Resizing}{subsection.4.5.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.4}Yield}{30}{subsection.4.5.4}\protected@file@percent }
+\newlabel{section:yield}{{4.5.4}{30}{Yield}{subsection.4.5.4}{}}
 \citation{Theright8:online}
 \citation{Swalens2014}
 \citation{chebyras74:online}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.5}Promise}{32}{subsection.4.5.5}\protected@file@percent }
-\newlabel{section:promise}{{4.5.5}{32}{Promise}{subsection.4.5.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Implemented promise interface.}}{32}{figure.4.3}\protected@file@percent }
-\newlabel{fig:promise-interface}{{4.3}{32}{Implemented promise interface}{figure.4.3}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}Implementations and evaluation}{34}{chapter.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.5}Promise}{31}{subsection.4.5.5}\protected@file@percent }
+\newlabel{section:promise}{{4.5.5}{31}{Promise}{subsection.4.5.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Implemented promise interface.}}{31}{figure.4.3}\protected@file@percent }
+\newlabel{fig:promise-interface}{{4.3}{31}{Implemented promise interface}{figure.4.3}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Implementations and evaluation}{33}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{chapter:evaluation}{{5}{34}{Implementations and evaluation}{chapter.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}Schedulers}{34}{section.5.1}\protected@file@percent }
-\newlabel{section:impl-schedulers}{{5.1}{34}{Schedulers}{section.5.1}{}}
+\newlabel{chapter:evaluation}{{5}{33}{Implementations and evaluation}{chapter.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}Schedulers}{33}{section.5.1}\protected@file@percent }
+\newlabel{section:impl-schedulers}{{5.1}{33}{Schedulers}{section.5.1}{}}
 \citation{Kappes2021}
 \citation{fad-cas-speed}
 \citation{Yang2016}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.1}Design principles}{35}{subsection.5.1.1}\protected@file@percent }
-\newlabel{section:lock-free-design-principles}{{5.1.1}{35}{Design principles}{subsection.5.1.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1.1}Design principles}{34}{subsection.5.1.1}\protected@file@percent }
+\newlabel{section:lock-free-design-principles}{{5.1.1}{34}{Design principles}{subsection.5.1.1}{}}
 \citation{2ndGenAM8:online}
 \citation{MD90FS0r76:online}
 \citation{ocamlmul16:online}
 \citation{vdso7Lin5:online}
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}Methods}{36}{section.5.2}\protected@file@percent }
-\newlabel{section:methods}{{5.2}{36}{Methods}{section.5.2}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.1}System}{36}{subsection.5.2.1}\protected@file@percent }
-\newlabel{section:methods_system}{{5.2.1}{36}{System}{subsection.5.2.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.2}Procedures}{36}{subsection.5.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.3}Statistical methods}{36}{subsection.5.2.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces 50k.}}{37}{figure.5.1}\protected@file@percent }
-\newlabel{fig:packet-50k}{{5.1}{37}{50k}{figure.5.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}Methods}{35}{section.5.2}\protected@file@percent }
+\newlabel{section:methods}{{5.2}{35}{Methods}{section.5.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.1}System}{35}{subsection.5.2.1}\protected@file@percent }
+\newlabel{section:methods_system}{{5.2.1}{35}{System}{subsection.5.2.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.2}Procedures}{35}{subsection.5.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2.3}Statistical methods}{35}{subsection.5.2.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces 50k.}}{36}{figure.5.1}\protected@file@percent }
+\newlabel{fig:packet-50k}{{5.1}{36}{50k}{figure.5.1}{}}
 \citation{amdahl}
-\@writefile{toc}{\contentsline {section}{\numberline {5.3}Server benchmark}{38}{section.5.3}\protected@file@percent }
-\newlabel{section:server_benchmark}{{5.3}{38}{Server benchmark}{section.5.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}General case}{38}{subsection.5.3.1}\protected@file@percent }
-\newlabel{section:benchmark-general-case}{{5.3.1}{38}{General case}{subsection.5.3.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}Server benchmark}{37}{section.5.3}\protected@file@percent }
+\newlabel{section:server_benchmark}{{5.3}{37}{Server benchmark}{section.5.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}General case}{37}{subsection.5.3.1}\protected@file@percent }
+\newlabel{section:benchmark-general-case}{{5.3.1}{37}{General case}{subsection.5.3.1}{}}
 \citation{amdahl}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces The throughput achieved on 50k tasks over varying number of domains.}}{39}{figure.5.2}\protected@file@percent }
-\newlabel{fig:packet-with-steal-counts}{{5.2}{39}{The throughput achieved on 50k tasks over varying number of domains}{figure.5.2}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Degradation}{39}{section*.6}\protected@file@percent }
-\newlabel{section:degradation}{{5.3.1}{39}{Degradation}{section*.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces The throughput achieved on 50k tasks over varying number of domains.}}{40}{figure.5.3}\protected@file@percent }
-\newlabel{fig:packet-counters}{{5.3}{40}{The throughput achieved on 50k tasks over varying number of domains}{figure.5.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces The throughput achieved on 10 million tasks over varying number of domains.}}{40}{figure.5.4}\protected@file@percent }
-\newlabel{fig:packet-10m-throughput}{{5.4}{40}{The throughput achieved on 10 million tasks over varying number of domains}{figure.5.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.5}{\ignorespaces The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}}{41}{figure.5.5}\protected@file@percent }
-\newlabel{fig:packet-slowed}{{5.5}{41}{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait}{figure.5.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.6}{\ignorespaces The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case.}}{41}{figure.5.6}\protected@file@percent }
-\newlabel{fig:packet-4spawners}{{5.6}{41}{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case}{figure.5.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces The throughput achieved on 50k tasks over varying number of domains.}}{38}{figure.5.2}\protected@file@percent }
+\newlabel{fig:packet-with-steal-counts}{{5.2}{38}{The throughput achieved on 50k tasks over varying number of domains}{figure.5.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Degradation}{38}{section*.6}\protected@file@percent }
+\newlabel{section:degradation}{{5.3.1}{38}{Degradation}{section*.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces The throughput achieved on 50k tasks over varying number of domains.}}{39}{figure.5.3}\protected@file@percent }
+\newlabel{fig:packet-counters}{{5.3}{39}{The throughput achieved on 50k tasks over varying number of domains}{figure.5.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces The throughput achieved on 10 million tasks over varying number of domains.}}{39}{figure.5.4}\protected@file@percent }
+\newlabel{fig:packet-10m-throughput}{{5.4}{39}{The throughput achieved on 10 million tasks over varying number of domains}{figure.5.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.5}{\ignorespaces The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}}{40}{figure.5.5}\protected@file@percent }
+\newlabel{fig:packet-slowed}{{5.5}{40}{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait}{figure.5.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.6}{\ignorespaces The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case.}}{40}{figure.5.6}\protected@file@percent }
+\newlabel{fig:packet-4spawners}{{5.6}{40}{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case}{figure.5.6}{}}
 \citation{workshed}
-\@writefile{toc}{\contentsline {subsubsection}{Work Distribution Extensions}{42}{section*.7}\protected@file@percent }
-\newlabel{section:work-distribution-extensions}{{5.3.1}{42}{Work Distribution Extensions}{section*.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Work Distribution Extensions}{41}{section*.7}\protected@file@percent }
+\newlabel{section:work-distribution-extensions}{{5.3.1}{41}{Work Distribution Extensions}{section*.7}{}}
 \citation{Makingth53:online}
 \citation{goprocgo14:online}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.7}{\ignorespaces The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}}{43}{figure.5.7}\protected@file@percent }
-\newlabel{fig:packet-extenstions}{{5.7}{43}{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait}{figure.5.7}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Work Distribution Extensions Result}{43}{section*.8}\protected@file@percent }
-\newlabel{section:extensions_result}{{5.3.1}{43}{Work Distribution Extensions Result}{section*.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.8}{\ignorespaces The throughput achieved on packet processing benchmark with 500k packets and 10 spawners. The benchmark was modified to have a non-trivial cache effect. Once the task was processed as in the original benchmark, it would spawn a chain of 10 tasks. Each task reads 20 with each reading 20 random bytes from the packet buffer, what simulates picking out different parts of the received data at different stages. LIFO offers a very clear throughput advantage (shown in the figure) and median-tail latency improvement.}}{44}{figure.5.8}\protected@file@percent }
-\newlabel{fig:packet-lifo-better}{{5.8}{44}{The throughput achieved on packet processing benchmark with 500k packets and 10 spawners. The benchmark was modified to have a non-trivial cache effect. Once the task was processed as in the original benchmark, it would spawn a chain of 10 tasks. Each task reads 20 with each reading 20 random bytes from the packet buffer, what simulates picking out different parts of the received data at different stages. LIFO offers a very clear throughput advantage (shown in the figure) and median-tail latency improvement}{figure.5.8}{}}
-\newlabel{paragraph:overflow-queue-bad-1}{{5.3.1}{44}{Work Distribution Extensions Result}{figure.5.7}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}Server benchmark with cache effects}{44}{subsection.5.3.2}\protected@file@percent }
-\newlabel{section:server-bench-with-cache-effects}{{5.3.2}{44}{Server benchmark with cache effects}{subsection.5.3.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.9}{\ignorespaces The throughput achieved on packet processing benchmark with 100k packets and 10 spawners. The benchmark has a weaker cache effect than \ref  {fig:packet-lifo-better} but still significant enough for LIFO to have a better throughput. However, there is a 0.1\% chance that packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO clearly offers a much better tail latency for most domain-counts in such a scenario. For example, at 115 domains LIFO saves over 30\% of tail latency.}}{45}{figure.5.9}\protected@file@percent }
-\newlabel{fig:packet-fifo-better}{{5.9}{45}{The throughput achieved on packet processing benchmark with 100k packets and 10 spawners. The benchmark has a weaker cache effect than \ref {fig:packet-lifo-better} but still significant enough for LIFO to have a better throughput. However, there is a 0.1\% chance that packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO clearly offers a much better tail latency for most domain-counts in such a scenario. For example, at 115 domains LIFO saves over 30\% of tail latency}{figure.5.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.3}Server benchmark with multi-modal processing latency}{45}{subsection.5.3.3}\protected@file@percent }
-\newlabel{section:server-bench-with-multi-modal}{{5.3.3}{45}{Server benchmark with multi-modal processing latency}{subsection.5.3.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{LIFO heuristics}{45}{section*.9}\protected@file@percent }
-\newlabel{section:lifo-heuristics}{{5.3.3}{45}{LIFO heuristics}{section*.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.7}{\ignorespaces The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}}{42}{figure.5.7}\protected@file@percent }
+\newlabel{fig:packet-extenstions}{{5.7}{42}{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait}{figure.5.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Work Distribution Extensions Result}{42}{section*.8}\protected@file@percent }
+\newlabel{section:extensions_result}{{5.3.1}{42}{Work Distribution Extensions Result}{section*.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.8}{\ignorespaces The throughput achieved on packet processing benchmark with 500k packets and 10 spawners. The benchmark was modified to have a non-trivial cache effect. Once the task was processed as in the original benchmark, it would spawn a chain of 10 tasks. Each task reads 20 with each reading 20 random bytes from the packet buffer, what simulates picking out different parts of the received data at different stages. LIFO offers a very clear throughput advantage (shown in the figure) and median-tail latency improvement.}}{43}{figure.5.8}\protected@file@percent }
+\newlabel{fig:packet-lifo-better}{{5.8}{43}{The throughput achieved on packet processing benchmark with 500k packets and 10 spawners. The benchmark was modified to have a non-trivial cache effect. Once the task was processed as in the original benchmark, it would spawn a chain of 10 tasks. Each task reads 20 with each reading 20 random bytes from the packet buffer, what simulates picking out different parts of the received data at different stages. LIFO offers a very clear throughput advantage (shown in the figure) and median-tail latency improvement}{figure.5.8}{}}
+\newlabel{paragraph:overflow-queue-bad-1}{{5.3.1}{43}{Work Distribution Extensions Result}{figure.5.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.2}Server benchmark with cache effects}{43}{subsection.5.3.2}\protected@file@percent }
+\newlabel{section:server-bench-with-cache-effects}{{5.3.2}{43}{Server benchmark with cache effects}{subsection.5.3.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.9}{\ignorespaces The throughput achieved on packet processing benchmark with 100k packets and 10 spawners. The benchmark has a weaker cache effect than \ref  {fig:packet-lifo-better} but still significant enough for LIFO to have a better throughput. However, there is a 0.1\% chance that packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO clearly offers a much better tail latency for most domain-counts in such a scenario. For example, at 115 domains LIFO saves over 30\% of tail latency.}}{44}{figure.5.9}\protected@file@percent }
+\newlabel{fig:packet-fifo-better}{{5.9}{44}{The throughput achieved on packet processing benchmark with 100k packets and 10 spawners. The benchmark has a weaker cache effect than \ref {fig:packet-lifo-better} but still significant enough for LIFO to have a better throughput. However, there is a 0.1\% chance that packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO clearly offers a much better tail latency for most domain-counts in such a scenario. For example, at 115 domains LIFO saves over 30\% of tail latency}{figure.5.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.3}Server benchmark with multi-modal processing latency}{44}{subsection.5.3.3}\protected@file@percent }
+\newlabel{section:server-bench-with-multi-modal}{{5.3.3}{44}{Server benchmark with multi-modal processing latency}{subsection.5.3.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{LIFO heuristics}{44}{section*.9}\protected@file@percent }
+\newlabel{section:lifo-heuristics}{{5.3.3}{44}{LIFO heuristics}{section*.9}{}}
 \citation{Maruzzelli2017-ou}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.10}{\ignorespaces The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits.}}{46}{figure.5.10}\protected@file@percent }
-\newlabel{fig:packet-hybrids}{{5.10}{46}{The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits}{figure.5.10}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.4}Mixer benchmark}{46}{section.5.4}\protected@file@percent }
-\newlabel{section:mixer-benchmark}{{5.4}{46}{Mixer benchmark}{section.5.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.10}{\ignorespaces The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits.}}{45}{figure.5.10}\protected@file@percent }
+\newlabel{fig:packet-hybrids}{{5.10}{45}{The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits}{figure.5.10}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.4}Mixer benchmark}{45}{section.5.4}\protected@file@percent }
+\newlabel{section:mixer-benchmark}{{5.4}{45}{Mixer benchmark}{section.5.4}{}}
 \citation{Frequent1:online}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.11}{\ignorespaces The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}}{47}{figure.5.11}\protected@file@percent }
-\newlabel{fig:mixer-bench}{{5.11}{47}{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases}{figure.5.11}{}}
-\newlabel{paragraph:overflow-queue-bad-2}{{5.4}{47}{Mixer benchmark}{figure.5.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.11}{\ignorespaces The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}}{46}{figure.5.11}\protected@file@percent }
+\newlabel{fig:mixer-bench}{{5.11}{46}{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases}{figure.5.11}{}}
+\newlabel{paragraph:overflow-queue-bad-2}{{5.4}{46}{Mixer benchmark}{figure.5.11}{}}
 \citation{Hull_John}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.12}{\ignorespaces The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}}{48}{figure.5.12}\protected@file@percent }
-\newlabel{fig:options-bench}{{5.12}{48}{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases}{figure.5.12}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.5}Binomial option pricer benchmark}{48}{section.5.5}\protected@file@percent }
-\newlabel{section:binomial_option_pricer_result}{{5.5}{48}{Binomial option pricer benchmark}{section.5.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.13}{\ignorespaces T 100k packets with cache dependency / just 1 spawner.}}{50}{figure.5.13}\protected@file@percent }
-\newlabel{fig:domainslib-comp}{{5.13}{50}{T 100k packets with cache dependency / just 1 spawner}{figure.5.13}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.6}Comparison with Domainslib}{50}{section.5.6}\protected@file@percent }
-\newlabel{section:result_with_domainslib}{{5.6}{50}{Comparison with Domainslib}{section.5.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.12}{\ignorespaces The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}}{47}{figure.5.12}\protected@file@percent }
+\newlabel{fig:options-bench}{{5.12}{47}{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases}{figure.5.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.5}Binomial option pricer benchmark}{47}{section.5.5}\protected@file@percent }
+\newlabel{section:binomial_option_pricer_result}{{5.5}{47}{Binomial option pricer benchmark}{section.5.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.13}{\ignorespaces T 100k packets with cache dependency / just 1 spawner.}}{49}{figure.5.13}\protected@file@percent }
+\newlabel{fig:domainslib-comp}{{5.13}{49}{T 100k packets with cache dependency / just 1 spawner}{figure.5.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.6}Comparison with Domainslib}{49}{section.5.6}\protected@file@percent }
+\newlabel{section:result_with_domainslib}{{5.6}{49}{Comparison with Domainslib}{section.5.6}{}}
 \citation{ocamlmul59:online}
-\@writefile{toc}{\contentsline {chapter}{\numberline {6}Summary and conclusions}{52}{chapter.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {6}Summary and conclusions}{51}{chapter.6}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
 \bibdata{refs}
-\newlabel{lastcontentpage}{{6}{53}{Summary and conclusions}{chapter.6}{}}
+\newlabel{lastcontentpage}{{6}{52}{Summary and conclusions}{chapter.6}{}}
 \bibcite{2ndGenAM1:online}{{1}{}{{2nd}}{{}}}
 \bibcite{AMDAnnou13:online}{{2}{}{{AMD}}{{}}}
 \bibcite{Howwebbr64:online}{{3}{}{{How}}{{}}}
@@ -365,46 +364,46 @@
 \citation{rfc793}
 \citation{async_kernel}
 \citation{async_kernel}
-\@writefile{toc}{\contentsline {chapter}{\numberline {A}Rejected design choices}{61}{appendix.A}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {A}Rejected design choices}{60}{appendix.A}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\@writefile{toc}{\contentsline {section}{\numberline {A.1}Backpressure}{61}{section.A.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {A.1}Backpressure}{60}{section.A.1}\protected@file@percent }
 \citation{ocamlmul5:online}
-\@writefile{toc}{\contentsline {section}{\numberline {A.2}Cancellations}{62}{section.A.2}\protected@file@percent }
-\newlabel{section:cancellations}{{A.2}{62}{Cancellations}{section.A.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {A.3}Blocking operations}{62}{section.A.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {A.4}Dynamic pool size}{62}{section.A.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {A.5}Batching}{62}{section.A.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {A.2}Cancellations}{61}{section.A.2}\protected@file@percent }
+\newlabel{section:cancellations}{{A.2}{61}{Cancellations}{section.A.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {A.3}Blocking operations}{61}{section.A.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {A.4}Dynamic pool size}{61}{section.A.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {A.5}Batching}{61}{section.A.5}\protected@file@percent }
 \citation{Yang2016}
-\@writefile{toc}{\contentsline {chapter}{\numberline {B}Core data structures}{63}{appendix.B}\protected@file@percent }
+\@writefile{toc}{\contentsline {chapter}{\numberline {B}Core data structures}{62}{appendix.B}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{section:underlying_data_structures}{{B}{63}{Core data structures}{appendix.B}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.1}MPMC queue on infinite array}{63}{section.B.1}\protected@file@percent }
-\newlabel{section:mpmc_queue_on_inf}{{B.1}{63}{MPMC queue on infinite array}{section.B.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {B.1}{\ignorespaces Basic enqueue function.}}{63}{figure.B.1}\protected@file@percent }
-\newlabel{fig:basic-enqueue}{{B.1}{63}{Basic enqueue function}{figure.B.1}{}}
+\newlabel{section:underlying_data_structures}{{B}{62}{Core data structures}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.1}MPMC queue on infinite array}{62}{section.B.1}\protected@file@percent }
+\newlabel{section:mpmc_queue_on_inf}{{B.1}{62}{MPMC queue on infinite array}{section.B.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.1}{\ignorespaces Basic enqueue function.}}{62}{figure.B.1}\protected@file@percent }
+\newlabel{fig:basic-enqueue}{{B.1}{62}{Basic enqueue function}{figure.B.1}{}}
 \citation{Sundell2011}
 \citation{Kappes2021}
-\@writefile{toc}{\contentsline {section}{\numberline {B.2}MPMC queue blocking}{64}{section.B.2}\protected@file@percent }
-\newlabel{section:blocking_mpmc}{{B.2}{64}{MPMC queue blocking}{section.B.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {B.2}{\ignorespaces Basic deque function.}}{64}{figure.B.2}\protected@file@percent }
-\newlabel{fig:basic-deque}{{B.2}{64}{Basic deque function}{figure.B.2}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.3}MPMC queue non-blocking dequeue}{64}{section.B.3}\protected@file@percent }
-\newlabel{section:mpmc_non_blocking_dequeue}{{B.3}{64}{MPMC queue non-blocking dequeue}{section.B.3}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.4}MPMC queue non-blocking enqueue}{65}{section.B.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {B.5}Work stealing queue}{65}{section.B.5}\protected@file@percent }
-\newlabel{section:wss-queue}{{B.5}{65}{Work stealing queue}{section.B.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.6}Work stealing stack}{66}{section.B.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B.2}MPMC queue blocking}{63}{section.B.2}\protected@file@percent }
+\newlabel{section:blocking_mpmc}{{B.2}{63}{MPMC queue blocking}{section.B.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {B.2}{\ignorespaces Basic deque function.}}{63}{figure.B.2}\protected@file@percent }
+\newlabel{fig:basic-deque}{{B.2}{63}{Basic deque function}{figure.B.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.3}MPMC queue non-blocking dequeue}{63}{section.B.3}\protected@file@percent }
+\newlabel{section:mpmc_non_blocking_dequeue}{{B.3}{63}{MPMC queue non-blocking dequeue}{section.B.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.4}MPMC queue non-blocking enqueue}{64}{section.B.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B.5}Work stealing queue}{64}{section.B.5}\protected@file@percent }
+\newlabel{section:wss-queue}{{B.5}{64}{Work stealing queue}{section.B.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.6}Work stealing stack}{65}{section.B.6}\protected@file@percent }
 \citation{Chase2005}
 \citation{Postnikova2022}
-\@writefile{toc}{\contentsline {section}{\numberline {B.7}Resizing}{67}{section.B.7}\protected@file@percent }
-\newlabel{section:resizing_details}{{B.7}{67}{Resizing}{section.B.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.8}Sharded queue}{67}{section.B.8}\protected@file@percent }
-\newlabel{section:multiqueue_details}{{B.8}{67}{Sharded queue}{section.B.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.7}Resizing}{66}{section.B.7}\protected@file@percent }
+\newlabel{section:resizing_details}{{B.7}{66}{Resizing}{section.B.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.8}Sharded queue}{66}{section.B.8}\protected@file@percent }
+\newlabel{section:multiqueue_details}{{B.8}{66}{Sharded queue}{section.B.8}{}}
 \citation{bartoszm90:online}
-\@writefile{toc}{\contentsline {section}{\numberline {B.9}False sharing}{68}{section.B.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {B.10}Validation}{68}{section.B.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {B.11}Limitations}{68}{section.B.11}\protected@file@percent }
-\newlabel{lastpage}{{B.11}{68}{Limitations}{section.B.11}{}}
-\gdef \@abspage@last{68}
+\@writefile{toc}{\contentsline {section}{\numberline {B.9}False sharing}{67}{section.B.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B.10}Validation}{67}{section.B.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {B.11}Limitations}{67}{section.B.11}\protected@file@percent }
+\newlabel{lastpage}{{B.11}{67}{Limitations}{section.B.11}{}}
+\gdef \@abspage@last{67}
