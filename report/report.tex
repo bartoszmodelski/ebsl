@@ -151,7 +151,7 @@ Write a summary of the whole thing. Make sure it fits on one page.
 \label{firstcontentpage} % start page count here
 
 \label{section:introduction}
-This section introduces and motivates the central problem of this dissertation in \ref{section:thesis}, and provides an overview of the findings in \ref{section:findings}.  
+This section introduces and motivates the central problem of this dissertation in \S\ref{section:thesis}, and provides an overview of the findings in \S\ref{section:findings}.  
 
 \section{Thesis}
 \label{section:thesis}
@@ -169,7 +169,7 @@ This is no longer the case with processors scaling mostly horizontally and everm
 
 The first part of the statement is akin to construction of No Free Lunch theorem \cite{Ho2002} for schedulers. While there is a growing body of NFL theorems for optimization problems (e.g. \cite{Wolpert1997}, \cite{Igel2005}), such fundamental results typically formalize knowledge, rather than produce direct guidance for real-world engineering. Therefore, this dissertation aims for a different exposition of the problem, one that analyses practical differences between scheduling policies. It considers widely-used performance metrics and explores the trade-offs between pragmatic scheduling schemes, guided by benchmarks executed on stock hardware. 
 
-The following sections strengthen the thesis from the point of view of hardware parallelism (\ref{section:intr_hardware_par}), software concurrency (\ref{section:intr_software_conc}) and the opportunity presented by OCaml Multicore (\ref{section:intr_ocaml-multicore}).
+The following sections strengthen the thesis from the point of view of hardware parallelism (\S\ref{section:intr_hardware_par}), software concurrency (\S\ref{section:intr_software_conc}) and the opportunity presented by OCaml Multicore (\S\ref{section:intr_ocaml-multicore}).
 
 \subsection{Parallelism}
 \label{section:intr_hardware_par}
@@ -203,11 +203,9 @@ Finally, concurrency is a convenient tool for expressing certain workloads. Lega
 This sections describes the system and programming environment used to verify the thesis. 
 
 \subsection{System}
-The report aims to investigate runtime scheduling space on a modern, high-core machine. Used system features two AMD EPYC 7702 processors, which gives a total of 128 physical cores and 256 threads. It runs Ubuntu 22.04. For more details, see \ref{section:methods_system}. 
+The report aims to investigate runtime scheduling space on a modern, high-core machine. Used system features two AMD EPYC 7702 processors, which gives a total of 128 physical cores and 256 threads. It runs Ubuntu 22.04. For more details, see \S\ref{section:methods_system}. 
 
 \subsection{OCaml Multicore}
-
-\textbf{Scheduler as a library, scheduler composable}
 \label{section:intr_ocaml-multicore}
 
 OCaml is a unique functional programming language, which aims to deliver performance and safety. It found many research and industrial users despite a significant shortcoming for a performance-oriented language - lack of support for multithreading. This confined real-world applications to monadic concurrency libraries such as Async and Lwt, which are troublesome to use: 
@@ -218,16 +216,15 @@ OCaml is a unique functional programming language, which aims to deliver perform
 
 Nonetheless, after years-long effort, multicore support has been recently merged into the main tree. Thus it is a favourable time to take a closer look at lightweight threads schedulers. Significant changes to existing schedulers are notoriously slow and troublesome, as even subtle differences to scheduling policy may expose bugs in existing programs. During my industrial experience, the only way to deal with such a change was having developers manually verify the code and re-do the testing. Incidentally, both methods are known to be bad at finding bugs in multiprocessing. This research project, however, is likely to contribute to the actual design and implementation of OCaml scheduler. 
 
-Finally, Multicore OCaml is a particularly interesting object of study as it includes a number of novel solutions. Common programming languages either include threading support, which is tightly coupled with the language itself, or offer no support and, thus, library-schedulers cannot offer much beyond simply running scheduled functions in some order. OCaml, on the other hand, features fibers and effects. Together, they allow writing a direct style, stack-switching scheduler as a library. Further, OCaml allows composing schedulers. A much-needed mechanism for executing diverse workloads with portions having different optimization criteria \cite{Tennenhouse89layeredmultiplexing}.
+Finally, Multicore OCaml is a particularly interesting object of study as it includes a number of novel solutions. Common programming languages either include threading support, which is tightly coupled with the language itself, or offer no support and, thus, library-schedulers cannot offer much beyond simply running scheduled functions in some order. OCaml, on the other hand, features fibers and effects. Together, they allow writing a direct style, stack-switching scheduler as a library. Further, OCaml offers a mechanism to compose schedulers. A much-needed mechanism for executing diverse workloads with portions having different optimization criteria \cite{Tennenhouse89layeredmultiplexing}.
 
 
 \section{Findings}
 \label{section:findings}
 
-\todo{fill in}
+Numerous benchmarks show how complex the relationship between scheduling policy, workload, available resources and chosen metric (throughput, latency) really is. Numerous results support the need for customization (\S\ref{section:extensions_result}) and composition (\S\ref{section:mixer-benchmark}) of schedulers for optimal performance, and the need for new methods to handle highly parallel and concurrent workloads (\S\ref{section:degradation}). Finally, the last benchmark shows a significant improvement in scalability over current state-of-the-art scheduling library in OCaml (\S\ref{section:result_with_domainslib}).
 
 \chapter{Background}
-
 
 This section begins by describing the general problem of scheduling, key concepts and two modern real-world runtime schedulers (\ref{section:background_schedulers}). Afterwards, it describes the tools of choice: important properties of OCaml programming environment (\ref{section:background_ocaml}) and details of fine-grained multicore programming (\ref{section:background_multiprocessing}).
 
@@ -903,7 +900,7 @@ Therefore, there are clear benefits from customization and composition of schedu
 
 Finally, OCaml multicore improves over classic runtime-integrated scheduling. Historically, built-in scheduling necessitated FIFO ordering to avoid the bad latency characteristics of LIFO under very heterogenous workloads. LIFO is, nonetheless, the optimal choice for many homogenous workloads (e.g. \S\ref{fig:mixer-bench}). The newfound capabilities of OCaml let developers tap into the benefits of using custom scheduling policies. In the case of mixer benchmark, the homogenous workload can be isolated on LIFO scheduler, while other diverse work remains on traditional FIFO discipline.
 
-Future work can take a number of different directions, e.g.: further optimization of task distribution mechanisms (e.g. horizontal scaling of local structures), integration of effects and preemption, and exploration of viable lock-free structures (inc. development of DSCheck \ref{section:background_dscheck}). 
+Future work can take a number of different directions, e.g.: further optimization of task distribution mechanisms (e.g. horizontal scaling of local structures), integration of effects and preemption, exploration of viable lock-free structures, and development of DSCheck (\S\ref{section:background_dscheck}). 
 
 
 \label{lastcontentpage} % end page count here
