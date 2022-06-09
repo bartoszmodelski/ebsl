@@ -33,8 +33,8 @@
 \contentsline {subsection}{\numberline {4.2.2}Audio mixer}{23}{subsection.4.2.2}%
 \contentsline {subsection}{\numberline {4.2.3}Binomial option pricing}{24}{subsection.4.2.3}%
 \contentsline {section}{\numberline {4.3}Ordering}{24}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{25}{subsection.4.3.1}%
-\contentsline {subsubsection}{Fairness revisited}{26}{section*.5}%
+\contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{24}{subsection.4.3.1}%
+\contentsline {subsubsection}{Fairness revisited}{25}{section*.5}%
 \contentsline {subsubsection}{Allocations}{26}{section*.6}%
 \contentsline {subsection}{\numberline {4.3.2}Hybrid}{27}{subsection.4.3.2}%
 \contentsline {section}{\numberline {4.4}Contention and locality}{27}{section.4.4}%
