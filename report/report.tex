@@ -370,18 +370,19 @@ An imperative programmer may consider it a generalisation of exceptions \cite{Br
 In the case of threading, effects provide a composable means of stopping and resuming execution. Once effects handlers are set up higher up the stack, any function may perform a yield effect, immediately returning the control to the appropriate handler. The handler receives a \textit{delimited continuation}, which resumes execution of the yielding function on demand. In the case of a scheduler, a handler may put the received continuation into a queue and resume a different task. This logic is implemented efficiently using fibers described in the previous section (\S\ref{section:fibers}). Whenever the effects handler is set up, it instantiates a new fiber for contained logic. When the logic performs an effect, said fiber is unchained from the top of the stack, and a new one is created and attached to execute the handler. Fibers and effects are optimized to support high-performance concurrency. 
 
 \label{paragraph:ocaml_preemption}
-In the current shape, effects do not mix with preemption. True preemption is limited to OS-level scheduling. In the case of Go \ref{section:rel-work-go}, runtime simulates preemption by having compiler automatically insert optional yields into strategic places (checkpoints) in the code. Similar solution does not really fit OCaml out of the box because it would pollute entire program with Yield effect, what defeats the purpose of effects system. In Go, such logic is hidden within the runtime and compiler. In the case of OCaml, suddenly pure or even no-op functions would emit effects. 
+In the current shape, effects do not mix with preemption. True preemption is limited to OS-level scheduling. In the case of Go \ref{section:rel-work-go}, runtime simulates preemption by having the compiler automatically insert optional yields into strategic places (checkpoints) in the code. A similar solution does not fit OCaml out of the box because it would pollute the entire program with the Yield effect, which defeats the purpose of the effects system. In Go, the runtime and compiler hide this logic from the developer. In the case of OCaml, suddenly, pure, or even no-op functions would emit effects.
 
 \subsection{Garbage collection}
 \label{section:gc}
-OCaml features a new garbage collector created with multicore in mind \cite{Sivaramakrishnan2020}. It has two generations: local minor heaps and a shared global major heap. Both minor and major heap collections require stop-the-world pause. The minor collection is fully parallel \cite{Sivaramakrishnan2020}.
+OCaml features a new garbage collector created with multicore in mind. It has two generations: thread-local minor heaps and a shared global major heap. The minor collection is fully parallel. Both heaps collections require a stop-the-world pause \cite{Sivaramakrishnan2020}.
+
 
 \subsection{Domainslib}
 
-OCaml ecosystem already has a scheduler endorsed by the core developers \cite{ocamlmul59:online} - Domainslib. However, multicore OCaml has not been widely adopted yet and thus, Domainslib is not as mature as in the case of other ecosystems. The design of Domainslib closely follows classic deque (\S\ref{paragraph:deque}). Therefore, Domainslib is not dissected as one of the state of the art schedulers but its performance is compared against this project in (\S\ref{section:result_with_domainslib}).
+OCaml ecosystem already has a scheduler endorsed by the OCaml team \cite{ocamlmul59:online} - Domainslib. Since multicore OCaml is novel, Domainslib is not as mature as schedulers in other ecosystems. Its design closely follows classic deque (\S\ref{paragraph:deque}). Therefore, Domainslib is not dissected as one of the state of the art schedulers. Nonetheless, its performance is compared against this project in (\S\ref{section:result_with_domainslib}).
 
 \chapter{Design}
-This chapter describes the design space of a scheduler. First, \S\ref{section:objectives} states the desirable properties and metrics to evaluate scheduling policies. Afterwards, major approaches are described and other design choices are discussed in the remainder. 
+This chapter describes the design space of a scheduler. First,  \S\ref{section:objectives} states the desirable properties of scheduling policies and metrics to evaluate them. Afterwards, major approaches are described, and the remainder discusses other design choices.
 
 \section{Objectives}
 \label{section:objectives}
