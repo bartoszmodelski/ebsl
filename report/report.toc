@@ -37,7 +37,7 @@
 \contentsline {subsubsection}{Fairness revisited}{25}{section*.4}%
 \contentsline {subsubsection}{Allocations}{26}{section*.5}%
 \contentsline {subsection}{\numberline {4.3.2}Hybrid}{27}{subsection.4.3.2}%
-\contentsline {section}{\numberline {4.4}Contention and locality}{27}{section.4.4}%
+\contentsline {section}{\numberline {4.4}Contention and scalability}{27}{section.4.4}%
 \contentsline {subsection}{\numberline {4.4.1}Core structure distribution}{28}{subsection.4.4.1}%
 \contentsline {subsection}{\numberline {4.4.2}Staged}{28}{subsection.4.4.2}%
 \contentsline {section}{\numberline {4.5}Other design choices}{29}{section.4.5}%

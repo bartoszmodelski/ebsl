@@ -163,15 +163,15 @@
 \newlabel{section:ordering}{{4.3.1}{25}{FIFO and LIFO}{subsection.4.3.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Fairness revisited}{25}{section*.4}\protected@file@percent }
 \newlabel{section:fairness-revisited}{{4.3.1}{25}{Fairness revisited}{section*.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces The figure shows two ways to traverse tasks graph. Boxes with blue shade represent task physically present in run queue, run stack. The grey boxes constitute tasks that are going to be spawned by their respective parents. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, 9, while using LIFO at 3, 6, 9. Thus, even though FIFO optimizes per-task latency, the latency of actual requests favors LIFO.}}{26}{figure.4.1}\protected@file@percent }
-\newlabel{fig:fifo-lifo-latency}{{4.1}{26}{The figure shows two ways to traverse tasks graph. Boxes with blue shade represent task physically present in run queue, run stack. The grey boxes constitute tasks that are going to be spawned by their respective parents. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, 9, while using LIFO at 3, 6, 9. Thus, even though FIFO optimizes per-task latency, the latency of actual requests favors LIFO}{figure.4.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces The figure shows two ways to traverse the task DAG. Boxes with a blue shade represent tasks physically present in the runqueue (or run stack). The grey boxes constitute tasks that their respective parents will spawn during execution. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, and 9 while using LIFO at 3, 6, and 9. Thus, although FIFO optimizes per-task latency, the latency of actual requests favors LIFO.}}{26}{figure.4.1}\protected@file@percent }
+\newlabel{fig:fifo-lifo-latency}{{4.1}{26}{The figure shows two ways to traverse the task DAG. Boxes with a blue shade represent tasks physically present in the runqueue (or run stack). The grey boxes constitute tasks that their respective parents will spawn during execution. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, and 9 while using LIFO at 3, 6, and 9. Thus, although FIFO optimizes per-task latency, the latency of actual requests favors LIFO}{figure.4.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Allocations}{26}{section*.5}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Naive Fibonacci implementation.}}{26}{figure.4.2}\protected@file@percent }
 \newlabel{fig:fib-pure}{{4.2}{26}{Naive Fibonacci implementation}{figure.4.2}{}}
 \citation{amdahl}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Hybrid}{27}{subsection.4.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Contention and locality}{27}{section.4.4}\protected@file@percent }
-\newlabel{section:global_local}{{4.4}{27}{Contention and locality}{section.4.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Contention and scalability}{27}{section.4.4}\protected@file@percent }
+\newlabel{section:global_local}{{4.4}{27}{Contention and scalability}{section.4.4}{}}
 \citation{Postnikova2022}
 \citation{Kirsch2013}
 \citation{Welsh2001}
