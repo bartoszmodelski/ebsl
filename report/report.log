@@ -1,7 +1,6 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  9 JUN 2022 20:44
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  9 JUN 2022 20:51
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
 **report.tex
 (./report.tex
@@ -810,12 +809,8 @@ nput line 643.
 
 LaTeX Warning: Float too large for page by 9.01306pt on input line 646.
 
-
-Underfull \vbox (badness 2150) has occurred while \output is active []
-
- [35]
-[36pdfTeX warning (ext4): destination with the same identifier (name{figure.5.1
-}) has been already used, duplicate ignored
+[35] [36pdfTeX warning (ext4): destination with the same identifier (name{figur
+e.5.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
 l.649 
@@ -837,138 +832,144 @@ Package pdftex.def Info: eval/packet-basic-counters.png  used on input line 673
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
 l.679 
-       <./eval/packet-basic-with-steal-counts2.png>]
-<eval/packet-basic-10million-just-throughput.png, id=845, 734.62456pt x 263.062
+      pdfTeX warning (ext4): destination with the same identifier (name{figure.
+5.3}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.679 
+       <./eval/packet-basic-with-steal-counts2.png> <./eval/packet-basic-counte
+rs.png>]
+<eval/packet-basic-10million-just-throughput.png, id=847, 734.62456pt x 263.062
 8pt>
 File: eval/packet-basic-10million-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-10million-just-throughput.png>
 Package pdftex.def Info: eval/packet-basic-10million-just-throughput.png  used 
 on input line 684.
 (pdftex.def)             Requested size: 386.96027pt x 138.57164pt.
-<eval/packet-basic-slowed_2.png, id=846, 717.6411pt x 263.0628pt>
+<eval/packet-basic-slowed_2.png, id=848, 717.6411pt x 263.0628pt>
 File: eval/packet-basic-slowed_2.png Graphic file (type png)
 <use eval/packet-basic-slowed_2.png>
 Package pdftex.def Info: eval/packet-basic-slowed_2.png  used on input line 692
 .
 (pdftex.def)             Requested size: 386.96027pt x 141.84708pt.
-<eval/packet-basic-4spawners-just-throughput.png, id=847, 717.6411pt x 263.0628
+<eval/packet-basic-4spawners-just-throughput.png, id=849, 717.6411pt x 263.0628
 pt>
 File: eval/packet-basic-4spawners-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-4spawners-just-throughput.png>
 Package pdftex.def Info: eval/packet-basic-4spawners-just-throughput.png  used 
 on input line 700.
 (pdftex.def)             Requested size: 386.96027pt x 141.84708pt.
+
+Underfull \vbox (badness 1694) has occurred while \output is active []
+
  [39pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
-3}) has been already used, duplicate ignored
+4}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.709 \end{itemize}
-                   pdfTeX warning (ext4): destination with the same identifier 
-(name{figure.5.4}) has been already used, duplicate ignored
+l.708     \item \textbf
+                       {Higher workload}. In fact, increasing the number of ...
+pdfTeX warning (ext4): destination with the same identifier (name{figure.5.5}) 
+has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.709 \end{itemize}
-                    <./eval/packet-basic-counters.png> <./eval/packet-basic-10m
-illion-just-throughput.png>] [40pdfTeX warning (ext4): destination with the sam
-e identifier (name{figure.5.5}) has been already used, duplicate ignored
+l.708     \item \textbf
+                       {Higher workload}. In fact, increasing the number of ...
+ <./eval/packet-basic-10million-just-throughput.png> <./eval/packet-basic-slowe
+d_2.png>] [40pdfTeX warning (ext4): destination with the same identifier (name{
+figure.5.6}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.709 \end{itemize}
-                   pdfTeX warning (ext4): destination with the same identifier 
-(name{figure.5.6}) has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.709 \end{itemize}
-                    <./eval/packet-basic-slowed_2.png> <./eval/packet-basic-4sp
-awners-just-throughput.png>] [41]
-<eval/packet-basic-distribution10-granular.png, id=879, 728.84296pt x 481.3182p
+l.721 \end{itemize}
+                    <./eval/packet-basic-4spawners-just-throughput.png>]
+<eval/packet-basic-distribution10-granular.png, id=874, 728.84296pt x 481.3182p
 t>
 File: eval/packet-basic-distribution10-granular.png Graphic file (type png)
 <use eval/packet-basic-distribution10-granular.png>
 Package pdftex.def Info: eval/packet-basic-distribution10-granular.png  used on
  input line 742.
 (pdftex.def)             Requested size: 386.96027pt x 255.55278pt.
- [42pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
-7}) has been already used, duplicate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.751 O
-       nly stealing at least 10 elements had a strong negative effect, as it...
- <./eval/packet-basic-distribution10-granular.png>]
-<eval/packet-basic-lifo-better.png, id=892, 771.1209pt x 286.1892pt>
+
+[41]
+<eval/packet-basic-lifo-better.png, id=887, 771.1209pt x 286.1892pt>
 File: eval/packet-basic-lifo-better.png Graphic file (type png)
 <use eval/packet-basic-lifo-better.png>
 Package pdftex.def Info: eval/packet-basic-lifo-better.png  used on input line 
 760.
 (pdftex.def)             Requested size: 386.96027pt x 143.61826pt.
- [43pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
-8}) has been already used, duplicate ignored
+ [42pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
+7}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.768 
-       <./eval/packet-basic-lifo-better.png>]
-<eval/packet-basic-fifo-better.png, id=903, 831.46635pt x 251.86095pt>
+l.767 N
+       otably, extra care is required to replicate this result on modern arc...
+ <./eval/packet-basic-distribution10-granular.png>]
+<eval/packet-basic-fifo-better.png, id=897, 831.46635pt x 251.86095pt>
 File: eval/packet-basic-fifo-better.png Graphic file (type png)
 <use eval/packet-basic-fifo-better.png>
 Package pdftex.def Info: eval/packet-basic-fifo-better.png  used on input line 
 774.
 (pdftex.def)             Requested size: 386.96027pt x 117.21788pt.
- [44pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
-9}) has been already used, duplicate ignored
+ [43pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
+8}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.790     \item \textbf
-                       {LIFO slot}. Rely on FIFO ordering but have a special...
- <./eval/packet-basic-fifo-better.png>]
-<eval/packet-basic-base-hybrids.png, id=914, 823.51665pt x 254.3904pt>
+l.780 
+      pdfTeX warning (ext4): destination with the same identifier (name{figure.
+5.9}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.780 
+       <./eval/packet-basic-lifo-better.png> <./eval/packet-basic-fifo-better.p
+ng>]
+<eval/packet-basic-base-hybrids.png, id=910, 823.51665pt x 254.3904pt>
 File: eval/packet-basic-base-hybrids.png Graphic file (type png)
 <use eval/packet-basic-base-hybrids.png>
 Package pdftex.def Info: eval/packet-basic-base-hybrids.png  used on input line
  796.
 (pdftex.def)             Requested size: 386.96027pt x 119.53632pt.
-<eval/mixer-base8.png, id=918, 867.24pt x 289.08pt>
+ [44pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
+10}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.802 
+       <./eval/packet-basic-base-hybrids.png>]
+<eval/mixer-base8.png, id=920, 867.24pt x 289.08pt>
 File: eval/mixer-base8.png Graphic file (type png)
 <use eval/mixer-base8.png>
 Package pdftex.def Info: eval/mixer-base8.png  used on input line 810.
 (pdftex.def)             Requested size: 386.96027pt x 128.98645pt.
  [45pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
-10}) has been already used, duplicate ignored
+11}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.816 
-       <./eval/packet-basic-base-hybrids.png>] [46pdfTeX warning (ext4): destin
-ation with the same identifier (name{figure.5.11}) has been already used, dupli
-cate ignored
-<argument> ...shipout:D \box_use:N \l_shipout_box 
-                                                  \__shipout_drop_firstpage_...
-l.824 
+l.818 
        <./eval/mixer-base8.png>]
-<eval/options-base.png, id=944, 867.24pt x 289.08pt>
+<eval/options-base.png, id=940, 867.24pt x 289.08pt>
 File: eval/options-base.png Graphic file (type png)
 <use eval/options-base.png>
 Package pdftex.def Info: eval/options-base.png  used on input line 832.
 (pdftex.def)             Requested size: 386.96027pt x 128.98645pt.
- [47pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
-12}) has been already used, duplicate ignored
+ [46] [47pdfTeX warning (ext4): destination with the same identifier (name{figu
+re.5.12}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.844 
+l.854 
        <./eval/options-base.png>]
 <eval/comp-base4.png, id=958, 867.24pt x 289.08pt>
 File: eval/comp-base4.png Graphic file (type png)
 <use eval/comp-base4.png>
 Package pdftex.def Info: eval/comp-base4.png  used on input line 866.
 (pdftex.def)             Requested size: 386.96027pt x 128.98645pt.
- [48] [49pdfTeX warning (ext4): destination with the same identifier (name{figu
-re.5.13}) has been already used, duplicate ignored
+ [48pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
+13}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.879 \end{itemize}
-                    <./eval/comp-base4.png>] [50]
+l.874 
+       <./eval/comp-base4.png>] [49]
 Chapter 6.
-[51
+[50
 
-] (./report.bbl [52]
+] (./report.bbl [51]
 Underfull \hbox (badness 1509) in paragraph at lines 14--18
 \OT1/cmtt/m/n/12 news / 2004-[]08-[]amd-[]industry-[]x86-[]dual-[]core-[]proces
 sor . html$[]\OT1/cmr/m/n/12 .  (Ac-cessed on
@@ -997,9 +998,9 @@ Underfull \hbox (badness 10000) in paragraph at lines 32--35
 ipedia . org / wiki / POWER4 # cite _
  []
 
-[53
+[52
 
-] [54] [55] [56]
+] [53] [54] [55]
 Underfull \hbox (badness 5681) in paragraph at lines 413--418
 []\OT1/cmr/m/n/12 K. Rupp.  karlrupp/microprocessor-trend-data: Data repos-i-to
 ry for my
@@ -1011,7 +1012,7 @@ Underfull \hbox (badness 1968) in paragraph at lines 413--418
 n/12 https : / / github . com / karlrupp /
  []
 
-[57]
+[56]
 Underfull \hbox (badness 10000) in paragraph at lines 480--486
 []\OT1/cmr/m/n/12 G. Team.  go/proc.go at 1292176bc98be4b7b9d24abec05e88b3dbd89
 e21
@@ -1029,21 +1030,21 @@ Underfull \hbox (badness 10000) in paragraph at lines 480--486
 c . go # L5806$[]\OT1/cmr/m/n/12 ,
  []
 
-[58]
+[57]
 Underfull \hbox (badness 10000) in paragraph at lines 524--529
 \OT1/cmtt/m/n/12 / / www . gigabyte . com / uk / Enterprise / Server-[]Motherbo
 ard / MD90-[]FS0-[]rev-[]11$[]\OT1/cmr/m/n/12 .
  []
 
-) [59]
+) [58]
 Appendix A.
 
 Underfull \vbox (badness 2189) has occurred while \output is active []
 
- [60
+ [59
 
 ]
-[61]
+[60]
 Appendix B.
 
 Overfull \hbox (19.37807pt too wide) in paragraph at lines 964--964
@@ -1065,7 +1066,7 @@ Underfull \hbox (badness 1286) in paragraph at lines 970--971
 [][]\OT1/cmr/m/n/12 With such a setup both en-queue and
  []
 
-[62
+[61
 
 pdfTeX warning (ext4): destination with the same identifier (name{figure.B.1}) 
 has been already used, duplicate ignored
@@ -1096,18 +1097,18 @@ Overfull \hbox (105.82811pt too wide) in paragraph at lines 982--982
 Package wrapfig Warning: Stationary wrapfigure forced to float on input line 98
 7.
 
-[63pdfTeX warning (ext4): destination with the same identifier (name{figure.B.2
+[62pdfTeX warning (ext4): destination with the same identifier (name{figure.B.2
 }) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
 l.1002     \item M
                   ark slot as burned and return immediately. Then once enque...
-] [64] [65]
+] [63] [64]
 
-LaTeX Warning: Reference `section:design_overflow_queue' on page 66 undefined o
+LaTeX Warning: Reference `section:design_overflow_queue' on page 65 undefined o
 n input line 1054.
 
-[66] [67] (./report.aux)
+[65] [66] (./report.aux)
 
 LaTeX Warning: There were undefined references.
 
@@ -1115,9 +1116,9 @@ Package rerunfilecheck Info: File `report.out' has not changed.
 (rerunfilecheck)             Checksum: 3C75A3A555F672EA0176F84A68DE83C2;10452.
  ) 
 Here is how much of TeX's memory you used:
- 21527 strings out of 480247
- 406067 string characters out of 5896151
- 676168 words of memory out of 5000000
+ 21526 strings out of 480247
+ 406060 string characters out of 5896151
+ 676162 words of memory out of 5000000
  38848 multiletter control sequences out of 15000+600000
  476268 words of font info for 51 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1136,10 +1137,10 @@ public/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 nts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12
 .pfb>
-Output written on report.pdf (67 pages, 1720072 bytes).
+Output written on report.pdf (66 pages, 1719559 bytes).
 PDF statistics:
- 1331 PDF objects out of 1440 (max. 8388607)
- 1182 compressed objects within 12 object streams
- 252 named destinations out of 1000 (max. 500000)
+ 1326 PDF objects out of 1440 (max. 8388607)
+ 1178 compressed objects within 12 object streams
+ 251 named destinations out of 1000 (max. 500000)
  722 words of extra memory for PDF output out of 10000 (max. 10000000)
 

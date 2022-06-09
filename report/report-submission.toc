@@ -52,33 +52,33 @@
 \contentsline {subsection}{\numberline {5.2.1}System}{35}{subsection.5.2.1}%
 \contentsline {subsection}{\numberline {5.2.2}Procedures}{35}{subsection.5.2.2}%
 \contentsline {subsection}{\numberline {5.2.3}Statistical methods}{35}{subsection.5.2.3}%
-\contentsline {section}{\numberline {5.3}Server benchmark}{37}{section.5.3}%
-\contentsline {subsection}{\numberline {5.3.1}General case}{37}{subsection.5.3.1}%
+\contentsline {section}{\numberline {5.3}Server benchmark}{35}{section.5.3}%
+\contentsline {subsection}{\numberline {5.3.1}General case}{35}{subsection.5.3.1}%
 \contentsline {subsubsection}{Degradation}{38}{section*.6}%
-\contentsline {subsubsection}{Work Distribution Extensions}{41}{section*.8}%
-\contentsline {subsubsection}{Work Distribution Extensions Result}{42}{section*.9}%
-\contentsline {subsection}{\numberline {5.3.2}Server benchmark with cache effects}{43}{subsection.5.3.2}%
-\contentsline {subsection}{\numberline {5.3.3}Server benchmark with multi-modal processing latency}{44}{subsection.5.3.3}%
+\contentsline {subsubsection}{Work Distribution Extensions}{40}{section*.8}%
+\contentsline {subsubsection}{Work Distribution Extensions Result}{41}{section*.9}%
+\contentsline {subsection}{\numberline {5.3.2}Server benchmark with cache effects}{42}{subsection.5.3.2}%
+\contentsline {subsection}{\numberline {5.3.3}Server benchmark with multi-modal processing latency}{43}{subsection.5.3.3}%
 \contentsline {subsubsection}{LIFO heuristics}{44}{section*.10}%
 \contentsline {section}{\numberline {5.4}Mixer benchmark}{45}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Binomial option pricer benchmark}{47}{section.5.5}%
-\contentsline {section}{\numberline {5.6}Comparison with Domainslib}{49}{section.5.6}%
-\contentsline {chapter}{\numberline {6}Summary and conclusions}{51}{chapter.6}%
-\contentsline {chapter}{\numberline {A}Rejected design choices}{60}{appendix.A}%
-\contentsline {section}{\numberline {A.1}Backpressure}{60}{section.A.1}%
-\contentsline {section}{\numberline {A.2}Cancellations}{61}{section.A.2}%
-\contentsline {section}{\numberline {A.3}Blocking operations}{61}{section.A.3}%
-\contentsline {section}{\numberline {A.4}Dynamic pool size}{61}{section.A.4}%
-\contentsline {section}{\numberline {A.5}Batching}{61}{section.A.5}%
-\contentsline {chapter}{\numberline {B}Core data structures}{62}{appendix.B}%
-\contentsline {section}{\numberline {B.1}MPMC queue on infinite array}{62}{section.B.1}%
-\contentsline {section}{\numberline {B.2}MPMC queue blocking}{63}{section.B.2}%
-\contentsline {section}{\numberline {B.3}MPMC queue non-blocking dequeue}{63}{section.B.3}%
-\contentsline {section}{\numberline {B.4}MPMC queue non-blocking enqueue}{64}{section.B.4}%
-\contentsline {section}{\numberline {B.5}Work stealing queue}{64}{section.B.5}%
-\contentsline {section}{\numberline {B.6}Work stealing stack}{65}{section.B.6}%
-\contentsline {section}{\numberline {B.7}Resizing}{66}{section.B.7}%
-\contentsline {section}{\numberline {B.8}Sharded queue}{66}{section.B.8}%
-\contentsline {section}{\numberline {B.9}False sharing}{67}{section.B.9}%
-\contentsline {section}{\numberline {B.10}Validation}{67}{section.B.10}%
-\contentsline {section}{\numberline {B.11}Limitations}{67}{section.B.11}%
+\contentsline {section}{\numberline {5.5}Binomial option pricer benchmark}{46}{section.5.5}%
+\contentsline {section}{\numberline {5.6}Comparison with Domainslib}{48}{section.5.6}%
+\contentsline {chapter}{\numberline {6}Summary and conclusions}{50}{chapter.6}%
+\contentsline {chapter}{\numberline {A}Rejected design choices}{59}{appendix.A}%
+\contentsline {section}{\numberline {A.1}Backpressure}{59}{section.A.1}%
+\contentsline {section}{\numberline {A.2}Cancellations}{60}{section.A.2}%
+\contentsline {section}{\numberline {A.3}Blocking operations}{60}{section.A.3}%
+\contentsline {section}{\numberline {A.4}Dynamic pool size}{60}{section.A.4}%
+\contentsline {section}{\numberline {A.5}Batching}{60}{section.A.5}%
+\contentsline {chapter}{\numberline {B}Core data structures}{61}{appendix.B}%
+\contentsline {section}{\numberline {B.1}MPMC queue on infinite array}{61}{section.B.1}%
+\contentsline {section}{\numberline {B.2}MPMC queue blocking}{62}{section.B.2}%
+\contentsline {section}{\numberline {B.3}MPMC queue non-blocking dequeue}{62}{section.B.3}%
+\contentsline {section}{\numberline {B.4}MPMC queue non-blocking enqueue}{63}{section.B.4}%
+\contentsline {section}{\numberline {B.5}Work stealing queue}{63}{section.B.5}%
+\contentsline {section}{\numberline {B.6}Work stealing stack}{64}{section.B.6}%
+\contentsline {section}{\numberline {B.7}Resizing}{65}{section.B.7}%
+\contentsline {section}{\numberline {B.8}Sharded queue}{65}{section.B.8}%
+\contentsline {section}{\numberline {B.9}False sharing}{66}{section.B.9}%
+\contentsline {section}{\numberline {B.10}Validation}{66}{section.B.10}%
+\contentsline {section}{\numberline {B.11}Limitations}{66}{section.B.11}%
