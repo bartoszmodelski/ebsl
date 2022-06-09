@@ -78,7 +78,7 @@
 \contentsline {section}{\numberline {B.5}Work stealing queue}{63}{section.B.5}%
 \contentsline {section}{\numberline {B.6}Work stealing stack}{64}{section.B.6}%
 \contentsline {section}{\numberline {B.7}Resizing}{65}{section.B.7}%
-\contentsline {section}{\numberline {B.8}Sharded queue}{65}{section.B.8}%
+\contentsline {section}{\numberline {B.8}Sharded queue}{66}{section.B.8}%
 \contentsline {section}{\numberline {B.9}False sharing}{66}{section.B.9}%
 \contentsline {section}{\numberline {B.10}Validation}{66}{section.B.10}%
 \contentsline {section}{\numberline {B.11}Limitations}{66}{section.B.11}%

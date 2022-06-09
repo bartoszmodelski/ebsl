@@ -166,9 +166,9 @@
 \@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces The figure shows two ways to traverse the task DAG. Boxes with a blue shade represent tasks physically present in the runqueue (or run stack). The grey boxes constitute tasks that their respective parents will spawn during execution. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, and 9 while using LIFO at 3, 6, and 9. Thus, although FIFO optimizes per-task latency, the latency of actual requests favors LIFO.}}{26}{figure.4.1}\protected@file@percent }
 \newlabel{fig:fifo-lifo-latency}{{4.1}{26}{The figure shows two ways to traverse the task DAG. Boxes with a blue shade represent tasks physically present in the runqueue (or run stack). The grey boxes constitute tasks that their respective parents will spawn during execution. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, and 9 while using LIFO at 3, 6, and 9. Thus, although FIFO optimizes per-task latency, the latency of actual requests favors LIFO}{figure.4.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Allocations}{26}{section*.5}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Naive Fibonacci implementation.}}{26}{figure.4.2}\protected@file@percent }
-\newlabel{fig:fib-pure}{{4.2}{26}{Naive Fibonacci implementation}{figure.4.2}{}}
 \citation{amdahl}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Naive Fibonacci implementation.}}{27}{figure.4.2}\protected@file@percent }
+\newlabel{fig:fib-pure}{{4.2}{27}{Naive Fibonacci implementation}{figure.4.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Hybrid}{27}{subsection.4.3.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {4.4}Contention and scalability}{27}{section.4.4}\protected@file@percent }
 \newlabel{section:global_local}{{4.4}{27}{Contention and scalability}{section.4.4}{}}
@@ -193,10 +193,10 @@
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.5.3}Yield}{31}{subsection.4.5.3}\protected@file@percent }
 \newlabel{section:yield}{{4.5.3}{31}{Yield}{subsection.4.5.3}{}}
 \citation{chebyras74:online}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.4}Promise}{32}{subsection.4.5.4}\protected@file@percent }
-\newlabel{section:promise}{{4.5.4}{32}{Promise}{subsection.4.5.4}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Implemented promise interface.}}{32}{figure.4.3}\protected@file@percent }
 \newlabel{fig:promise-interface}{{4.3}{32}{Implemented promise interface}{figure.4.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.4}Promise}{32}{subsection.4.5.4}\protected@file@percent }
+\newlabel{section:promise}{{4.5.4}{32}{Promise}{subsection.4.5.4}{}}
 \@writefile{toc}{\contentsline {chapter}{\numberline {5}Implementations and evaluation}{33}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
@@ -386,10 +386,10 @@
 \newlabel{fig:basic-enqueue}{{B.1}{61}{Basic enqueue function}{figure.B.1}{}}
 \citation{Sundell2011}
 \citation{Kappes2021}
-\@writefile{toc}{\contentsline {section}{\numberline {B.2}MPMC queue blocking}{62}{section.B.2}\protected@file@percent }
-\newlabel{section:blocking_mpmc}{{B.2}{62}{MPMC queue blocking}{section.B.2}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {B.2}{\ignorespaces Basic deque function.}}{62}{figure.B.2}\protected@file@percent }
 \newlabel{fig:basic-deque}{{B.2}{62}{Basic deque function}{figure.B.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B.2}MPMC queue blocking}{62}{section.B.2}\protected@file@percent }
+\newlabel{section:blocking_mpmc}{{B.2}{62}{MPMC queue blocking}{section.B.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {B.3}MPMC queue non-blocking dequeue}{62}{section.B.3}\protected@file@percent }
 \newlabel{section:mpmc_non_blocking_dequeue}{{B.3}{62}{MPMC queue non-blocking dequeue}{section.B.3}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {B.4}MPMC queue non-blocking enqueue}{63}{section.B.4}\protected@file@percent }
@@ -397,12 +397,12 @@
 \newlabel{section:wss-queue}{{B.5}{63}{Work stealing queue}{section.B.5}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {B.6}Work stealing stack}{64}{section.B.6}\protected@file@percent }
 \citation{Chase2005}
-\citation{Postnikova2022}
 \@writefile{toc}{\contentsline {section}{\numberline {B.7}Resizing}{65}{section.B.7}\protected@file@percent }
 \newlabel{section:resizing_details}{{B.7}{65}{Resizing}{section.B.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {B.8}Sharded queue}{65}{section.B.8}\protected@file@percent }
-\newlabel{section:multiqueue_details}{{B.8}{65}{Sharded queue}{section.B.8}{}}
+\citation{Postnikova2022}
 \citation{bartoszm90:online}
+\@writefile{toc}{\contentsline {section}{\numberline {B.8}Sharded queue}{66}{section.B.8}\protected@file@percent }
+\newlabel{section:multiqueue_details}{{B.8}{66}{Sharded queue}{section.B.8}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {B.9}False sharing}{66}{section.B.9}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {B.10}Validation}{66}{section.B.10}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {B.11}Limitations}{66}{section.B.11}\protected@file@percent }

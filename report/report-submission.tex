@@ -457,7 +457,7 @@ A possible counterpoint to such an example could be to run the entire request as
 
 \subsubsection{Allocations}
 
-\begin{wrapfigure}{r}{0.63\textwidth}
+\begin{figure} 
     \centering
     \begin{verbatim}
 
@@ -472,7 +472,7 @@ A possible counterpoint to such an example could be to run the entire request as
     \end{verbatim}
     \caption{Naive Fibonacci implementation.}
     \label{fig:fib-pure}
-\end{wrapfigure}
+\end{figure}
 
 Finally, it is worth noting that described effects may be overpowered if a workload is simply more efficient to traverse in either depth-first (LIFO) or breadth-first (FIFO) manner. Such a bias may arise for several reasons. For example, memory, since it does not scale linearly. Hardware is strictly hierarchical, with latency increasing exponentially at every stage. OCaml garbage collector is generational; minor heap is cheaper than major heap (\S\ref{section:gc}). Sometimes faster scheduling method is simply the one that minimizes allocations. For example, FIFO traversal of naive Fibonacci implementation quickly exhausts all available memory and experiences a significant slowdown. The same workload under LIFO scheduling causes a trivial load. Naturally, some workloads favor FIFO for the same reasons.
 
@@ -558,7 +558,7 @@ Notably, Linux kernel developers made a choice in a similar vein in 2003 when yi
 \label{section:promise}
 Promise is a placeholder value returned by a scheduler for a newly added task. It is similar to an option type, which is automatically filled with returned value upon completion of respective task. If another thread attempts to read the promise when empty, it becomes blocked until the result is known \cite{Swalens2014}. 
 
-\begin{wrapfigure}{r}{0.63\textwidth}
+\begin{figure} 
     \centering
     \begin{verbatim}
 
@@ -567,7 +567,7 @@ Promise is a placeholder value returned by a scheduler for a newly added task. I
     \end{verbatim}
     \caption{Implemented promise interface.}
     \label{fig:promise-interface}
-\end{wrapfigure}
+\end{figure}
 
 
 Fundamentally, promises do not have to be implemented in the runtime. They are a convenient abstraction to avoid busy waiting and can be built entirely from standard synchronisation primitives. It is the case in Go \cite{chebyras74:online}. With preemption, goroutines tend to be more long-lived than tasks in Tokio or OCaml (and channels offer similar semantics if required). Nevertheless, this project has included promises as OCaml tasks should be very granular. Availability of promises allowed audio mixer (\S\ref{section:bench-audio-mixer}) benchmark to be written in a more idiomatic way. Figure \ref{fig:promise-interface} shows the implemented interface. Naturally, it is an eager mechanism - scheduled tasks are executed even if nothing awaits the promise. 
@@ -611,25 +611,21 @@ Therefore, this thesis relies on lock-free structures inspired by \citet{Kappes2
 
 \section{Methods}
 \label{section:methods}
-This section describes details of the experimental setup, procedures and the statistical methods.
+This section describes the experimental setup, procedures, and statistical methods.
 
 \subsection{System}
 \label{section:methods_system}
-The hardware features two AMD EPYC 7702 processors (\cite{2ndGenAM8:online}) plugged into a dual-socket Gigabyte MZ92-FS0-00 motherboard (\cite{MD90FS0r76:online}). It has 1082 GiB of RAM and caches have the following sizes L1 64 KiB, L2 512 KiB and a shared L3 256 MiB. Cache line is 64 bytes wide. 
+The hardware features two AMD EPYC 7702 processors (\cite{2ndGenAM8:online}) plugged into a dual-socket Gigabyte MZ92-FS0-00 motherboard (\cite{MD90FS0r76:online}). It features 1082 GiB of RAM. Caches have the following sizes: L1 64 KiB, L2 512 KiB, and a shared L3 256 MiB. A cache line is 64 bytes wide. 
 
 The installed system is Ubuntu 22.04 LTS. All the schedulers and benchmarks in this project have been compiled with OCaml 4.12.0+domains \cite{ocamlmul16:online}, which has a hard limit of 128 domains (OS threads, \S\ref{section:fibers}). 
 
 \subsection{Procedures}
-Each benchmark has been run 11 times. The first sample has been dropped as it tends to be more noisy that others due to lazy loading of libraries, cold caches, etc. 
+Each benchmark has been run 11 times, with the first sample dropped as it tends to be noisier than others due to the lazy loading of libraries and cold caches. 
 
-Performance sensitive data was collected on thread-local counters. Benchmarking latency required many calls to clock, which were ensured to be served by vDSO \cite{vdso7Lin5:online} and take less than 50ns on average. 
+Performance-sensitive data was collected on thread-local counters. Benchmarking latency required many calls to the system clock, which were ensured to be served by vDSO \cite{vdso7Lin5:online} and take less than 50ns on average. 
 
 \subsection{Statistical methods}
-Since it is quite hard to assume any particular distribution (esp. gaussian) when it comes to performance measurements, the statistical methods used throughtout this project are distribution agnostic. Charts feature medians, and 25th, 75th as error bards.
-
-
-
-
+Since it is hard to assume any particular distribution (esp. gaussian) when it comes to performance measurements, the statistical methods used throughout this project are distribution agnostic. Charts feature medians, 25th, and 75th as error bards.
 
 
 \section{Server benchmark} 
@@ -881,20 +877,20 @@ The detailed analysis is beyond the scope of this section but the three key fact
 \chapter{Summary and conclusions}
 \label{section:summary_and_conclusion}
 
-This dissertation focused on exploring the trade-offs between various real-world scheduling policies. The core of the work included lock-free FIFO and LIFO schedulers, which were then composed (\S\ref{section:staged-as-composition}) and extended in various ways (\S\ref{section:lifo-heuristics}, \S\ref{section:work-distribution-extensions}). The evaluation involved a number of real-world benchmarks and common industrial metrics: throughput and tail latency (\S\ref{section:objectives}). 
+This dissertation focused on exploring the trade-offs between various real-world scheduling policies. The core of the work included lock-free FIFO and LIFO schedulers, which were then composed (\S\ref{section:staged-as-composition}) and extended in various ways (\S\ref{section:lifo-heuristics}, \S\ref{section:work-distribution-extensions}). The evaluation involved many real-world benchmarks and standard industrial metrics: throughput and tail latency (\S\ref{section:objectives}). 
 
 The results highlight vast differences between different scheduling policies. There is no single optimal scheduling policy. Instead, it depends on the workload, available parallelism and optimized metrics. Other findings include: 
 \begin{itemize}
-    \item The selection of optimal policy is non-trivial. For example, there is no clear-cut answer for whether FIFO, LIFO or other is better for latency. It depends on the interaction of a number of factors such as shape of the task-graph and locality benefits. In one case, staged architecture was shown to improve above both (\S\ref{section:mixer-benchmark}, (\S\ref{section:server-bench-with-multi-modal})). 
-    \item Scaling fine-grained workloads to high-core machines is non-trivial. In fact, an algorithm that scales well up to 20 cores can in fact lose perfomance as more resources are added due to to contention (\S\ref{section:benchmark-general-case}).
+    \item The selection of optimal policy is non-trivial. For example, there is no clear-cut answer for whether FIFO, LIFO, or other is better for latency. It depends on the interaction of a number of factors, such as the shape of the task graph and locality benefits. In one case, staged architecture was shown to improve above both (\S\ref{section:mixer-benchmark}, (\S\ref{section:server-bench-with-multi-modal})).
+    \item Scaling fine-grained workloads to high-core machines is non-trivial. An algorithm that scales well up to 20 cores can lose performance as more resources are added due to contention (\S\ref{section:benchmark-general-case}).
     \item Locked overflow queue used in Go and Tokio limits performance of some workloads (\S\ref{paragraph:overflow-queue-bad-1}, \S\ref{paragraph:overflow-queue-bad-2}).
-    \item The default OCaml scheduler - Domainslib \cite{ocamlmul59:online} - has room for improvement on high core counts (\S\ref{section:result_with_domainslib}). Notably, the OCaml team has already expressed interest in upstreaming some of the lock-free data structures developed for this project.
+    \item The default OCaml scheduler - Domainslib \cite{ocamlmul59:online} - has room for improvement on high core counts (\S\ref{section:result_with_domainslib}). Notably, the OCaml team has already expressed interest in upstreaming some lock-free data structures developed for this project.
 \end{itemize}
 Therefore, there are clear benefits from customization and composition of schedulers for the workload and the desired metrics. Thus, the hypothesis stated in the introduction is accepted (\S\ref{section:thesis}). 
 
-Finally, OCaml multicore improves over classic runtime-integrated scheduling. Historically, built-in scheduling necessitated FIFO ordering to avoid the bad latency characteristics of LIFO under very heterogenous workloads. LIFO is, nonetheless, the optimal choice for many homogenous workloads (e.g. \S\ref{fig:mixer-bench}). The newfound capabilities of OCaml let developers tap into the benefits of using custom scheduling policies. In the case of mixer benchmark, the homogenous workload can be isolated on LIFO scheduler, while other diverse work remains on traditional FIFO discipline.
+Finally, OCaml multicore improves over classic runtime-integrated scheduling. Historically, built-in scheduling necessitated FIFO to avoid LIFO's bad latency characteristics under heterogeneous workloads. LIFO is, nonetheless, the optimal choice for many homogenous workloads (e.g., \S\ref{fig:mixer-bench}). The newfound capabilities of OCaml let developers tap into the benefits of using custom scheduling policies. In the case of the mixer benchmark, the homogenous workload can be isolated on the LIFO scheduler, while other diverse work remains in the traditional FIFO scheduler.
 
-Future work can take a number of different directions, e.g.: further optimization of task distribution mechanisms (e.g. horizontal scaling of local structures), integration of effects and preemption, exploration of viable lock-free structures, and development of DSCheck (\S\ref{section:background_dscheck}). 
+Future work can take several different directions, e.g., further optimization of task distribution mechanisms (e.g., horizontal scaling of local structures), integration of effects and preemption, exploration of viable lock-free structures, and development of DSCheck (\S\ref{section:background_dscheck}). 
 
 
 \label{lastcontentpage} % end page count here
@@ -953,7 +949,8 @@ As the first step, it is crucial to understand the main idea behind any multi-pr
 
 Functions operating on such an array are presented in listing \ref{fig:basic-enqueue} and \ref{fig:basic-deque}. The enqueuer simply increases the \textit{tail} index by one using an atomic operation, receives the index of its slot in return and stores the enqueued element there. Since the queue is infinite, every slot is only used once. Likewise, the dequeuer begins by increasing the \textit{head} index and receives the index of its slot in return. However, since there is no synchronisation with the tail, the actual slot can still be empty. Either because head overshot the tail or enqueuer is simply slow to finish operation. Thus, dequeur needs to make sure that the slot actually contains an element and once that's established, it returns the element. 
 
-\begin{wrapfigure}{r}{0.5\textwidth}
+
+\begin{figure} 
     \centering
     \begin{verbatim}
   let enqueue {array; tail; _} element = 
@@ -964,13 +961,14 @@ Functions operating on such an array are presented in listing \ref{fig:basic-enq
     \end{verbatim}
     \caption{Basic enqueue function.}
     \label{fig:basic-enqueue}
-\end{wrapfigure}
+\end{figure}
+
 
 
 With such a setup both enqueue and dequeue need do two atomic operations (FAD+GET/SET) but the contention is resolved at the \textit{head}, \textit{tail} indices with FAD. Thus, there is never any need to retry in the hotspots. Once past the FAD, each dequeuer is essentially matched up with an enqueuer and a slot to pass the information through. Accesses to the slot need to be atomic as enqueuer and dequeuer may work in parallel. This extra atomic operation is avoidable in some cases and convenient in others (e.g. implementation of cancellations \ref{section:cancellations} or lightweight yielding \ref{section:yield}). Overall, it is a constant factor and does not impact scalability of the structure.
 
 
-\begin{wrapfigure}{r}{0.5\textwidth}
+\begin{figure} 
     \centering
     \begin{verbatim}
   let dequeue {array; head; _} element = 
@@ -982,7 +980,7 @@ With such a setup both enqueue and dequeue need do two atomic operations (FAD+GE
     \end{verbatim}
     \caption{Basic deque function.}
     \label{fig:basic-deque}
-\end{wrapfigure}
+\end{figure}
 
 \section{MPMC queue blocking}
 \label{section:blocking_mpmc}
