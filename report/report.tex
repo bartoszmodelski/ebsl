@@ -164,18 +164,18 @@ A standard scheduling definition explains it in terms of allocating resources to
 This simplicity is no longer the case with processors scaling mainly horizontally and ever more complex applications. Thus, this dissertation argues the following thesis. 
 
 \begin{quote}
-    Modern hardware is so parallel, and workloads are so concurrent that there is no single, perfect scheduling strategy across a complex application software stack. Therefore, significant performance advantages can be gained from customizing and composing schedulers.
+    Modern hardware is so parallel, and workloads are so concurrent, that there is no single, perfect scheduling strategy across a complex application software stack. Therefore, significant performance advantages can be gained from customizing and composing schedulers.
 \end{quote} 
 
 The first part of the statement is akin to the construction of a No Free Lunch theorem \cite{Ho2002} for schedulers. While there is a growing body of NFL theorems for optimization problems (e.g., \cite{Wolpert1997}, \cite{Igel2005}), such fundamental results formalize knowledge rather than produce direct guidance for real-world engineering. Therefore, this dissertation aims for a different exposition of the problem, one that analyses practical differences between scheduling policies. It considers widely-used performance metrics and explores the trade-offs between pragmatic scheduling schemes guided by benchmarks executed on stock hardware. 
 
-The following sections strengthen the thesis from the view of hardware parallelism (\S\ref{section:intr_hardware_par}), software concurrency (\S\ref{section:intr_software_conc}), and the opportunity presented by OCaml Multicore (\S\ref{section:intr_ocaml-multicore}).
+The following sections strengthen the thesis from the view of hardware parallelism (\S\ref{section:intr_hardware_par}), software concurrency (\S\ref{section:intr_software_conc}), the opportunity presented by OCaml Multicore (\S\ref{section:intr_ocaml-multicore}), and concludes with an overview of the findings in (\S\ref{section:findings}).
 
 \subsection{Parallelism}
 \label{section:intr_hardware_par}
 
 
-\begin{figure}
+\begin{figure}[t]
     \centering
     \includegraphics[width=0.85\textwidth]{50-years-processor-trend.png}
     \caption{50 years of evolution of processors. The single-core performance sees diminishing returns. During the last 15 years, CPU manufacturers turned to multicore architectures. Figure generated using \cite{karlrupp48:online}.}
@@ -187,13 +187,13 @@ Moore's law is an observation stating that the number of transistors in integrat
 
 Hence, parallelism is here to stay. Naturally, in contrast with clock frequency increases, schedulers must be carefully crafted to take full advantage of the horizontal scaling of the underlying architecture. That is because:
 \begin{itemize}
-    \item Designs need to evolve as synchronization primitives like locks or atomics do not scale endlessly. A naive work stealing scheduler may have been good enough on a 16-thread Intel Xeon in 2012 but fails to utilize all 128 threads of a contemporary AMD ThreadRipper \cite{Castello2016}. 
-    \item Modern high-core architectures feature non-uniform memory. Thus, memory latency patterns vary with the topology, and scheduling decisions benefit from taking memory hierarchy into account (e.g., \cite{Drebes2016}, \cite{faverge:inria-00416502}). Moreover, the non-uniformity appears in consumer products such as Apple M1 or Intel Core i7-1280P, which have two sets of cores: one optimized for performance and another for efficiency.
+    \item Synchronization primitives like locks or atomics do not scale endlessly. A naive work stealing scheduler may have been good enough on a 16-thread Intel Xeon in 2012 but fails to utilize all 128 threads of a contemporary AMD ThreadRipper \cite{Castello2016}. 
+    \item Modern high-core architectures feature non-uniform memory. Thus, memory latency patterns vary with the topology, and scheduling decisions benefit from taking memory hierarchy into account (e.g., \cite{Drebes2016}, \cite{faverge:inria-00416502}). Moreover, the non-uniformity appears even in consumer products such as Apple M1 or Intel Core i7-1280P, which have two sets of cores: one optimized for performance and another for efficiency.
 \end{itemize}
 
 \subsection{Concurrency}
 \label{section:intr_software_conc}
-Workloads become more concurrent, and there are many reasons behind that. High concurrency is a necessary condition to take advantage of the available parallelism. Compute-heavy applications have strong incentives to distribute work across multiple cores in the world of stalled single-clock speeds. 
+There are many reason behind why workloads become more concurrent. Firstly, high concurrency is a necessary condition to take advantage of the available parallelism. Compute-heavy applications have strong incentives to distribute work across multiple cores in the world of stalled single-clock speeds. 
 
 Secondly, the complexity of the underlying workload increases as computers become more ubiquitous. More useful programs are available with time, and composing their executions requires concurrency. Moreover, the programs alone become more complicated. Data-intensive applications \cite{Kleppmann2017-en} require more concurrency as networked portions of the code benefit from scheduling guarantees. 
 
@@ -216,7 +216,7 @@ OCaml is a unique functional programming language aiming to deliver performance 
 
 Nonetheless, multicore support has been recently merged into the main tree after a years-long effort. Thus it is an excellent time to take a closer look at lightweight threads schedulers. Significant changes to existing schedulers are notoriously slow and troublesome, as even subtle differences in scheduling policy may expose bugs in existing programs. During my industrial experience, the only way to deal with such a change was to have developers manually verify the code and re-do the testing. Incidentally, both methods are inadequate at finding bugs in multiprocessing. However, this research project will likely contribute to the actual design and implementation of the OCaml scheduler. 
 
-Finally, Multicore OCaml is a fascinating study object as it includes several novel solutions. Standard programming languages either include threading support, which is tightly coupled with the language itself, or offer no support. Thus, library schedulers cannot offer much beyond simply running scheduled functions in some order. OCaml, on the other hand, features fibers and effects. Together, they allow writing a direct style, stack-switching scheduler as a library. Further, OCaml offers a mechanism to compose schedulers, a much-needed mechanism for executing diverse workloads with portions having different optimization criteria \cite{Tennenhouse89layeredmultiplexing}.
+Finally, Multicore OCaml is a fascinating study object as it includes several novel solutions. Standard programming languages either include threading support, which is tightly coupled with the language itself, or offer no support. Thus, library schedulers cannot offer much beyond simply running scheduled functions in some order. OCaml, on the other hand, features fibers and effects. Together, they allow writing a direct style, stack-switching scheduler as a library. Further, OCaml offers a mechanism to compose schedulers, a much-needed feature for executing diverse workloads whose portions have different optimization criteria \cite{Tennenhouse89layeredmultiplexing}.
 
 \section{Findings}
 \label{section:findings}
@@ -236,7 +236,7 @@ Scheduling attempts to assign resources to tasks in a way that optimizes some me
 \begin{figure}
     \centering
     \includegraphics[width=0.85\textwidth]{scheduler_graph.png}
-    \caption{A simplified graph of fine-grained tasks, which scheduler attempts to traverse in order to terminate. The green box represents executed tasks. Blue boxes are currently enqueued tasks. The orange boxes are tasks that will be scheduled once their parents execute, and they are not visible to the scheduler at the moment. This graph shows how little is known about the tasks, and scheduler traps in the shape of infinite-depth subgraphs are prone to cause starvation.}
+    \caption{A simplified graph of fine-grained tasks, which a scheduler attempts to traverse in order to terminate. The green box represents executed tasks. Blue boxes are currently enqueued tasks. The orange boxes are tasks that will be scheduled once their parents execute, and they are not visible to the scheduler at the moment. This graph shows how little is known about the tasks, and scheduler traps in the shape of infinite-depth subgraphs are prone to cause starvation.}
    \label{fig:sched-graph}
 \end{figure}
 
