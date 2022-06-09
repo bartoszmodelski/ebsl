@@ -1,7 +1,6 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  9 JUN 2022 02:03
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  9 JUN 2022 02:04
 entering extended mode
  restricted \write18 enabled.
- file:line:error style messages enabled.
  %&-line parsing enabled.
 **report-submission.tex
 (./report-submission.tex
@@ -712,14 +711,9 @@ of the avail-able par-al-lelism. Compute-
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
 l.201 
-       <./50-years-processor-trend.png>] [10]
-
-LaTeX Warning: Reference `section:summary_and_conclusion' on page 11 undefined 
-on input line 225.
-
-[11]
+       <./50-years-processor-trend.png>] [10] [11]
 Chapter 2.
-<scheduler_graph.png, id=536, 698.61pt x 272.01625pt>
+<scheduler_graph.png, id=537, 698.61pt x 272.01625pt>
 File: scheduler_graph.png Graphic file (type png)
 <use scheduler_graph.png>
 Package pdftex.def Info: scheduler_graph.png  used on input line 239.
@@ -747,7 +741,7 @@ ine 428.
 Underfull \vbox (badness 3746) has occurred while \output is active []
 
  [24]
-<FIFOLIFO.png, id=691, 824.07875pt x 241.90375pt>
+<FIFOLIFO.png, id=692, 824.07875pt x 241.90375pt>
 File: FIFOLIFO.png Graphic file (type png)
 <use FIFOLIFO.png>
 Package pdftex.def Info: FIFOLIFO.png  used on input line 450.
@@ -802,7 +796,7 @@ Chapter 5.
 [33
 
 ] [34]
-<eval/packet-basic-with-steal-counts2std.png, id=815, 734.62456pt x 1354.3398pt
+<eval/packet-basic-with-steal-counts2std.png, id=816, 734.62456pt x 1354.3398pt
 >
 File: eval/packet-basic-with-steal-counts2std.png Graphic file (type png)
 <use eval/packet-basic-with-steal-counts2std.png>
@@ -823,13 +817,13 @@ Underfull \vbox (badness 2150) has occurred while \output is active []
                                                   \__shipout_drop_firstpage_...
 l.652 
        <./eval/packet-basic-with-steal-counts2std.png>] [37]
-<eval/packet-basic-with-steal-counts2.png, id=839, 716.1957pt x 263.0628pt>
+<eval/packet-basic-with-steal-counts2.png, id=840, 716.1957pt x 263.0628pt>
 File: eval/packet-basic-with-steal-counts2.png Graphic file (type png)
 <use eval/packet-basic-with-steal-counts2.png>
 Package pdftex.def Info: eval/packet-basic-with-steal-counts2.png  used on inpu
 t line 667.
 (pdftex.def)             Requested size: 386.96027pt x 142.13206pt.
-<eval/packet-basic-counters.png, id=842, 716.1957pt x 263.0628pt>
+<eval/packet-basic-counters.png, id=843, 716.1957pt x 263.0628pt>
 File: eval/packet-basic-counters.png Graphic file (type png)
 <use eval/packet-basic-counters.png>
 Package pdftex.def Info: eval/packet-basic-counters.png  used on input line 676
@@ -841,20 +835,20 @@ Package pdftex.def Info: eval/packet-basic-counters.png  used on input line 676
                                                   \__shipout_drop_firstpage_...
 l.682 
        <./eval/packet-basic-with-steal-counts2.png>]
-<eval/packet-basic-10million-just-throughput.png, id=852, 734.62456pt x 263.062
+<eval/packet-basic-10million-just-throughput.png, id=853, 734.62456pt x 263.062
 8pt>
 File: eval/packet-basic-10million-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-10million-just-throughput.png>
 Package pdftex.def Info: eval/packet-basic-10million-just-throughput.png  used 
 on input line 687.
 (pdftex.def)             Requested size: 386.96027pt x 138.57164pt.
-<eval/packet-basic-slowed_2.png, id=853, 717.6411pt x 263.0628pt>
+<eval/packet-basic-slowed_2.png, id=854, 717.6411pt x 263.0628pt>
 File: eval/packet-basic-slowed_2.png Graphic file (type png)
 <use eval/packet-basic-slowed_2.png>
 Package pdftex.def Info: eval/packet-basic-slowed_2.png  used on input line 695
 .
 (pdftex.def)             Requested size: 386.96027pt x 141.84708pt.
-<eval/packet-basic-4spawners-just-throughput.png, id=854, 717.6411pt x 263.0628
+<eval/packet-basic-4spawners-just-throughput.png, id=855, 717.6411pt x 263.0628
 pt>
 File: eval/packet-basic-4spawners-just-throughput.png Graphic file (type png)
 <use eval/packet-basic-4spawners-just-throughput.png>
@@ -884,7 +878,7 @@ l.712 \end{itemize}
 l.712 \end{itemize}
                     <./eval/packet-basic-slowed_2.png> <./eval/packet-basic-4sp
 awners-just-throughput.png>] [41]
-<eval/packet-basic-distribution10-granular.png, id=885, 728.84296pt x 481.3182p
+<eval/packet-basic-distribution10-granular.png, id=886, 728.84296pt x 481.3182p
 t>
 File: eval/packet-basic-distribution10-granular.png Graphic file (type png)
 <use eval/packet-basic-distribution10-granular.png>
@@ -898,7 +892,7 @@ Package pdftex.def Info: eval/packet-basic-distribution10-granular.png  used on
 l.756 O
        nly stealing at least 10 elements had a strong negative effect, as it...
  <./eval/packet-basic-distribution10-granular.png>]
-<eval/packet-basic-lifo-better.png, id=898, 771.1209pt x 286.1892pt>
+<eval/packet-basic-lifo-better.png, id=899, 771.1209pt x 286.1892pt>
 File: eval/packet-basic-lifo-better.png Graphic file (type png)
 <use eval/packet-basic-lifo-better.png>
 Package pdftex.def Info: eval/packet-basic-lifo-better.png  used on input line 
@@ -910,7 +904,7 @@ Package pdftex.def Info: eval/packet-basic-lifo-better.png  used on input line
                                                   \__shipout_drop_firstpage_...
 l.773 
        <./eval/packet-basic-lifo-better.png>]
-<eval/packet-basic-fifo-better.png, id=909, 831.46635pt x 251.86095pt>
+<eval/packet-basic-fifo-better.png, id=910, 831.46635pt x 251.86095pt>
 File: eval/packet-basic-fifo-better.png Graphic file (type png)
 <use eval/packet-basic-fifo-better.png>
 Package pdftex.def Info: eval/packet-basic-fifo-better.png  used on input line 
@@ -923,13 +917,13 @@ Package pdftex.def Info: eval/packet-basic-fifo-better.png  used on input line
 l.795     \item \textbf
                        {LIFO slot}. Rely on FIFO ordering but have a special...
  <./eval/packet-basic-fifo-better.png>]
-<eval/packet-basic-base-hybrids.png, id=920, 823.51665pt x 254.3904pt>
+<eval/packet-basic-base-hybrids.png, id=921, 823.51665pt x 254.3904pt>
 File: eval/packet-basic-base-hybrids.png Graphic file (type png)
 <use eval/packet-basic-base-hybrids.png>
 Package pdftex.def Info: eval/packet-basic-base-hybrids.png  used on input line
  801.
 (pdftex.def)             Requested size: 386.96027pt x 119.53632pt.
-<eval/mixer-base8.png, id=924, 867.24pt x 289.08pt>
+<eval/mixer-base8.png, id=925, 867.24pt x 289.08pt>
 File: eval/mixer-base8.png Graphic file (type png)
 <use eval/mixer-base8.png>
 Package pdftex.def Info: eval/mixer-base8.png  used on input line 815.
@@ -946,7 +940,7 @@ cate ignored
                                                   \__shipout_drop_firstpage_...
 l.829 
        <./eval/mixer-base8.png>]
-<eval/options-base.png, id=950, 867.24pt x 289.08pt>
+<eval/options-base.png, id=951, 867.24pt x 289.08pt>
 File: eval/options-base.png Graphic file (type png)
 <use eval/options-base.png>
 Package pdftex.def Info: eval/options-base.png  used on input line 837.
@@ -957,7 +951,7 @@ Package pdftex.def Info: eval/options-base.png  used on input line 837.
                                                   \__shipout_drop_firstpage_...
 l.849 
        <./eval/options-base.png>] [48]
-<eval/comp-base4.png, id=968, 867.24pt x 289.08pt>
+<eval/comp-base4.png, id=969, 867.24pt x 289.08pt>
 File: eval/comp-base4.png Graphic file (type png)
 <use eval/comp-base4.png>
 Package pdftex.def Info: eval/comp-base4.png  used on input line 871.
@@ -969,10 +963,6 @@ Package pdftex.def Info: eval/comp-base4.png  used on input line 871.
 l.884 \end{itemize}
                     <./eval/comp-base4.png>] [50]
 Chapter 6.
-
-LaTeX Warning: Reference `section:summary_and_conclusion' on page 51 undefined 
-on input line 887.
-
 [51
 
 ] (./report-submission.bbl [52]
@@ -1110,16 +1100,13 @@ Package wrapfig Warning: Stationary wrapfigure forced to float on input line 99
 l.1005     \item M
                   ark slot as burned and return immediately. Then once enque...
 ] [64] [65] [66] [67] (./report-submission.aux)
-
-LaTeX Warning: There were undefined references.
-
 Package rerunfilecheck Info: File `report-submission.out' has not changed.
 (rerunfilecheck)             Checksum: 910B502A005F36D97FD12B7FCB9042EB;10572.
  ) 
 Here is how much of TeX's memory you used:
  21521 strings out of 480247
  406156 string characters out of 5896151
- 675080 words of memory out of 5000000
+ 674127 words of memory out of 5000000
  38840 multiletter control sequences out of 15000+600000
  476320 words of font info for 51 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
@@ -1139,10 +1126,10 @@ onts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
 m/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmti1
 2.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12.pfb>
 
-Output written on report-submission.pdf (67 pages, 1729819 bytes).
+Output written on report-submission.pdf (67 pages, 1729752 bytes).
 PDF statistics:
- 1341 PDF objects out of 1440 (max. 8388607)
- 1190 compressed objects within 12 object streams
+ 1342 PDF objects out of 1440 (max. 8388607)
+ 1191 compressed objects within 12 object streams
  252 named destinations out of 1000 (max. 500000)
  730 words of extra memory for PDF output out of 10000 (max. 10000000)
 
