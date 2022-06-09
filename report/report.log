@@ -1,6 +1,7 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  9 JUN 2022 19:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  9 JUN 2022 19:50
 entering extended mode
  restricted \write18 enabled.
+ file:line:error style messages enabled.
  %&-line parsing enabled.
 **report.tex
 (./report.tex
@@ -780,10 +781,7 @@ TS1/cmr/m/n/12 §[]\OT1/cmr/m/n/12 4.3[]) de-scribe global schedul-ing prop-er-t
 ies and mech-a-nisms achiev-
  []
 
-[27] [28] [29] [30]
-Underfull \vbox (badness 3209) has occurred while \output is active []
-
- [31]
+[27] [28] [29] [30] [31]
 Underfull \hbox (badness 3826) in paragraph at lines 574--575
 [][]\OT1/cmr/m/n/12 Fundamentally, promises do
  []
@@ -1127,7 +1125,7 @@ public/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 nts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12
 .pfb>
-Output written on report.pdf (67 pages, 1719884 bytes).
+Output written on report.pdf (67 pages, 1719972 bytes).
 PDF statistics:
  1339 PDF objects out of 1440 (max. 8388607)
  1190 compressed objects within 12 object streams
