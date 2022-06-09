@@ -227,89 +227,88 @@ Numerous benchmarks show the complex relationship between scheduling policy, wor
 
 \chapter{Background}
 
-This section begins with description of the problem of scheduling (\S\ref{section:background_schedulers}), key concepts, and details of fine-grained multicore programming (\S\ref{section:background_multiprocessing}).
+This section begins with a description of the problem of scheduling (\S\ref{section:background_schedulers}), key concepts, and details of fine-grained multicore programming (\S\ref{section:background_multiprocessing}).
 
 \section{Scheduling}
 \label{section:background_schedulers}
 
-Scheduling attempts to assign resources to tasks in a way that optimizes some metrics \cite{Pinedo2012}. The problem itself is not limited to computer science and arises in a number of areas, e.g. organization management. In the case of computer science, it stems from a very fundamental need to compose executions of multiple programs. However, supporting such a model of execution is not trivial. Instructions of multiple programs are inherently impractical to compose, since they all write and read the same registers. In effect, composition is achieved by interleaving executions of multiple programs, and a special mechanism to hide existence of these pauses by saving and restoring state. This leaves us with a clear-cut scheduling problem as there is a need for a holistic decision-making process to determine, which program runs when and for how long. This decision-making perspective is illustrated by figure \ref{fig:sched-graph} and such a model of the problem will be helpful to keep in mind throughout the rest of the report. 
-
+Scheduling attempts to assign resources to tasks in a way that optimizes some metrics \cite{Pinedo2012}. The problem is not limited to computer science and arises in several areas, e.g., organization management. In the case of computer science, it stems from a very fundamental need to compose executions of multiple programs. However, supporting such a model of execution is not trivial. Instructions of multiple programs are inherently impractical to compose since they all write and read the same registers. In effect, composition is achieved by interleaving executions of multiple programs and a special mechanism to hide the existence of these pauses by saving and restoring the state. This leaves us with a clear-cut scheduling problem as there is a need for a holistic decision-making process to determine which program runs when and for how long. Figure \ref{fig:sched-graph} illustrates this decision-making perspective. Such a model of the problem will be helpful to keep in mind throughout the rest of the report. 
 
 \begin{figure}
-     \centering
-     \includegraphics[width=0.85\textwidth]{scheduler_graph.png}
-     \caption{A simplified graph of fine-grained tasks, which scheduler attempts to traverse in order to terminate. Green box represents executed task, blue boxes are currently enqueued tasks. The orange boxes are tasks that are going to be scheduled once their parent execute. They are not visible to the scheduler at the moment. This graph shows how little is actually known about the tasks, and scheduler-traps in the shape of infinite-depth subgraphs, which are prone to cause starvation.}
-    \label{fig:sched-graph}
+    \centering
+    \includegraphics[width=0.85\textwidth]{scheduler_graph.png}
+    \caption{A simplified graph of fine-grained tasks, which scheduler attempts to traverse in order to terminate. The green box represents executed tasks. Blue boxes are currently enqueued tasks. The orange boxes are tasks that will be scheduled once their parents execute, and they are not visible to the scheduler at the moment. This graph shows how little is known about the tasks, and scheduler traps in the shape of infinite-depth subgraphs are prone to cause starvation.}
+   \label{fig:sched-graph}
 \end{figure}
-
 
 \subsection{System threads}
 \label{section:system-threads}
-System threads are a fundamental OS feature, which allows to detach the number of synchronous executions from the number of processing units. All kinds of program grew to rely on this abstraction heavily. For example, Google Chrome spawns a single process per tab \cite{Howwebbr64:online}, and depending on the logic, each such process spawns additional threads. This aggressive acquisition of resources leads to smooth operation of the web browser but puts significant pressure on the operating system, which has to ensure that in the sea of threads everything gets a fair share of the CPU time and their individual objectives are achieved, e.g. a heavy web browser and light but latency-sensitive audio driver.
+System threads are a fundamental OS feature that detaches the number of synchronous executions from the number of processing units. All kinds of programs grew to rely on this abstraction heavily. For example, Google Chrome spawns a single process per tab \cite{Howwebbr64:online} and each such process may spawn multiple additional threads. This aggressive acquisition of resources leads to the smooth operation of the web browser. However, it puts significant pressure on the operating system, which has to ensure that in the sea of threads, everyone gets a fair share of the CPU time and the individual objectives are achieved, i.e., ones of a heavy web browser and a latency-sensitive audio driver.
 
 
 
 \subsection{Lightweight threads}
 \label{section:lightweight-threads}
-System threading provides the fundamental mechanisms to execute concurrent workloads across parallel hardware. But programmers need to be wary of designed computations as the cost of interacting with kernel is non-trivial. It may vary from mode switching to full syscall overhead, which requires a number of things to happen (e.g. context switch, capability check, audit). This overhead thwarts the cost of a small task. Thus, the performance of highly concurrent workloads suffers significantly.
+System threading provides the fundamental mechanisms to execute concurrent workloads across parallel hardware. Nevertheless, programmers must be wary of designed computations as the cost of interacting with the kernel is non-trivial. It may vary from mode switching to syscall overhead, which requires a number of things to happen (e.g., context switch, capability check, audit). This overhead thwarts the cost of a small task. Thus, the performance of highly concurrent workloads suffers significantly.
 
-This is inconvenient for the developers. Spawning little concurrent tasks is the natural way to express many common workloads, e.g. processing HTTP requests. Language designers started to construct lightweight threads, which are a threading solution implemented in the user space. Lightweight threads aim to be cheap to use and they do deliver on that promise. Context switch in Go requires saving and restoring 3 registers \cite{gorout_vs_os_thread}. In OCaml just 2 \cite{Sivaramakrishnan2021}. Conversely, a system scheduler needs to save and restore \textit{all} registers and perform mode switching \cite{gorout_vs_os_thread}. Hence, lightweight threads are naturally better suited to support fine-grained concurrency. 
+These overheads are inconvenient for the developers. Spawning little concurrent tasks is the natural way to express many typical workloads, e.g., processing HTTP requests. In turn, language designers developed lightweight threads, a threading solution implemented in the user space. Lightweight threads aim to be cheap to use, and they do deliver on that promise. Context switch in Go requires saving and restoring three registers \cite{gorout_vs_os_thread}. In OCaml, just two \cite{Sivaramakrishnan2021}. Conversely, a system scheduler needs to save and restore \textit{all} registers and perform mode switching \cite{gorout_vs_os_thread}. Hence, lightweight threads are naturally better suited to support fine-grained concurrency. 
 
 \subsection{Preemption}
 \label{section:preemption}
 
-Preemption is the ability to suspend other tasks without any cooperation on their side. It is a cornerstone of modern OS-level scheduling, wherein each program is assigned a quantum of CPU time. Once the time is used up, scheduler preempts (forcibly deschedules) the offender. Preemption is a necessary condition to keep the system stable in the world with imperfect programs. In practice, preemption has more profound consequences. Individual programs no longer worry about their composition with others. They may cooperate but ultimately, all decisions are made by the privileged scheduler, which has a view of the whole system.
+Preemption is the ability to suspend other tasks without any cooperation on their side. It is a cornerstone of modern OS-level scheduling, wherein each program is assigned a quantum of CPU time. Once the time is up, the scheduler preempts (forcibly deschedules) the offender. Preemption is necessary to keep the system stable in a world with imperfect programs. In practice, preemption has more profound consequences. Individual programs no longer worry about their composition with others. They may cooperate, but ultimately, all decisions are made by the privileged scheduler, which has a view of the whole system.
 
-Unfortunately, true preemption is not possible within the user space. Operating systems rely on the hardware support for privileged mode and interrupts. For security reasons, a stanard applications should not be able to access that. Furthermore, even if there was a safe mechanism to allow true preemption in user space, such mechanism might defeat its purpose. Lightweight threads aim to be very cheap and that conflicts with using full OS-level context-switching mechanisms.
+Unfortunately, true preemption is not possible within the user space. Operating systems rely on hardware support for privileged mode and interrupts. For security reasons, a standard application should not be able to access that. Furthermore, even if there was a safe mechanism to allow true preemption in user space, such a mechanism might defeat its purpose. Lightweight threads aim to be cheap, which conflicts with using OS-level context-switching mechanisms.
 
 \subsection{Work stealing}
 \label{section:background-work-stealing}
-Work-stealing is a widespread concept applicable to all kinds of multicore scheduling. It has been introduced at least 40 years ago \cite{Blumofe1999} and remains used in some of the most cutting edge schedulers, e.g. Completely Fair Scheduler (the default scheduler in Linux) \cite{linux_cfs}, Cilk \cite{Blumofe1995}, Go \cite{golang}.
+Work-stealing is a widespread concept applicable to all kinds of multicore scheduling. It was introduced at least 40 years ago \cite{Blumofe1999} and remains used in some of the most cutting edge schedulers, e.g., Completely Fair Scheduler (the default scheduler in Linux) \cite{linux_cfs}, Cilk \cite{Blumofe1995}, Go \cite{golang}.
 
-Work-stealing splits the global work queue (in the FIFO case) into a number of local, per-CPU runqueues. Each processor strongly prioritizes its own runqueue; namely, it will enqueue and dequeue elements from its own structure as long as it is possible. This alone is similar to a number of unrelated processors, actual distribution of work happens when the impossibility criterion is met. If enqueue is impossible (due to lack of space), owner can either resize the runqueue or transfer some of the work into a global overflow queue. If dequeue is impossible (due to lack of items), processor chooses a different processor at random and steals work from the victim, thus balancing the load. There is a number of benefits flowing from such organization. \begin{itemize}
-    \item \textbf{Less synchronization and faster hot path}. Since local runqueues are single-producer, the enqueue operation needs little synchronization. Likewise, local dequeue operation only need to synchronize with stealers making it fast as well. 
-    \item \textbf{Low contention}. Whenever load on the system is high, processors converge to using their own queues, thus eliminating any need to compete with others for work.
-    \item \textbf{Locality}. Children tasks are likely to execute on the same processor as their parents, what maximizes the locality and improves overall performance.
+Work-stealing splits the global work queue (in the FIFO case) into many local, per-CPU runqueues. Each processor strongly prioritizes its runqueue; it will enqueue and dequeue elements from its own structure as long as possible. Now, if the local dequeue is impossible (due to lack of items), the processor chooses a victim randomly and steals some of its work, thus balancing the load. Many benefits flow from such an organization. 
+\begin{itemize}
+    \item \textbf{Less synchronization and faster hot path}. Since local runqueues are single-producer, the enqueue operation needs little synchronization. Likewise, local dequeue operation only needs to synchronize with stealers making it fast as well. 
+    \item \textbf{Low contention}. Whenever load on the system is high, processors converge to using their queues, thus eliminating any need to compete with others for work.
+    \item \textbf{Locality}. Children's tasks are likely to execute on the same processor as their parents, maximizing the locality and improving overall performance.
 \end{itemize}
 
 \label{paragraph:deque}
-Chase-Lev deque (double-ended queue) \cite{Chase2005} is one of the notable, classic work stealing implementations. Its design is similar to the example describe above but while steal remains FIFO, local insertions and removal follow LIFO order. It aimed to minimize required synchronisation, since local thread operates at one end of the structure and steal at the other but also, although not recognized by the authors, it improves locality of the workload \ref{section:approaches}. 
+Chase-Lev deque (double-ended queue) is one of the notable, classic work stealing implementations. Its design is similar to the above example, but while steal remains FIFO, local insertions and removal follow the LIFO order. It minimizes required synchronization since the local thread operates at one end of the structure and steals at the other. Such a setup also improves the locality of the workload \ref{section:approaches}. 
 
 \section{Multiprocessing}
 \label{section:background_multiprocessing}
 
-Multiprocessing is a crucial technique to take advantage of the modern processors. There is a number of multicore programming paradigms, each providing different trade-off between safety and performance. While it is rarely the case in software engineering practice, schedulers are critical enough to fully prioritise the latter criterion, and choose lock-free programming. 
+Multiprocessing is crucial to taking advantage of modern processors. There are several multicore programming paradigms, each providing different trade-offs between safety and performance. While it is rarely the case in software engineering practice, schedulers are critical enough to choose lock-free programming. 
 
-This section introduces key multiprocessing concepts with a focus on the lock-free perspective. 
+This section introduces vital multiprocessing concepts with a focus on the lock-free perspective.  
 
 \subsection{Amdahl's law}
-As already discussed, taking advantage of parallel hardware requires extra engineering effort. The actual amount of effort varies wildly between tasks. In some cases parallelization is trivial and boils down to using relevant threading API, e.g. computation of five independent hashes. 
+As already discussed, taking advantage of parallel hardware requires extra engineering effort. The actual amount of effort varies wildly between tasks. In some cases, parallelization is trivial and boils down to using relevant threading API, e.g., computation of five independent hashes. 
 
-However, on the other end of the spectrum lie programs for which effective parallelization is impossible. It is enough to slightly tweak the previous example to show that. Assume computation of a chain of 5 hashes, wherein each hash depends on the output of the previous one. The hashes need to happen in a sequential manner. There might still be opportunity for parallelization but it depends strictly on implementation of the hash operation. Moreover, even if hash operation is very parallelizable, the synchronisation will need to happen before and after every hash operation in the chain (10x), rather than just at the beginning and end of the workload. 
+However, on the other end of the spectrum lie programs for which effective parallelization is impossible. Assume computation of a chain of 5 hashes, wherein each hash depends on the output of the previous one. The hashing operations need to happen sequentially. There might still be an opportunity for parallelization, but only within a single hash computation. Even if hash operation is very parallelizable, the synchronisation will need to happen before and after every hash operation in the chain (10x), rather than just at the beginning and end of the workload. 
 
-The speedup coming from parallelization is described by Amdahl's law \cite{art_of_mult}.
+Amdahl's law describes the speedup coming from parallelization \cite{art_of_mult}.
 
 \begin{center}
 $Speedup = \frac{1}{1 - p + \frac{p}{n}}$
 \end{center} 
 
-Where \textit{n} is the number of processors and \textit{p} portion of the program that is parallelizable. The law puts a strict bound on the gains from multiprocessing. It also hints why adding more cores may yield diminishing returns; doubling the number of processing units halves the time spent in parallelizable portion of the workload. Thus, gains on parallelizable portion rapidly become smaller than any non-trivial sequential part of the program. 
+Where \textit{n} is the number of processors and \textit{p} portion of the program that is parallelizable. The law puts a strict bound on the gains from multiprocessing. It also hints at why adding more cores may yield diminishing returns; doubling the number of processing units halves the time spent in the parallelizable portion of the workload. Thus, gains on parallelizable portions rapidly become smaller than any non-trivial sequential part of the program. 
 
 \subsection{Lock-free algorithms}
-Lock-freedom characterizes algorithms, which guarantee that at least one of many threads is going to terminate in a finite number of steps \cite{art_of_mult}. This is not the case with locks; if thread holding a lock is not scheduled then no one is allowed to make progress. Lock-free algorithms are built with the same low-level primitives, that are used to build high-level blocking synchronization, but here they are applied to the problem at hand. Thus, absence of explicit lock objects does not guarantee lock-freedom, as in theory, blocking behavior can be reimplemented from scratch. 
+Lock-freedom characterizes algorithms, which guarantee that at least one of many threads will terminate in a finite number of steps (with locks, if the thread holding a lock is not scheduled, no one is allowed to progress) \cite{art_of_mult}. Lock-free algorithms use the same low-level primitives that are used to build high-level blocking synchronization, but here they are applied to the problem at hand. Thus, the absence of explicit lock objects does not guarantee lock-freedom, as in theory, blocking behavior can be reimplemented from scratch. 
 
-The main advantage of using lower-level primitives, atomic operations, comes in the form of better control over synchronisation, which may translate into better performance. Naturally, performance improvement is not guaranteed; contentious lock-free algorithm may scale much worse than an alternative implementation based on high-quality locking. 
+The main advantage of using lower-level primitives, atomic operations, comes from better control over synchronisation, which may translate into better performance. Naturally, performance improvement is not guaranteed; a contentious lock-free algorithm may scale much worse than an alternative implementation based on a high-quality lock.
 
 \subsection{Atomic operations}
-Atomic operations are hardware-supported instructions, which guarantee synchronized, indivisible execution. They are mostly non-blocking and tend to operate on at most one processor word. Actual usage and implementations vary between architectures but languages typically provide a unified interface. So is the case with OCaml. This project relies primarily on two atomic operations:
+Atomic operations are hardware-supported instructions, which guarantee synchronised, indivisible execution. They are mostly non-blocking and operate on at most one processor word. Actual usage and implementations vary between architectures, but languages typically provide a unified interface. So is the case with OCaml. This project relies primarily on two atomic operations:
 \begin{itemize}
-    \item \textbf{Compare and swap}. CAS takes 3 arguments, one variable (memory address and two values: old, new. If the variable equals the old value, then it gets updated to the new value in one step. Success or failure are reported to the caller.  
-    \item \textbf{Fetch and add}. FAD takes two arguments, one variable (memory address) and an integer value. The integer is added to the variable and prior value is reported. FAD always succeeds.  
+    \item \textbf{Compare and swap}. CAS takes three arguments, one variable (memory address) and two values: old and new. If the variable equals the old value, it gets updated to the new value in one step. CAS reports success or failure to the caller.  
+    \item \textbf{Fetch and add}. FAD takes two arguments, one variable (memory address) and an integer value. The integer is added to the variable, and the prior value is returned. FAD always succeeds.  
 \end{itemize}
 
-Both operations have similar latency when applied to the same use case \cite{fad-cas-speed}. CAS has the benefit of being much more general but at the cost of potentially having to retry. It is worth pointing out, that these operations essentially push the burden of synchronisation to the microarchitectural level but it remains non-trivial. Atomic operations may still take one or two orders of magnitude more cycles than their non-atomic counterparts and most common instructions. 
+Both operations have similar latency when applied to the same use case \cite{fad-cas-speed}. CAS has the benefit of being much more general but at the cost of potentially having to retry. It is worth pointing out that these operations essentially push the burden of synchronisation to the microarchitectural level, but it remains non-trivial. Atomic operations may still take one or two orders of magnitude more cycles than their non-atomic counterparts and most common instructions. 
 
-Implementations of atomic operations may allow or forbid certain kinds of memory reordering \cite{memoryor11:online}. OCaml atomics only come with sequential consistency, which is the strongest restriction. Sequential consistency forbids any reordering across an atomic operation. Therefore, memory order relaxations are not further considered in this report.
+Implementations of atomic operations may allow or forbid particular kinds of memory reordering \cite{memoryor11:online}. OCaml atomics only come with sequential consistency, which forbids any reordering across an atomic operation. Therefore, this report does not consider memory order relaxations.
 
 \subsection{Linearizability}
 \label{section:linearizability}
