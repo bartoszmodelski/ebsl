@@ -1,4 +1,4 @@
-\begin{thebibliography}{73}
+\begin{thebibliography}{75}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -476,6 +476,14 @@ J.~Swalens, S.~Marr, J.~D. Koster, and T.~V. Cutsem.
 \newblock \doi{10.4204/eptcs.155.8}.
 \newblock URL \url{https://doi.org/10.4204/eptcs.155.8}.
 
+\bibitem[Team({\natexlab{a}})]{goprocgo7:online}
+G.~Team.
+\newblock go/proc.go at 1292176bc98be4b7b9d24abec05e88b3dbd89e21 · golang/go.
+\newblock
+  \url{https://github.com/golang/go/blob/1292176bc98be4b7b9d24abec05e88b3dbd89e21/src/runtime/proc.go#L5806},
+  {\natexlab{a}}.
+\newblock (Accessed on 06/08/2022).
+
 \bibitem[Team(2022)]{goprocgo14:online}
 G.~Team.
 \newblock go/proc.go at master · golang/go.
@@ -484,26 +492,32 @@ G.~Team.
   2022.
 \newblock (Accessed on 06/01/2022).
 
-\bibitem[Team({\natexlab{a}})]{Concurre37:online}
+\bibitem[Team({\natexlab{b}})]{tokiorsl53:online}
+L.~Team.
+\newblock tokio-rs/loom: Concurrency permutation testing tool for rust.
+\newblock \url{https://github.com/tokio-rs/loom}, {\natexlab{b}}.
+\newblock (Accessed on 06/08/2022).
+
+\bibitem[Team({\natexlab{c}})]{Concurre37:online}
 O.~Team.
 \newblock Concurrency and parallelism design notes ·
   ocaml-multicore/ocaml-multicore wiki.
 \newblock
   \url{https://github.com/ocaml-multicore/ocaml-multicore/wiki/Concurrency-and-parallelism-design-notes},
-  {\natexlab{a}}.
+  {\natexlab{c}}.
 \newblock (Accessed on 06/08/2022).
 
-\bibitem[Team({\natexlab{b}})]{ocamlmul5:online}
+\bibitem[Team({\natexlab{d}})]{ocamlmul5:online}
 O.~Team.
 \newblock ocaml-multicore/eio: Effects-based direct-style io for multicore
   ocaml.
-\newblock \url{https://github.com/ocaml-multicore/eio}, {\natexlab{b}}.
+\newblock \url{https://github.com/ocaml-multicore/eio}, {\natexlab{d}}.
 \newblock (Accessed on 06/08/2022).
 
-\bibitem[Team({\natexlab{c}})]{ocamlmul59:online}
+\bibitem[Team({\natexlab{e}})]{ocamlmul59:online}
 O.-M. Team.
 \newblock ocaml-multicore/domainslib: Parallel programming over domains.
-\newblock \url{https://github.com/ocaml-multicore/domainslib}, {\natexlab{c}}.
+\newblock \url{https://github.com/ocaml-multicore/domainslib}, {\natexlab{e}}.
 \newblock (Accessed on 06/01/2022).
 
 \bibitem[Technology()]{MD90FS0r76:online}

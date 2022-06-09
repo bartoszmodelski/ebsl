@@ -34,8 +34,8 @@
 \contentsline {subsection}{\numberline {4.2.3}Binomial option pricing}{25}{subsection.4.2.3}%
 \contentsline {section}{\numberline {4.3}Ordering}{25}{section.4.3}%
 \contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{26}{subsection.4.3.1}%
-\contentsline {subsubsection}{Fairness revisited}{27}{section*.5}%
-\contentsline {subsubsection}{Allocations}{27}{section*.6}%
+\contentsline {subsubsection}{Fairness revisited}{27}{section*.4}%
+\contentsline {subsubsection}{Allocations}{27}{section*.5}%
 \contentsline {subsection}{\numberline {4.3.2}Hybrid}{28}{subsection.4.3.2}%
 \contentsline {section}{\numberline {4.4}Contention and locality}{28}{section.4.4}%
 \contentsline {subsection}{\numberline {4.4.1}Core structure distribution}{28}{subsection.4.4.1}%
@@ -55,12 +55,12 @@
 \contentsline {subsection}{\numberline {5.2.3}Statistical methods}{36}{subsection.5.2.3}%
 \contentsline {section}{\numberline {5.3}Server benchmark}{38}{section.5.3}%
 \contentsline {subsection}{\numberline {5.3.1}General case}{38}{subsection.5.3.1}%
-\contentsline {subsubsection}{Degradation}{39}{section*.7}%
-\contentsline {subsubsection}{Work Distribution Extensions}{42}{section*.9}%
-\contentsline {subsubsection}{Work Distribution Extensions Result}{43}{section*.10}%
+\contentsline {subsubsection}{Degradation}{39}{section*.6}%
+\contentsline {subsubsection}{Work Distribution Extensions}{42}{section*.7}%
+\contentsline {subsubsection}{Work Distribution Extensions Result}{43}{section*.8}%
 \contentsline {subsection}{\numberline {5.3.2}Server benchmark with cache effects}{44}{subsection.5.3.2}%
 \contentsline {subsection}{\numberline {5.3.3}Server benchmark with multi-modal processing latency}{45}{subsection.5.3.3}%
-\contentsline {subsubsection}{LIFO heuristics}{45}{section*.11}%
+\contentsline {subsubsection}{LIFO heuristics}{45}{section*.9}%
 \contentsline {section}{\numberline {5.4}Mixer benchmark}{46}{section.5.4}%
 \contentsline {section}{\numberline {5.5}Binomial option pricer benchmark}{48}{section.5.5}%
 \contentsline {section}{\numberline {5.6}Comparison with Domainslib}{50}{section.5.6}%
