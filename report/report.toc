@@ -14,9 +14,9 @@
 \contentsline {subsection}{\numberline {2.1.4}Work stealing}{14}{subsection.2.1.4}%
 \contentsline {section}{\numberline {2.2}Multiprocessing}{15}{section.2.2}%
 \contentsline {subsection}{\numberline {2.2.1}Amdahl's law}{15}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Lock-free algorithms}{16}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.2}Lock-free algorithms}{15}{subsection.2.2.2}%
 \contentsline {subsection}{\numberline {2.2.3}Atomic operations}{16}{subsection.2.2.3}%
-\contentsline {subsection}{\numberline {2.2.4}Linearizability}{17}{subsection.2.2.4}%
+\contentsline {subsection}{\numberline {2.2.4}Linearizability}{16}{subsection.2.2.4}%
 \contentsline {subsection}{\numberline {2.2.5}DSCheck}{17}{subsection.2.2.5}%
 \contentsline {chapter}{\numberline {3}Related work}{18}{chapter.3}%
 \contentsline {section}{\numberline {3.1}Go}{18}{section.3.1}%
