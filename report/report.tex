@@ -210,7 +210,7 @@ The report aims to investigate runtime scheduling space on a modern, high-core m
 
 OCaml is a unique functional programming language aiming to deliver performance and safety. It found many research and industrial users despite a significant shortcoming for a performance-oriented language - lack of support for multithreading. This confined real-world applications to monadic concurrency libraries such as Async and Lwt, which are troublesome to use: 
 \begin{itemize}
-    \item \textbf{No runtime support.} Lack of runtime support hurts the development in several ways, e.g., there is no way to switch between tasks efficiently, and tracing becomes harder as there is no real notion of separate threads and stacks. 
+    \item \textbf{No runtime support.} Lack of runtime support hurts development in several ways, e.g., there is no way to switch between tasks efficiently, and tracing becomes harder as there is no real notion of separate threads and stacks. 
     \item \textbf{Blocking.} Combine single-core with no preemption, and any single CPU-intensive or blocking call is prone to cause chaos by starving other threads, e.g., trigger network timeouts. On the surface, there is no qualitative difference with multicore as any \textit{n} non-preemptive threads can be blocked by \textit{n} misbehaving task. However, in practice, multicore is far safer. Firstly, a developer may isolate low-latency tasks on a different pool, allowing for more relaxed programming elsewhere. Secondly, a multicore runtime may feature a guardian thread, spawning new OS threads whenever needed \cite{golang}.
 \end{itemize}
 
@@ -430,7 +430,7 @@ In contrast with other asset classes, computation of option prices is computatio
 
 \section{Ordering}
 \label{section:approaches}
-This section describes the core ordering problem in scheduling.
+This section describes the problem of ordering in scheduling.
 
 \subsection{FIFO and LIFO}
 \label{section:ordering}
@@ -700,18 +700,16 @@ Finally, it is worth stating that this result should not be interpreted as work 
 \begin{figure} 
      \centering 
      \includegraphics[width=0.85\textwidth]{eval/packet-basic-4spawners-just-throughput.png}
-     \caption{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case. \todo{fix me}}
+     \caption{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case. }
     \label{fig:packet-4spawners}
 \end{figure}
-
+\todo{fix fig caption}
 \begin{itemize}
     \item \textbf{Heavier task}. See figure \ref{fig:packet-slowed} for the performance when each task has had an extra 500ns sleep to perform. This is enough time to extend the stability beyond 100 domains.
     \item \textbf{More spawners}. See figure \ref{fig:packet-4spawners} for the performance under more spawners, i.e. developer made an explicit change to help the scheduler.
     \item \textbf{Higher workload}. In fact, increasing the number of tasks also stabilizes the scaling. See figure \ref{fig:packet-10m-throughput} for the case with 10 million task instead of 50k. This case saturates many more workers, and while overall throughput is lower, the performance remains stable beyond 30 cores. 
 \end{itemize}
 These differences in scalability highlight the need for new methods to take advantage of high parallelism and very fine-grained concurrency (\S\ref{section:thesis}).
-
-
 
 \subsubsection{Work Distribution Extensions}
 \label{section:work-distribution-extensions}

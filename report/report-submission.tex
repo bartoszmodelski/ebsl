@@ -210,7 +210,7 @@ The report aims to investigate runtime scheduling space on a modern, high-core m
 
 OCaml is a unique functional programming language aiming to deliver performance and safety. It found many research and industrial users despite a significant shortcoming for a performance-oriented language - lack of support for multithreading. This confined real-world applications to monadic concurrency libraries such as Async and Lwt, which are troublesome to use: 
 \begin{itemize}
-    \item \textbf{No runtime support.} Lack of runtime support hurts the development in several ways, e.g., there is no way to switch between tasks efficiently, and tracing becomes harder as there is no real notion of separate threads and stacks. 
+    \item \textbf{No runtime support.} Lack of runtime support hurts development in several ways, e.g., there is no way to switch between tasks efficiently, and tracing becomes harder as there is no real notion of separate threads and stacks. 
     \item \textbf{Blocking.} Combine single-core with no preemption, and any single CPU-intensive or blocking call is prone to cause chaos by starving other threads, e.g., trigger network timeouts. On the surface, there is no qualitative difference with multicore as any \textit{n} non-preemptive threads can be blocked by \textit{n} misbehaving task. However, in practice, multicore is far safer. Firstly, a developer may isolate low-latency tasks on a different pool, allowing for more relaxed programming elsewhere. Secondly, a multicore runtime may feature a guardian thread, spawning new OS threads whenever needed \cite{golang}.
 \end{itemize}
 
@@ -421,15 +421,16 @@ Thus, the second benchmark imitates a VoIP server with many conferences and part
 
 \subsection{Binomial option pricing}
 \label{section:bench-option-pricing}
-The last benchmark delves into the world of finance. The livelihood of trading shops depends on their ability to accurately and timely price instruments. 
 
-\todo{finish me}
+The last benchmark delves into the world of finance. The livelihood of trading shops depends on their ability to accurately and timely price instruments. Pricing typically happens multiple times for a single trade. Before a trade occurs, a valid price must be determined as quickly as possible to capture an existing opportunity, if any. Once the trade confirmation arrives, several other systems react, e.g., risk exposure needs recalculation. It must happen swiftly to halt other trades if necessary, but precision is now critical. Then the whole process may happen again when more information is known, e.g., for accounting purposes. 
 
-Moreover, binomial option pricing requires an interesting dynamic processing computation. It builds a lattice of possible future prices and walks it backwards to propagate expected options payoff taking interest rates into account. The computation is non-trivial to effectively parallelize. 
+Options are a fascinating example of a pricing challenge. The instrument offers the owner an option (but not an obligation) to enter a trade at a specified price and date. The binomial option pricing model is a simple and widely used method of computing an option's market value. The model creates a lattice of future prices and backpropagates the expected payoff from every leaf node (akin to dynamic programming). Further, there is a strict trade-off between computational cost and precision, which is controlled by the granularity of the timestep of the computed lattice.
+
+In contrast with other asset classes, computation of option prices is computationally intensive due to the sheer number of instruments. For example, NYSE has 2400 stock listings, which is not a significant number of iterations for a reasonable computation on modern hardware. However, each stock listing has hundreds of options at different strike prices, expiration dates, and contract terms. That constitutes a far less trivial load, especially if the recomputation happens many times a second and there is a need to balance the cost and precision. All this makes this workload a great testing ground for a scheduler.
 
 \section{Ordering}
 \label{section:approaches}
-This section describes the core ordering problem in scheduling.
+This section describes the problem of ordering in scheduling.
 
 \subsection{FIFO and LIFO}
 \label{section:ordering}
@@ -699,18 +700,16 @@ Finally, it is worth stating that this result should not be interpreted as work 
 \begin{figure} 
      \centering 
      \includegraphics[width=0.85\textwidth]{eval/packet-basic-4spawners-just-throughput.png}
-     \caption{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case.}
+     \caption{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case. }
     \label{fig:packet-4spawners}
 \end{figure}
-
+\todo{fix fig caption}
 \begin{itemize}
     \item \textbf{Heavier task}. See figure \ref{fig:packet-slowed} for the performance when each task has had an extra 500ns sleep to perform. This is enough time to extend the stability beyond 100 domains.
     \item \textbf{More spawners}. See figure \ref{fig:packet-4spawners} for the performance under more spawners, i.e. developer made an explicit change to help the scheduler.
     \item \textbf{Higher workload}. In fact, increasing the number of tasks also stabilizes the scaling. See figure \ref{fig:packet-10m-throughput} for the case with 10 million task instead of 50k. This case saturates many more workers, and while overall throughput is lower, the performance remains stable beyond 30 cores. 
 \end{itemize}
 These differences in scalability highlight the need for new methods to take advantage of high parallelism and very fine-grained concurrency (\S\ref{section:thesis}).
-
-
 
 \subsubsection{Work Distribution Extensions}
 \label{section:work-distribution-extensions}
@@ -845,7 +844,7 @@ $call\:option\:value = max(underlying\:price - strike\:price, 0)$.
 
 Binomial model first estimates value of the underlying by assuming that at each time step the price may either move up by a specific amount or down by the inverse, at specific probabilities. This creates a lattice, whose leaves represent prices at some final timestep. Then, the binomial pricer calculates payoff at every final timestep and propagates the expected value backwards using known probabilities of up and down moves. The first stage - stock prices at final timestep - can be computed analytically, while propagation of expectation must actually walk the lattice to take interest rates into account. Despite its simplicity, the binomial model is widely used in practice as it is far easier to include extra features than in the analytical approaches.
 
-In constrast with other asset classes, computation of option prices is computationally intensive due to sheer number of instruments. For example, NYSE has 2400 stock listings. Each of them has hundreds of options at different strike prices, expiration dates and contract terms. Thus, the benchmark recomputes values of 30k options. Differents instruments have varying importance to a trading company due to the size of current position, available infrastructure, other models, etc. Thus, most instruments are computed at a fairly low accuracy (20 timesteps) and 0.5\% at high accuracy (2k steps), what results in a bimodal distribution of work per instrument. Pricing of each option is not parallelized but each timestep of the lattice is computed concurrently to avoid long stalls. 
+The benchmark recomputes values of 30k options. Differents instruments have varying importance to a trading company due to the size of current position, available infrastructure, other models, etc. Thus, most instruments are computed at a fairly low accuracy (20 timesteps) and 0.5\% at high accuracy (2k steps), what results in a bimodal distribution of work per instrument. Pricing of each option is not parallelized but each timestep of the lattice is computed concurrently to avoid long stalls. 
 
 \begin{itemize}
     \item Despite an overall comparable throughput the latenyc is much better with FIFO
@@ -853,7 +852,7 @@ In constrast with other asset classes, computation of option prices is computati
     \item Increasing the number of spawners is tragic for latency on LIFO as that leads to more tasks being processed locally and in a more LIFO manner. 
 \end{itemize}
 
-Figure \ref{fig:options-bench} shows the tail latency under FIFO and LIFO scheduling. Even though that the overall throughput is comparable, the latency is significantly better with LIFO. It follows from FIFO processing each task-tree concurrently and taking advantage of terminating the shallow ones early. This benchmark may seem specific and inconsequential to most workloads, yet this is what commonly occurs in complex systems. Distribution of tasks is not just bimodal but multimodal, and thus impact all range of tail latencies. In fact, in the limit, if some subtrees have infinite depth, other tasks may never get to run with LIFO. Practical runtime or systems schedulers typically follow FIFO to avoid starvation in heterogenous workloads.   
+Figure \ref{fig:options-bench} shows the tail latency under FIFO and LIFO scheduling. Even though that the overall throughput is comparable, the latency is significantly better with LIFO. It follows from FIFO processing each task-tree concurrently and taking advantage of terminating the shallow ones early. Importantly, other tail latencies do not suffer from this choice, as processing a small number of quick tasks before the large ones does not significantly impact the latency of the latter. This benchmark may seem specific and inconsequential to most workloads, yet this is what commonly occurs in complex systems. Distribution of tasks is not just bimodal but multimodal, and thus impact all range of tail latencies. In fact, in the limit, if some subtrees have infinite depth, other tasks may never get to run with LIFO. Practical runtime or systems schedulers typically follow FIFO to avoid starvation in heterogenous workloads.   
 
 As more workers are added, the tail latency improves. Predominantly because the overall queue sizes are shorter (fewer items are stuck behind heavy tasks) and stealing always takes the oldest elements. However, as soon as more spawners are added, the spawning becomes more efficient and processing more local, what collapses the tail latency even with many domains. 
 
@@ -938,6 +937,8 @@ This has not been explicitely handled in the current implementation but both app
 
 
 \section{Dynamic pool size}
+
+io vs compute increase or not to
 \section{Batching}
 
 

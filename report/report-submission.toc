@@ -32,20 +32,20 @@
 \contentsline {subsection}{\numberline {4.2.1}Packet processing}{23}{subsection.4.2.1}%
 \contentsline {subsection}{\numberline {4.2.2}Audio mixer}{23}{subsection.4.2.2}%
 \contentsline {subsection}{\numberline {4.2.3}Binomial option pricing}{24}{subsection.4.2.3}%
-\contentsline {section}{\numberline {4.3}Ordering}{24}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{24}{subsection.4.3.1}%
-\contentsline {subsubsection}{Fairness revisited}{25}{section*.5}%
-\contentsline {subsubsection}{Allocations}{26}{section*.6}%
+\contentsline {section}{\numberline {4.3}Ordering}{25}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{25}{subsection.4.3.1}%
+\contentsline {subsubsection}{Fairness revisited}{25}{section*.4}%
+\contentsline {subsubsection}{Allocations}{26}{section*.5}%
 \contentsline {subsection}{\numberline {4.3.2}Hybrid}{27}{subsection.4.3.2}%
 \contentsline {section}{\numberline {4.4}Contention and locality}{27}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Core structure distribution}{27}{subsection.4.4.1}%
+\contentsline {subsection}{\numberline {4.4.1}Core structure distribution}{28}{subsection.4.4.1}%
 \contentsline {subsection}{\numberline {4.4.2}Staged}{28}{subsection.4.4.2}%
 \contentsline {section}{\numberline {4.5}Other design choices}{29}{section.4.5}%
 \contentsline {subsection}{\numberline {4.5.1}Work distribution}{29}{subsection.4.5.1}%
 \contentsline {subsection}{\numberline {4.5.2}Overflow queue}{30}{subsection.4.5.2}%
 \contentsline {subsection}{\numberline {4.5.3}Resizing}{30}{subsection.4.5.3}%
-\contentsline {subsection}{\numberline {4.5.4}Yield}{30}{subsection.4.5.4}%
-\contentsline {subsection}{\numberline {4.5.5}Promise}{31}{subsection.4.5.5}%
+\contentsline {subsection}{\numberline {4.5.4}Yield}{31}{subsection.4.5.4}%
+\contentsline {subsection}{\numberline {4.5.5}Promise}{32}{subsection.4.5.5}%
 \contentsline {chapter}{\numberline {5}Implementations and evaluation}{33}{chapter.5}%
 \contentsline {section}{\numberline {5.1}Schedulers}{33}{section.5.1}%
 \contentsline {subsection}{\numberline {5.1.1}Design principles}{34}{subsection.5.1.1}%
@@ -55,7 +55,7 @@
 \contentsline {subsection}{\numberline {5.2.3}Statistical methods}{35}{subsection.5.2.3}%
 \contentsline {section}{\numberline {5.3}Server benchmark}{37}{section.5.3}%
 \contentsline {subsection}{\numberline {5.3.1}General case}{37}{subsection.5.3.1}%
-\contentsline {subsubsection}{Degradation}{38}{section*.7}%
+\contentsline {subsubsection}{Degradation}{38}{section*.6}%
 \contentsline {subsubsection}{Work Distribution Extensions}{41}{section*.8}%
 \contentsline {subsubsection}{Work Distribution Extensions Result}{42}{section*.9}%
 \contentsline {subsection}{\numberline {5.3.2}Server benchmark with cache effects}{43}{subsection.5.3.2}%
