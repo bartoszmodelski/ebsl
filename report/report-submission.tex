@@ -642,10 +642,12 @@ Since it is hard to assume any particular distribution (esp. gaussian) when it c
 \subsection{General case}
 \label{section:benchmark-general-case}
 
+
+
 \begin{figure}
      \centering
-     \includegraphics[width=0.80\textwidth]{eval/packet-basic-with-steal-counts2std.png}
-     \caption{The performance achieved by packet processing benchmark with 50k tasks over varying number of cores. The panels show throughput, time, 3 latency percentiles and retries on insertion due to lack of space.}
+     \includegraphics[width=1\textwidth]{eval/packet-basic-with-steal-counts2std-bigger_fonts.png}
+     \caption{The performance achieved by packet processing benchmark with 50k tasks over varying number of cores. The panels show throughput, time, two tail latency percentiles, and retries on insertion due to lack of space.}
     \label{fig:packet-50k}
 \end{figure}
 
@@ -653,7 +655,7 @@ The first benchmark mimics a minimal TCP packet processing scenario. The workloa
 
 The results of conducting a test with 50k packets in such a controlled setting are shown by figure \ref{fig:packet-50k}. The first panel shows the median processing speed on a logarithmic scale. In the first part of the graph, between 5 and 20 domains, the performance rapidly accelerates with the number of threads. Twenty domains witness peak performance by the LIFO scheduler, and the performance degrades as more threads are added. At first, slowly, then rapidly beyond 80 domains. FIFO scheduler sees its peak at 80 domains, but its performance is also relatively stable between 20 and 80, with a pronounced drop afterwards. This is surprising; adding more resources may not translate to a significant improvement \cite{amdahl}, but it should not be detrimental either. Discussed further in \S\ref{section:degradation}.
 
-The second panel shows the actual time required to complete the benchmark. Next, the charts from three to five show 50\%, 99\%, and 99.99\% latency percentiles. Again, up to 20 domains, there is a steep decrease in all latencies. There are local differences around 20 domains, with FIFO offering a better median latency for one point and LIFO better tail latencies for 2-3 points. Afterwards, the results converge. The tail latencies are partly driven by LIFO being faster to process tasks but, likely, not as much as it looks since error bars indicate more noisy measurement than elsewhere. 
+The second panel shows the actual time required to complete the benchmark. Next, the charts from three to five 99\%, and 99.99\% latency percentiles. Again, up to 20 domains, there is a steep decrease in all latencies. There are local differences around 20 domains, with LIFO offering better tail latencies for 2-3 points. Afterwards, the results converge. The tail latencies are partly driven by LIFO being faster to process tasks but, likely, not as much as it looks since error bars indicate more noisy measurement than elsewhere. 
 
 Finally, the last panel shows the number of retries of the main spawner (\textit{listener}) when trying to insert elements into the queue or stack. The retry loop is cheap to execute. The spawner frequently throttles, adding tasks for lower core counts due to lack of space. However, the number of busy-waiting cycles lowers with extra cores, quickly reaching a point where magnitudes are too small to affect overall performance. At last, it ceases to occur in the median case beyond 45 cores. 
  
@@ -665,8 +667,8 @@ In line with Amdahl's law \cite{amdahl}, it is expected that any application wil
 
 \begin{figure} 
      \centering
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-with-steal-counts2.png}
-     \caption{The throughput achieved on packet processing benchmark with 50k tasks.}
+     \includegraphics[width=1\textwidth]{eval/packet-basic-with-steal-counts2-bigger_font.png}
+     \caption{The number of steal attempts reached by FIFO and LIFO schedulers on packet processing benchmark with 50k tasks.}
     \label{fig:packet-with-steal-counts}
 \end{figure}
 
@@ -674,8 +676,8 @@ In the LIFO case, as shown by \ref{fig:packet-with-steal-counts}, the scheduler 
 
 \begin{figure} 
      \centering 
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-counters.png}
-     \caption{The throughput achieved on packet processing benchmark with 50k tasks.}
+     \includegraphics[width=1\textwidth]{eval/packet-basic-counters-bigger_font.png}
+     \caption{The number of stalled cycles reached by FIFO and LIFO schedulers on packet processing benchmark with 50k tasks.}
     \label{fig:packet-counters}
 \end{figure}
 
@@ -684,7 +686,7 @@ In the FIFO case, the problem also relates to work distribution. FIFO is not abl
 Finally, it is worth stating that this result should not be interpreted as work stealing being generally inappropriate for saturating 100 cores. Packet benchmark creates a short burst of 50k items, which reaches a throughput of over 1.5m items per second. Each task has its logic and requires allocations, but this benchmark does constitute a very fine-grained concurrency. That puts high stress on the scheduler and exposes its inefficiencies. Further, there is an unusual amount of distribution required. It is far easier to distribute tasks onto 10 threads than 100, e.g., atomic operations take constant time, and load information is less dispersed. If the workload is simplified just a little, the scalability improves. 
 \begin{figure} 
      \centering
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-10million-just-throughput.png}
+     \includegraphics[width=1\textwidth]{eval/packet-basic-10million-just-throughput-bigger_font.png}
      \caption{The throughput achieved on packet processing benchmark with 10 million tasks.}
     \label{fig:packet-10m-throughput}
 \end{figure}
@@ -692,7 +694,7 @@ Finally, it is worth stating that this result should not be interpreted as work 
 
 \begin{figure} 
      \centering
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-slowed_2.png}
+     \includegraphics[width=1\textwidth]{eval/packet-basic-slowed_2-bigger_font.png}
      \caption{The throughput achieved on packet processing benchmark with 50k tasks. Each tasks loaded with additional 500ns wait.}
     \label{fig:packet-slowed}
 \end{figure}
@@ -700,7 +702,7 @@ Finally, it is worth stating that this result should not be interpreted as work 
 
 \begin{figure} 
      \centering 
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-4spawners-just-throughput.png}
+     \includegraphics[width=1\textwidth]{eval/packet-basic-4spawners-just-throughput-bigger_font.png}
      \caption{The throughput achieved on packet processing benchmark with 50k with 4 spawners. (2 spawners in the 5-core case.) }
     \label{fig:packet-4spawners}
 \end{figure}
@@ -739,10 +741,11 @@ The aforementioned observations translated into the following implementations.
 
 \begin{figure} 
      \centering
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-distribution10-granular.png}
+     \includegraphics[width=1\textwidth]{eval/packet-basic-distribution10-granular-bigger_font.png}
      \caption{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}
     \label{fig:packet-extenstions}
 \end{figure}
+
 
 \S\ref{section:work-distribution-extensions} discussed a number of alternative work distribution mechanisms. The positive results are shown in figure \ref{fig:packet-extenstions}. Only neighbourhood stealing has shown a clear improvement over the baseline, which is in line with the diagnosis stated in the previous section \S\ref{section:degradation}. It is worth pointing out that such optimization will harm coarse-grained workloads, where threads higher in the hierarchy will be stuck processing tasks for longer, thus not replenishing their local structure quickly enough. This result shows that very fine-grained workloads may require novel approaches and support the hypothesis (\S\ref{section:thesis}).
 
@@ -756,7 +759,7 @@ Finally, scalable overflow structures (lock-free queue, multi-queue) and work-sh
 
 \begin{figure} 
     \centering 
-    \includegraphics[width=0.85\textwidth]{eval/packet-basic-lifo-better.png}
+    \includegraphics[width=1\textwidth]{eval/packet-basic-lifo-better.png}
     \caption{The throughput achieved on the packet processing benchmark with 500k packets and ten spawners. The benchmark was modified to have a non-trivial cache effect. Once the task was processed as in the original benchmark, it would spawn a chain of 10 tasks. Each task reads 20, with each reading 20 random bytes from the packet buffer, simulating picking out different parts of the received data at different stages. LIFO offers an obvious throughput advantage (shown in the figure) and median-tail latency improvement.}
    \label{fig:packet-lifo-better}
 \end{figure}
@@ -770,7 +773,7 @@ Notably, extra care is required to replicate this result on modern architecture.
 
 \begin{figure} 
     \centering 
-    \includegraphics[width=0.85\textwidth]{eval/packet-basic-fifo-better.png}
+    \includegraphics[width=1\textwidth]{eval/packet-basic-fifo-better.png}
     \caption{The throughput achieved on the packet processing benchmark with 100k packets and ten spawners. The benchmark has a weaker cache effect than \ref{fig:packet-lifo-better} but is still significant enough for LIFO to have better throughput. However, there is a 0.1\% chance that the packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO offers a much better tail latency for most domain counts in such a scenario. For example, at 115 domains, LIFO saves over 30\% of tail latency.}
    \label{fig:packet-fifo-better}
 \end{figure}
@@ -791,7 +794,7 @@ Notably, these heuristic have been built as a wrapper around LIFO data structure
 
 \begin{figure} 
     \centering 
-    \includegraphics[width=0.85\textwidth]{eval/packet-basic-base-hybrids.png}
+    \includegraphics[width=1\textwidth]{eval/packet-basic-base-hybrids.png}
     \caption{The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits.}
    \label{fig:packet-hybrids}
 \end{figure}
@@ -805,7 +808,7 @@ This result, in line with the hypothesis (\S\ref{section:thesis}), strongly supp
 
 \begin{figure} 
     \centering 
-    \includegraphics[width=0.85\textwidth]{eval/mixer-base8.png}
+    \includegraphics[width=1\textwidth]{eval/mixer-base8.png}
     \caption{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases. FIFO 10S and LIFO 10S represents the schedulers consisting of ten independent FIFO/LIFO silos.}
    \label{fig:mixer-bench}
 \end{figure}
@@ -827,7 +830,7 @@ Finally, this result shows that even when optimizing for latency, there are no r
 
 \begin{figure} 
     \centering 
-    \includegraphics[width=0.85\textwidth]{eval/options-base.png}
+    \includegraphics[width=1\textwidth]{eval/options-base.png}
     \caption{The 99\% tail latency of achieved by options benchmark under different schedulers.}
    \label{fig:options-bench}
 \end{figure}
@@ -859,7 +862,7 @@ Note that the LIFO in this section refers to the LIFO scheduler developed for th
 
 \begin{figure} 
     \centering 
-    \includegraphics[width=0.85\textwidth]{eval/comp-base4.png}
+    \includegraphics[width=1\textwidth]{eval/comp-base4.png}
     \caption{Throughput of the packet benchmark with bimodal task chains and cache dependency (\S\ref{section:server-bench-with-multi-modal}). It used 100k packets and a single spawner. The figure shows peformance achieved by the LIFO scheduler developed in this dissertation and Domainslib \cite{ocamlmul59:online}.}
    \label{fig:domainslib-comp}
 \end{figure}
