@@ -1,4 +1,4 @@
-\begin{thebibliography}{75}
+\begin{thebibliography}{74}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -21,16 +21,6 @@ How web browsers use processes and threads | by jeewantha lahiru | level up
   coding.
 \newblock
   \url{https://levelup.gitconnected.com/how-web-browsers-use-processes-and-threads-9f8f8fa23371}.
-\newblock (Accessed on 05/17/2022).
-
-\bibitem[OCa()]{OCamllib90:online}
-Ocaml library : List.
-\newblock \url{https://v2.ocaml.org/api/List.html}.
-\newblock (Accessed on 05/18/2022).
-
-\bibitem[POW()]{POWER4Wi47:online}
-Power4 - wikipedia.
-\newblock \url{https://en.wikipedia.org/wiki/POWER4#cite_ref-stallings_2-0}.
 \newblock (Accessed on 05/17/2022).
 
 \bibitem[asy()]{async_kernel}
@@ -443,6 +433,13 @@ K.~Sivaramakrishnan, S.~Dolan, L.~White, T.~Kelly, S.~Jaffer, and
   2021.
 \newblock \doi{10.1145/3453483.3454039}.
 \newblock URL \url{https://doi.org/10.1145/3453483.3454039}.
+
+\bibitem[Stallings(2005)]{Stallings}
+W.~Stallings.
+\newblock \emph{Computer Organization and Architecture: Designing for
+  Performance (7th Edition)}.
+\newblock 01 2005.
+\newblock ISBN 9788120329621.
 
 \bibitem[Stephen et~al.(2015)Stephen, Leo, KC, Jeremy, and
   Anil]{stephen_effective_nodate}

@@ -3,22 +3,18 @@ Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: report.aux
 The style file: abbrvnat.bst
 Database file #1: refs.bib
-Warning--to sort, need author or key in POWER4Wi47:online
 Warning--to sort, need author or key in AMDAnnou13:online
 Warning--to sort, need author or key in 2ndGenAM1:online
 Warning--to sort, need author or key in golang
 Warning--to sort, need author or key in Howwebbr64:online
 Warning--to sort, need author or key in gorout_vs_os_thread
 Warning--to sort, need author or key in linux_cfs
-Warning--to sort, need author or key in OCamllib90:online
 Warning--to sort, need author or key in memoryor11:online
 Warning--to sort, need author or key in rfc793
 Warning--to sort, need author or key in async_kernel
 Warning--empty year in 2ndGenAM1:online
 Warning--empty year in AMDAnnou13:online
 Warning--empty year in Howwebbr64:online
-Warning--empty year in OCamllib90:online
-Warning--empty year in POWER4Wi47:online
 Warning--empty year in async_kernel
 Warning--empty year in golang
 Warning--empty year in gorout_vs_os_thread
@@ -36,6 +32,7 @@ Warning--empty year in TokioAna8:online
 Warning--empty year in bartoszm90:online
 Warning--empty year in karlrupp48:online
 Warning--empty journal in fad-cas-speed
+Warning--empty publisher in Stallings
 Warning--empty year in goprocgo7:online
 Warning--empty year in tokiorsl53:online
 Warning--empty year in Concurre37:online
@@ -43,45 +40,45 @@ Warning--empty year in ocamlmul5:online
 Warning--empty year in ocamlmul59:online
 Warning--empty year in MD90FS0r76:online
 Warning--empty year in Frequent1:online
-You've used 75 entries,
+You've used 74 entries,
             2773 wiz_defined-function locations,
-            1103 strings with 20358 characters,
-and the built_in function-call counts, 33283 in all, are:
-= -- 3065
-> -- 1830
-< -- 47
-+ -- 644
-- -- 564
-* -- 2606
-:= -- 5003
-add.period$ -- 337
-call.type$ -- 75
-change.case$ -- 409
-chr.to.int$ -- 70
-cite$ -- 201
-duplicate$ -- 1494
-empty$ -- 2817
-format.name$ -- 646
-if$ -- 7120
+            1101 strings with 20276 characters,
+and the built_in function-call counts, 33099 in all, are:
+= -- 3039
+> -- 1840
+< -- 48
++ -- 646
+- -- 567
+* -- 2598
+:= -- 5011
+add.period$ -- 335
+call.type$ -- 74
+change.case$ -- 406
+chr.to.int$ -- 69
+cite$ -- 194
+duplicate$ -- 1484
+empty$ -- 2779
+format.name$ -- 650
+if$ -- 7061
 int.to.chr$ -- 6
 int.to.str$ -- 1
-missing$ -- 48
-newline$ -- 478
-num.names$ -- 260
-pop$ -- 1030
+missing$ -- 50
+newline$ -- 474
+num.names$ -- 264
+pop$ -- 1008
 preamble$ -- 1
-purify$ -- 336
+purify$ -- 335
 quote$ -- 0
-skip$ -- 1048
+skip$ -- 1041
 stack$ -- 0
-substring$ -- 733
+substring$ -- 729
 swap$ -- 183
 text.length$ -- 9
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 805
-warning$ -- 40
-while$ -- 250
+type$ -- 789
+warning$ -- 37
+while$ -- 253
 width$ -- 0
-write$ -- 1127
-(There were 40 warnings)
+write$ -- 1118
+(There were 37 warnings)

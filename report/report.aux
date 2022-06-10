@@ -17,7 +17,7 @@
 \providecommand\HyField@AuxAddToFields[1]{}
 \providecommand\HyField@AuxAddToCoFields[2]{}
 \bibstyle{abbrvnat}
-\citation{POWER4Wi47:online}
+\citation{Stallings}
 \citation{AMDAnnou13:online}
 \citation{mooremulti}
 \citation{Bohr2007}
@@ -31,10 +31,6 @@
 \newlabel{section:introduction}{{1}{7}{Introduction}{chapter.1}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {1.1}Thesis}{7}{section.1.1}\protected@file@percent }
 \newlabel{section:thesis}{{1.1}{7}{Thesis}{section.1.1}{}}
-\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ improve citation}{7}{section*.3}\protected@file@percent }
-\pgfsyspdfmark {pgfid1}{25251640}{28671235}
-\pgfsyspdfmark {pgfid4}{37920833}{28685980}
-\pgfsyspdfmark {pgfid5}{40689729}{28417283}
 \citation{Ho2002}
 \citation{Wolpert1997}
 \citation{Igel2005}
@@ -161,11 +157,11 @@
 \newlabel{section:approaches}{{4.3}{25}{Ordering}{section.4.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{25}{subsection.4.3.1}\protected@file@percent }
 \newlabel{section:ordering}{{4.3.1}{25}{FIFO and LIFO}{subsection.4.3.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Fairness revisited}{25}{section*.4}\protected@file@percent }
-\newlabel{section:fairness-revisited}{{4.3.1}{25}{Fairness revisited}{section*.4}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Fairness revisited}{25}{section*.3}\protected@file@percent }
+\newlabel{section:fairness-revisited}{{4.3.1}{25}{Fairness revisited}{section*.3}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces The figure shows two ways to traverse the task DAG. Boxes with a blue shade represent tasks physically present in the runqueue (or run stack). The grey boxes constitute tasks that their respective parents will spawn during execution. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, and 9 while using LIFO at 3, 6, and 9. Thus, although FIFO optimizes per-task latency, the latency of actual requests favors LIFO.}}{26}{figure.4.1}\protected@file@percent }
 \newlabel{fig:fifo-lifo-latency}{{4.1}{26}{The figure shows two ways to traverse the task DAG. Boxes with a blue shade represent tasks physically present in the runqueue (or run stack). The grey boxes constitute tasks that their respective parents will spawn during execution. To simplify, assume that every task is drawn from the same distribution. In such a case, requests processed using FIFO order terminate at timestamps 7, 8, and 9 while using LIFO at 3, 6, and 9. Thus, although FIFO optimizes per-task latency, the latency of actual requests favors LIFO}{figure.4.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Allocations}{26}{section*.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Allocations}{26}{section*.4}\protected@file@percent }
 \citation{amdahl}
 \@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Naive Fibonacci implementation.}}{27}{figure.4.2}\protected@file@percent }
 \newlabel{fig:fib-pure}{{4.2}{27}{Naive Fibonacci implementation}{figure.4.2}{}}
@@ -222,33 +218,29 @@
 \newlabel{section:server_benchmark}{{5.3}{35}{Server benchmark}{section.5.3}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {5.3.1}General case}{35}{subsection.5.3.1}\protected@file@percent }
 \newlabel{section:benchmark-general-case}{{5.3.1}{35}{General case}{subsection.5.3.1}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces 50k.}}{36}{figure.5.1}\protected@file@percent }
-\newlabel{fig:packet-50k}{{5.1}{36}{50k}{figure.5.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.1}{\ignorespaces The performance achieved by packet processing benchmark with 50k tasks over varying number of cores. The panels show throughput, time, 3 latency percentiles and retries on insertion due to lack of space.}}{36}{figure.5.1}\protected@file@percent }
+\newlabel{fig:packet-50k}{{5.1}{36}{The performance achieved by packet processing benchmark with 50k tasks over varying number of cores. The panels show throughput, time, 3 latency percentiles and retries on insertion due to lack of space}{figure.5.1}{}}
 \citation{amdahl}
 \citation{amdahl}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces The throughput achieved on 50k tasks over varying number of domains.}}{38}{figure.5.2}\protected@file@percent }
-\newlabel{fig:packet-with-steal-counts}{{5.2}{38}{The throughput achieved on 50k tasks over varying number of domains}{figure.5.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces The throughput achieved on 50k tasks over varying number of domains.}}{38}{figure.5.3}\protected@file@percent }
-\newlabel{fig:packet-counters}{{5.3}{38}{The throughput achieved on 50k tasks over varying number of domains}{figure.5.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Degradation}{38}{section*.6}\protected@file@percent }
-\newlabel{section:degradation}{{5.3.1}{38}{Degradation}{section*.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces The throughput achieved on 10 million tasks over varying number of domains.}}{39}{figure.5.4}\protected@file@percent }
-\newlabel{fig:packet-10m-throughput}{{5.4}{39}{The throughput achieved on 10 million tasks over varying number of domains}{figure.5.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.5}{\ignorespaces The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}}{39}{figure.5.5}\protected@file@percent }
-\newlabel{fig:packet-slowed}{{5.5}{39}{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait}{figure.5.5}{}}
-\@writefile{tdo}{\contentsline {todo}{\color@fb@x {}{black}{}{orange}{\leavevmode {\color  {orange}o}}\ fix fig caption}{39}{section*.7}\protected@file@percent }
-\pgfsyspdfmark {pgfid6}{4661699}{12683592}
-\pgfsyspdfmark {pgfid9}{37920833}{12698337}
-\pgfsyspdfmark {pgfid10}{40689729}{12429640}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.6}{\ignorespaces The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case. }}{40}{figure.5.6}\protected@file@percent }
-\newlabel{fig:packet-4spawners}{{5.6}{40}{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case}{figure.5.6}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Work Distribution Extensions}{40}{section*.8}\protected@file@percent }
-\newlabel{section:work-distribution-extensions}{{5.3.1}{40}{Work Distribution Extensions}{section*.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.2}{\ignorespaces The throughput achieved on packet processing benchmark with 50k tasks.}}{38}{figure.5.2}\protected@file@percent }
+\newlabel{fig:packet-with-steal-counts}{{5.2}{38}{The throughput achieved on packet processing benchmark with 50k tasks}{figure.5.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.3}{\ignorespaces The throughput achieved on packet processing benchmark with 50k tasks.}}{38}{figure.5.3}\protected@file@percent }
+\newlabel{fig:packet-counters}{{5.3}{38}{The throughput achieved on packet processing benchmark with 50k tasks}{figure.5.3}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Degradation}{38}{section*.5}\protected@file@percent }
+\newlabel{section:degradation}{{5.3.1}{38}{Degradation}{section*.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.4}{\ignorespaces The throughput achieved on packet processing benchmark with 10 million tasks.}}{39}{figure.5.4}\protected@file@percent }
+\newlabel{fig:packet-10m-throughput}{{5.4}{39}{The throughput achieved on packet processing benchmark with 10 million tasks}{figure.5.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.5}{\ignorespaces The throughput achieved on packet processing benchmark with 50k tasks. Each tasks loaded with additional 500ns wait.}}{39}{figure.5.5}\protected@file@percent }
+\newlabel{fig:packet-slowed}{{5.5}{39}{The throughput achieved on packet processing benchmark with 50k tasks. Each tasks loaded with additional 500ns wait}{figure.5.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.6}{\ignorespaces The throughput achieved on packet processing benchmark with 50k with 4 spawners. (2 spawners in the 5-core case.) }}{40}{figure.5.6}\protected@file@percent }
+\newlabel{fig:packet-4spawners}{{5.6}{40}{The throughput achieved on packet processing benchmark with 50k with 4 spawners. (2 spawners in the 5-core case.)}{figure.5.6}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Work Distribution Extensions}{40}{section*.6}\protected@file@percent }
+\newlabel{section:work-distribution-extensions}{{5.3.1}{40}{Work Distribution Extensions}{section*.6}{}}
 \citation{workshed}
 \citation{Makingth53:online}
 \citation{goprocgo14:online}
-\@writefile{toc}{\contentsline {subsubsection}{Work Distribution Extensions Result}{41}{section*.9}\protected@file@percent }
-\newlabel{section:extensions_result}{{5.3.1}{41}{Work Distribution Extensions Result}{section*.9}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Work Distribution Extensions Result}{41}{section*.7}\protected@file@percent }
+\newlabel{section:extensions_result}{{5.3.1}{41}{Work Distribution Extensions Result}{section*.7}{}}
 \newlabel{paragraph:overflow-queue-bad-1}{{5.3.1}{41}{Work Distribution Extensions Result}{figure.5.7}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {5.7}{\ignorespaces The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}}{42}{figure.5.7}\protected@file@percent }
 \newlabel{fig:packet-extenstions}{{5.7}{42}{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait}{figure.5.7}{}}
@@ -258,26 +250,28 @@
 \newlabel{fig:packet-lifo-better}{{5.8}{43}{The throughput achieved on the packet processing benchmark with 500k packets and ten spawners. The benchmark was modified to have a non-trivial cache effect. Once the task was processed as in the original benchmark, it would spawn a chain of 10 tasks. Each task reads 20, with each reading 20 random bytes from the packet buffer, simulating picking out different parts of the received data at different stages. LIFO offers an obvious throughput advantage (shown in the figure) and median-tail latency improvement}{figure.5.8}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {5.9}{\ignorespaces The throughput achieved on the packet processing benchmark with 100k packets and ten spawners. The benchmark has a weaker cache effect than \ref  {fig:packet-lifo-better} but is still significant enough for LIFO to have better throughput. However, there is a 0.1\% chance that the packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO offers a much better tail latency for most domain counts in such a scenario. For example, at 115 domains, LIFO saves over 30\% of tail latency.}}{43}{figure.5.9}\protected@file@percent }
 \newlabel{fig:packet-fifo-better}{{5.9}{43}{The throughput achieved on the packet processing benchmark with 100k packets and ten spawners. The benchmark has a weaker cache effect than \ref {fig:packet-lifo-better} but is still significant enough for LIFO to have better throughput. However, there is a 0.1\% chance that the packet causes heavy work to be done, which spawns two tasks taking 20ms to complete. Akin to a network call to a different service. As shown in the figure, FIFO offers a much better tail latency for most domain counts in such a scenario. For example, at 115 domains, LIFO saves over 30\% of tail latency}{figure.5.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.3}Server benchmark with multi-modal processing latency}{43}{subsection.5.3.3}\protected@file@percent }
-\newlabel{section:server-bench-with-multi-modal}{{5.3.3}{43}{Server benchmark with multi-modal processing latency}{subsection.5.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3.3}Server benchmark with bimodal processing latency}{43}{subsection.5.3.3}\protected@file@percent }
+\newlabel{section:server-bench-with-multi-modal}{{5.3.3}{43}{Server benchmark with bimodal processing latency}{subsection.5.3.3}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {5.10}{\ignorespaces The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits.}}{44}{figure.5.10}\protected@file@percent }
 \newlabel{fig:packet-hybrids}{{5.10}{44}{The throughput and latency trade-off space achieved by various schedulers on the packet processing benchmark with varied task chains. The frontier consists of pure LIFO, FIFO and staged architecture, whereas various hybrid heuristic offered no benefits}{figure.5.10}{}}
-\@writefile{toc}{\contentsline {subsubsection}{LIFO heuristics}{44}{section*.10}\protected@file@percent }
-\newlabel{section:lifo-heuristics}{{5.3.3}{44}{LIFO heuristics}{section*.10}{}}
+\@writefile{toc}{\contentsline {subsubsection}{LIFO heuristics}{44}{section*.8}\protected@file@percent }
+\newlabel{section:lifo-heuristics}{{5.3.3}{44}{LIFO heuristics}{section*.8}{}}
 \citation{Maruzzelli2017-ou}
 \citation{Frequent1:online}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.11}{\ignorespaces The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}}{45}{figure.5.11}\protected@file@percent }
-\newlabel{fig:mixer-bench}{{5.11}{45}{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases}{figure.5.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.11}{\ignorespaces The number of latency breaches achieved by different schedulers as the load (number of mixers) increases. FIFO 10S and LIFO 10S represents the schedulers consisting of ten independent FIFO/LIFO silos.}}{45}{figure.5.11}\protected@file@percent }
+\newlabel{fig:mixer-bench}{{5.11}{45}{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases. FIFO 10S and LIFO 10S represents the schedulers consisting of ten independent FIFO/LIFO silos}{figure.5.11}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {5.4}Mixer benchmark}{45}{section.5.4}\protected@file@percent }
 \newlabel{section:mixer-benchmark}{{5.4}{45}{Mixer benchmark}{section.5.4}{}}
 \citation{Hull_John}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.12}{\ignorespaces The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}}{46}{figure.5.12}\protected@file@percent }
-\newlabel{fig:options-bench}{{5.12}{46}{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases}{figure.5.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.12}{\ignorespaces The 99\% tail latency of achieved by options benchmark under different schedulers.}}{46}{figure.5.12}\protected@file@percent }
+\newlabel{fig:options-bench}{{5.12}{46}{The 99\% tail latency of achieved by options benchmark under different schedulers}{figure.5.12}{}}
 \newlabel{paragraph:overflow-queue-bad-2}{{5.4}{46}{Mixer benchmark}{figure.5.11}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.5}Binomial option pricer benchmark}{46}{section.5.5}\protected@file@percent }
-\newlabel{section:binomial_option_pricer_result}{{5.5}{46}{Binomial option pricer benchmark}{section.5.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {5.13}{\ignorespaces T 100k packets with cache dependency / just 1 spawner.}}{48}{figure.5.13}\protected@file@percent }
-\newlabel{fig:domainslib-comp}{{5.13}{48}{T 100k packets with cache dependency / just 1 spawner}{figure.5.13}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.5}Binomial option pricer benchmark}{47}{section.5.5}\protected@file@percent }
+\newlabel{section:binomial_option_pricer_result}{{5.5}{47}{Binomial option pricer benchmark}{section.5.5}{}}
+\citation{ocamlmul59:online}
+\citation{ocamlmul59:online}
+\@writefile{lof}{\contentsline {figure}{\numberline {5.13}{\ignorespaces Throughput of the packet benchmark with bimodal task chains and cache dependency (\S  \ref  {section:server-bench-with-multi-modal}). It used 100k packets and a single spawner. The figure shows peformance achieved by the LIFO scheduler developed in this dissertation and Domainslib \cite  {ocamlmul59:online}.}}{48}{figure.5.13}\protected@file@percent }
+\newlabel{fig:domainslib-comp}{{5.13}{48}{Throughput of the packet benchmark with bimodal task chains and cache dependency (\S \ref {section:server-bench-with-multi-modal}). It used 100k packets and a single spawner. The figure shows peformance achieved by the LIFO scheduler developed in this dissertation and Domainslib \cite {ocamlmul59:online}}{figure.5.13}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {5.6}Comparison with Domainslib}{48}{section.5.6}\protected@file@percent }
 \newlabel{section:result_with_domainslib}{{5.6}{48}{Comparison with Domainslib}{section.5.6}{}}
 \citation{ocamlmul59:online}
@@ -290,78 +284,77 @@
 \bibcite{2ndGenAM1:online}{{1}{}{{2nd}}{{}}}
 \bibcite{AMDAnnou13:online}{{2}{}{{AMD}}{{}}}
 \bibcite{Howwebbr64:online}{{3}{}{{How}}{{}}}
-\bibcite{OCamllib90:online}{{4}{}{{OCa}}{{}}}
-\bibcite{POWER4Wi47:online}{{5}{}{{POW}}{{}}}
-\bibcite{async_kernel}{{6}{}{{asy}}{{}}}
-\bibcite{golang}{{7}{}{{gol}}{{}}}
-\bibcite{gorout_vs_os_thread}{{8}{}{{gor}}{{}}}
-\bibcite{linux_cfs}{{9}{}{{lin}}{{}}}
-\bibcite{memoryor11:online}{{10}{}{{mem}}{{}}}
-\bibcite{rfc793}{{11}{1981}{{rfc}}{{}}}
-\bibcite{2ndGenAM8:online}{{12}{}{{Advanced Micro~Devices}}{{}}}
-\bibcite{voip-latency}{{13}{2009}{{Agastya et~al.}}{{Agastya, Mechanic, and Kothari}}}
-\bibcite{litmus}{{14}{2011}{{Alglave et~al.}}{{Alglave, Maranget, Sarkar, and Sewell}}}
-\bibcite{Amin2013}{{15}{2013}{{Amin et~al.}}{{Amin, Jackson, Gilbert, Martin, and Shaw}}}
-\bibcite{Blumofe1999}{{16}{1999}{{Blumofe and Leiserson}}{{}}}
-\bibcite{Blumofe1995}{{17}{1995}{{Blumofe et~al.}}{{Blumofe, Joerg, Kuszmaul, Leiserson, Randall, and Zhou}}}
-\bibcite{Bohr2007}{{18}{2007}{{Bohr}}{{}}}
-\bibcite{Brachthuser2020}{{19}{2020}{{Brachth\"{a}user et~al.}}{{Brachth\"{a}user, Schuster, and Ostermann}}}
-\bibcite{Castello2016}{{20}{2016}{{Castello et~al.}}{{Castello, Pena, Seo, Mayo, Balaji, and Quintana-Orti}}}
-\bibcite{Chase2005}{{21}{2005}{{Chase and Lev}}{{}}}
-\bibcite{chebyras74:online}{{22}{2022}{{chebyrash}}{{}}}
-\bibcite{8057206}{{23}{2017}{{Cheng et~al.}}{{Cheng, Chen, Zhou, Gmach, and Milojicic}}}
-\bibcite{ocamlmul16:online}{{24}{}{{Contributors}}{{}}}
-\bibcite{Theright8:online}{{25}{}{{Corbet}}{{}}}
-\bibcite{Drebes2016}{{26}{2016}{{Drebes et~al.}}{{Drebes, Pop, Heydemann, Drach, and Cohen}}}
-\bibcite{6307773}{{27}{2011}{{Esmaeilzadeh et~al.}}{{Esmaeilzadeh, Blem, Amant, Sankaralingam, and Burger}}}
-\bibcite{mooremulti}{{28}{2013}{{Esmaeilzadeh et~al.}}{{Esmaeilzadeh, Blem, Amant, Sankaralingam, and Burger}}}
-\bibcite{faverge:inria-00416502}{{29}{2009}{{Faverge and Ramet}}{{}}}
-\bibcite{Geer2005}{{30}{2005}{{Geer}}{{}}}
-\bibcite{NomadbyH95:online}{{31}{}{{HashiCorp}}{{}}}
-\bibcite{art_of_mult}{{32}{2021}{{Herlihy et~al.}}{{Herlihy, Shavit, Luchangco, and Spear}}}
-\bibcite{Ho2002}{{33}{2002}{{Ho and Pepyne}}{{}}}
-\bibcite{Hull_John}{{34}{2005}{{Hull}}{{}}}
-\bibcite{Igel2005}{{35}{2005}{{Igel and Toussaint}}{{}}}
-\bibcite{sadiqjds97:online}{{36}{}{{Jaffer}}{{}}}
-\bibcite{Kappes2021}{{37}{2021}{{Kappes and Anastasiadis}}{{}}}
-\bibcite{amdahl}{{38}{2011}{{Karmani et~al.}}{{Karmani, Agha, Squillante, Seiferas, Brezina, Hu, Tuminaro, Sanders, Tr\"{a}ffe, Geijn, Tr\"{a}ff, Geijn, Sander, Gustafson, Dror, Young, Shaw, Lin, Lee, Chang, Kuan, Kollias, Grama, Li, Whaley, and Vuduc}}}
-\bibcite{vdso7Lin5:online}{{39}{}{{Kerrisk}}{{}}}
-\bibcite{Khan2018}{{40}{2018}{{Khan et~al.}}{{Khan, Hounshell, and Fuchs}}}
-\bibcite{Kirsch2013}{{41}{2013}{{Kirsch et~al.}}{{Kirsch, Lippautz, and Payer}}}
-\bibcite{Kleppmann2017-en}{{42}{2017}{{Kleppmann}}{{}}}
-\bibcite{correct_and_efficiect_deque}{{43}{2013}{{L\^{e} et~al.}}{{L\^{e}, Pop, Cohen, and Zappa~Nardelli}}}
-\bibcite{Makingth53:online}{{44}{}{{Lerche}}{{}}}
-\bibcite{TokioAna8:online}{{45}{}{{Lerche}}{{}}}
-\bibcite{Maruzzelli2017-ou}{{46}{2017}{{Maruzzelli}}{{}}}
-\bibcite{workshed}{{47}{2022}{{McClure et~al.}}{{McClure, Ousterhout, Shenker, and Ratnasamy}}}
-\bibcite{Miller1968}{{48}{1968}{{Miller}}{{}}}
-\bibcite{bartoszm90:online}{{49}{}{{Modelski}}{{}}}
-\bibcite{Moore2006}{{50}{2006}{{Moore}}{{}}}
-\bibcite{Norris2013}{{51}{2013}{{Norris and Demsky}}{{}}}
-\bibcite{Pinedo2012}{{52}{2012}{{Pinedo}}{{}}}
-\bibcite{Postnikova2022}{{53}{2022}{{Postnikova et~al.}}{{Postnikova, Koval, Nadiradze, and Alistarh}}}
-\bibcite{Pretnar2015}{{54}{2015}{{Pretnar}}{{}}}
-\bibcite{karlrupp48:online}{{55}{}{{Rupp}}{{}}}
-\bibcite{fad-cas-speed}{{56}{2020}{{Schweizer et~al.}}{{Schweizer, Besta, and Hoefler}}}
-\bibcite{Sivaramakrishnan2020}{{57}{2020}{{Sivaramakrishnan et~al.}}{{Sivaramakrishnan, Dolan, White, Jaffer, Kelly, Sahoo, Parimala, Dhiman, and Madhavapeddy}}}
-\bibcite{Sivaramakrishnan2021}{{58}{2021}{{Sivaramakrishnan et~al.}}{{Sivaramakrishnan, Dolan, White, Kelly, Jaffer, and Madhavapeddy}}}
-\bibcite{stephen_effective_nodate}{{59}{2015}{{Stephen et~al.}}{{Stephen, Leo, KC, Jeremy, and Anil}}}
-\bibcite{Sun2021}{{60}{2021}{{Sun et~al.}}{{Sun, He, Yan, Gao, Liu, and Zheng}}}
-\bibcite{Sundell2011}{{61}{2011}{{Sundell et~al.}}{{Sundell, Gidenstam, Papatriantafilou, and Tsigas}}}
-\bibcite{Swalens2014}{{62}{2014}{{Swalens et~al.}}{{Swalens, Marr, Koster, and Cutsem}}}
-\bibcite{goprocgo7:online}{{63}{}{{Team}}{{}}}
-\bibcite{goprocgo14:online}{{64}{2022}{{Team}}{{}}}
-\bibcite{tokiorsl53:online}{{65}{}{{Team}}{{}}}
-\bibcite{Concurre37:online}{{66}{}{{Team}}{{}}}
-\bibcite{ocamlmul5:online}{{67}{}{{Team}}{{}}}
-\bibcite{ocamlmul59:online}{{68}{}{{Team}}{{}}}
-\bibcite{MD90FS0r76:online}{{69}{}{{Technology}}{{}}}
-\bibcite{Tennenhouse89layeredmultiplexing}{{70}{1989}{{Tennenhouse}}{{}}}
-\bibcite{Frequent1:online}{{71}{}{{Twilio}}{{}}}
-\bibcite{Welsh2001}{{72}{2001}{{Welsh et~al.}}{{Welsh, Culler, and Brewer}}}
-\bibcite{Wolpert1997}{{73}{1997}{{Wolpert and Macready}}{{}}}
-\bibcite{Yang2016}{{74}{2016}{{Yang and Mellor-Crummey}}{{}}}
-\bibcite{latthrough}{{75}{2014}{{Zhang et~al.}}{{Zhang, Feng, Wang, and Xie}}}
+\bibcite{async_kernel}{{4}{}{{asy}}{{}}}
+\bibcite{golang}{{5}{}{{gol}}{{}}}
+\bibcite{gorout_vs_os_thread}{{6}{}{{gor}}{{}}}
+\bibcite{linux_cfs}{{7}{}{{lin}}{{}}}
+\bibcite{memoryor11:online}{{8}{}{{mem}}{{}}}
+\bibcite{rfc793}{{9}{1981}{{rfc}}{{}}}
+\bibcite{2ndGenAM8:online}{{10}{}{{Advanced Micro~Devices}}{{}}}
+\bibcite{voip-latency}{{11}{2009}{{Agastya et~al.}}{{Agastya, Mechanic, and Kothari}}}
+\bibcite{litmus}{{12}{2011}{{Alglave et~al.}}{{Alglave, Maranget, Sarkar, and Sewell}}}
+\bibcite{Amin2013}{{13}{2013}{{Amin et~al.}}{{Amin, Jackson, Gilbert, Martin, and Shaw}}}
+\bibcite{Blumofe1999}{{14}{1999}{{Blumofe and Leiserson}}{{}}}
+\bibcite{Blumofe1995}{{15}{1995}{{Blumofe et~al.}}{{Blumofe, Joerg, Kuszmaul, Leiserson, Randall, and Zhou}}}
+\bibcite{Bohr2007}{{16}{2007}{{Bohr}}{{}}}
+\bibcite{Brachthuser2020}{{17}{2020}{{Brachth\"{a}user et~al.}}{{Brachth\"{a}user, Schuster, and Ostermann}}}
+\bibcite{Castello2016}{{18}{2016}{{Castello et~al.}}{{Castello, Pena, Seo, Mayo, Balaji, and Quintana-Orti}}}
+\bibcite{Chase2005}{{19}{2005}{{Chase and Lev}}{{}}}
+\bibcite{chebyras74:online}{{20}{2022}{{chebyrash}}{{}}}
+\bibcite{8057206}{{21}{2017}{{Cheng et~al.}}{{Cheng, Chen, Zhou, Gmach, and Milojicic}}}
+\bibcite{ocamlmul16:online}{{22}{}{{Contributors}}{{}}}
+\bibcite{Theright8:online}{{23}{}{{Corbet}}{{}}}
+\bibcite{Drebes2016}{{24}{2016}{{Drebes et~al.}}{{Drebes, Pop, Heydemann, Drach, and Cohen}}}
+\bibcite{6307773}{{25}{2011}{{Esmaeilzadeh et~al.}}{{Esmaeilzadeh, Blem, Amant, Sankaralingam, and Burger}}}
+\bibcite{mooremulti}{{26}{2013}{{Esmaeilzadeh et~al.}}{{Esmaeilzadeh, Blem, Amant, Sankaralingam, and Burger}}}
+\bibcite{faverge:inria-00416502}{{27}{2009}{{Faverge and Ramet}}{{}}}
+\bibcite{Geer2005}{{28}{2005}{{Geer}}{{}}}
+\bibcite{NomadbyH95:online}{{29}{}{{HashiCorp}}{{}}}
+\bibcite{art_of_mult}{{30}{2021}{{Herlihy et~al.}}{{Herlihy, Shavit, Luchangco, and Spear}}}
+\bibcite{Ho2002}{{31}{2002}{{Ho and Pepyne}}{{}}}
+\bibcite{Hull_John}{{32}{2005}{{Hull}}{{}}}
+\bibcite{Igel2005}{{33}{2005}{{Igel and Toussaint}}{{}}}
+\bibcite{sadiqjds97:online}{{34}{}{{Jaffer}}{{}}}
+\bibcite{Kappes2021}{{35}{2021}{{Kappes and Anastasiadis}}{{}}}
+\bibcite{amdahl}{{36}{2011}{{Karmani et~al.}}{{Karmani, Agha, Squillante, Seiferas, Brezina, Hu, Tuminaro, Sanders, Tr\"{a}ffe, Geijn, Tr\"{a}ff, Geijn, Sander, Gustafson, Dror, Young, Shaw, Lin, Lee, Chang, Kuan, Kollias, Grama, Li, Whaley, and Vuduc}}}
+\bibcite{vdso7Lin5:online}{{37}{}{{Kerrisk}}{{}}}
+\bibcite{Khan2018}{{38}{2018}{{Khan et~al.}}{{Khan, Hounshell, and Fuchs}}}
+\bibcite{Kirsch2013}{{39}{2013}{{Kirsch et~al.}}{{Kirsch, Lippautz, and Payer}}}
+\bibcite{Kleppmann2017-en}{{40}{2017}{{Kleppmann}}{{}}}
+\bibcite{correct_and_efficiect_deque}{{41}{2013}{{L\^{e} et~al.}}{{L\^{e}, Pop, Cohen, and Zappa~Nardelli}}}
+\bibcite{Makingth53:online}{{42}{}{{Lerche}}{{}}}
+\bibcite{TokioAna8:online}{{43}{}{{Lerche}}{{}}}
+\bibcite{Maruzzelli2017-ou}{{44}{2017}{{Maruzzelli}}{{}}}
+\bibcite{workshed}{{45}{2022}{{McClure et~al.}}{{McClure, Ousterhout, Shenker, and Ratnasamy}}}
+\bibcite{Miller1968}{{46}{1968}{{Miller}}{{}}}
+\bibcite{bartoszm90:online}{{47}{}{{Modelski}}{{}}}
+\bibcite{Moore2006}{{48}{2006}{{Moore}}{{}}}
+\bibcite{Norris2013}{{49}{2013}{{Norris and Demsky}}{{}}}
+\bibcite{Pinedo2012}{{50}{2012}{{Pinedo}}{{}}}
+\bibcite{Postnikova2022}{{51}{2022}{{Postnikova et~al.}}{{Postnikova, Koval, Nadiradze, and Alistarh}}}
+\bibcite{Pretnar2015}{{52}{2015}{{Pretnar}}{{}}}
+\bibcite{karlrupp48:online}{{53}{}{{Rupp}}{{}}}
+\bibcite{fad-cas-speed}{{54}{2020}{{Schweizer et~al.}}{{Schweizer, Besta, and Hoefler}}}
+\bibcite{Sivaramakrishnan2020}{{55}{2020}{{Sivaramakrishnan et~al.}}{{Sivaramakrishnan, Dolan, White, Jaffer, Kelly, Sahoo, Parimala, Dhiman, and Madhavapeddy}}}
+\bibcite{Sivaramakrishnan2021}{{56}{2021}{{Sivaramakrishnan et~al.}}{{Sivaramakrishnan, Dolan, White, Kelly, Jaffer, and Madhavapeddy}}}
+\bibcite{Stallings}{{57}{2005}{{Stallings}}{{}}}
+\bibcite{stephen_effective_nodate}{{58}{2015}{{Stephen et~al.}}{{Stephen, Leo, KC, Jeremy, and Anil}}}
+\bibcite{Sun2021}{{59}{2021}{{Sun et~al.}}{{Sun, He, Yan, Gao, Liu, and Zheng}}}
+\bibcite{Sundell2011}{{60}{2011}{{Sundell et~al.}}{{Sundell, Gidenstam, Papatriantafilou, and Tsigas}}}
+\bibcite{Swalens2014}{{61}{2014}{{Swalens et~al.}}{{Swalens, Marr, Koster, and Cutsem}}}
+\bibcite{goprocgo7:online}{{62}{}{{Team}}{{}}}
+\bibcite{goprocgo14:online}{{63}{2022}{{Team}}{{}}}
+\bibcite{tokiorsl53:online}{{64}{}{{Team}}{{}}}
+\bibcite{Concurre37:online}{{65}{}{{Team}}{{}}}
+\bibcite{ocamlmul5:online}{{66}{}{{Team}}{{}}}
+\bibcite{ocamlmul59:online}{{67}{}{{Team}}{{}}}
+\bibcite{MD90FS0r76:online}{{68}{}{{Technology}}{{}}}
+\bibcite{Tennenhouse89layeredmultiplexing}{{69}{1989}{{Tennenhouse}}{{}}}
+\bibcite{Frequent1:online}{{70}{}{{Twilio}}{{}}}
+\bibcite{Welsh2001}{{71}{2001}{{Welsh et~al.}}{{Welsh, Culler, and Brewer}}}
+\bibcite{Wolpert1997}{{72}{1997}{{Wolpert and Macready}}{{}}}
+\bibcite{Yang2016}{{73}{2016}{{Yang and Mellor-Crummey}}{{}}}
+\bibcite{latthrough}{{74}{2014}{{Zhang et~al.}}{{Zhang, Feng, Wang, and Xie}}}
 \citation{rfc793}
 \citation{async_kernel}
 \citation{async_kernel}
@@ -373,8 +366,6 @@
 \@writefile{toc}{\contentsline {section}{\numberline {A.2}Cancellations}{60}{section.A.2}\protected@file@percent }
 \newlabel{section:cancellations}{{A.2}{60}{Cancellations}{section.A.2}{}}
 \@writefile{toc}{\contentsline {section}{\numberline {A.3}Blocking operations}{60}{section.A.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {A.4}Dynamic pool size}{60}{section.A.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {A.5}Batching}{60}{section.A.5}\protected@file@percent }
 \citation{Yang2016}
 \@writefile{toc}{\contentsline {chapter}{\numberline {B}Core data structures}{61}{appendix.B}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}

@@ -34,8 +34,8 @@
 \contentsline {subsection}{\numberline {4.2.3}Binomial option pricing}{24}{subsection.4.2.3}%
 \contentsline {section}{\numberline {4.3}Ordering}{25}{section.4.3}%
 \contentsline {subsection}{\numberline {4.3.1}FIFO and LIFO}{25}{subsection.4.3.1}%
-\contentsline {subsubsection}{Fairness revisited}{25}{section*.4}%
-\contentsline {subsubsection}{Allocations}{26}{section*.5}%
+\contentsline {subsubsection}{Fairness revisited}{25}{section*.3}%
+\contentsline {subsubsection}{Allocations}{26}{section*.4}%
 \contentsline {subsection}{\numberline {4.3.2}Hybrid}{27}{subsection.4.3.2}%
 \contentsline {section}{\numberline {4.4}Contention and scalability}{27}{section.4.4}%
 \contentsline {subsection}{\numberline {4.4.1}Core structure distribution}{28}{subsection.4.4.1}%
@@ -54,22 +54,20 @@
 \contentsline {subsection}{\numberline {5.2.3}Statistical methods}{35}{subsection.5.2.3}%
 \contentsline {section}{\numberline {5.3}Server benchmark}{35}{section.5.3}%
 \contentsline {subsection}{\numberline {5.3.1}General case}{35}{subsection.5.3.1}%
-\contentsline {subsubsection}{Degradation}{38}{section*.6}%
-\contentsline {subsubsection}{Work Distribution Extensions}{40}{section*.8}%
-\contentsline {subsubsection}{Work Distribution Extensions Result}{41}{section*.9}%
+\contentsline {subsubsection}{Degradation}{38}{section*.5}%
+\contentsline {subsubsection}{Work Distribution Extensions}{40}{section*.6}%
+\contentsline {subsubsection}{Work Distribution Extensions Result}{41}{section*.7}%
 \contentsline {subsection}{\numberline {5.3.2}Server benchmark with cache effects}{42}{subsection.5.3.2}%
-\contentsline {subsection}{\numberline {5.3.3}Server benchmark with multi-modal processing latency}{43}{subsection.5.3.3}%
-\contentsline {subsubsection}{LIFO heuristics}{44}{section*.10}%
+\contentsline {subsection}{\numberline {5.3.3}Server benchmark with bimodal processing latency}{43}{subsection.5.3.3}%
+\contentsline {subsubsection}{LIFO heuristics}{44}{section*.8}%
 \contentsline {section}{\numberline {5.4}Mixer benchmark}{45}{section.5.4}%
-\contentsline {section}{\numberline {5.5}Binomial option pricer benchmark}{46}{section.5.5}%
+\contentsline {section}{\numberline {5.5}Binomial option pricer benchmark}{47}{section.5.5}%
 \contentsline {section}{\numberline {5.6}Comparison with Domainslib}{48}{section.5.6}%
 \contentsline {chapter}{\numberline {6}Summary and conclusions}{50}{chapter.6}%
 \contentsline {chapter}{\numberline {A}Rejected design choices}{59}{appendix.A}%
 \contentsline {section}{\numberline {A.1}Backpressure}{59}{section.A.1}%
 \contentsline {section}{\numberline {A.2}Cancellations}{60}{section.A.2}%
 \contentsline {section}{\numberline {A.3}Blocking operations}{60}{section.A.3}%
-\contentsline {section}{\numberline {A.4}Dynamic pool size}{60}{section.A.4}%
-\contentsline {section}{\numberline {A.5}Batching}{60}{section.A.5}%
 \contentsline {chapter}{\numberline {B}Core data structures}{61}{appendix.B}%
 \contentsline {section}{\numberline {B.1}MPMC queue on infinite array}{61}{section.B.1}%
 \contentsline {section}{\numberline {B.2}MPMC queue blocking}{62}{section.B.2}%

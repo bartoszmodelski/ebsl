@@ -128,7 +128,7 @@ $ make wordcount
 gs -q -dSAFER -sDEVICE=txtwrite -o - \
    -dFirstPage=6 -dLastPage=11 report-submission.pdf | \
 egrep '[A-Za-z]{3}' | wc -w
-467
+14877
 \end{verbatim}
 \end{quote}
 
@@ -140,7 +140,15 @@ egrep '[A-Za-z]{3}' | wc -w
 
 \chapter*{Abstract}
 
-Write a summary of the whole thing. Make sure it fits on one page.
+During the last twenty years, the advances in computer processors have taken a much different route than before. The exponential growth of frequency stagnated due to physical limits, and CPU manufacturers started to scale processors out, i.e., stack more and more cores within a single processor. In turn, programs became more concurrent to take advantage of the available parallelism, but also because modern computers are more interactive, networked, and omnipresent. 
+
+In this dissertation, we argue that modern hardware is so parallel and workloads are so concurrent that there is no single, perfect scheduling strategy across a complex application software stack. Therefore, significant performance advantages can be gained from customizing and composing schedulers.
+
+To validate the hypothesis, we have developed several practical userspace schedulers (FIFO, LIFO, Staged, FIFO resizing) and extended them with a number of work distribution methods. The code was written in OCaml with multicore support, which features a novel effects-based approach to multithreading. Most importantly, it decouples lightweight threading from the runtime and lets users compose schedulers. 
+
+The evaluation involved several real-world benchmarks executed on up to 120 threads of a dual-socket machine with two AMD EPYC 7702 processors.
+
+The results show that scaling applications to high core counts is non-trivial, and some classic methods such as work stealing do not provide optimal performance. Secondly, different scheduling policies have a profound impact on the throughput and latency of specific benchmarks, which justifies the need to compose schedulers for heterogeneous workloads. Further, a composition of schedulers in a staged architecture was shown to provide better tail latency than its components. Moreover, the performance of the scheduler developed in this project was shown to improve over the existing default Multicore OCaml scheduler - Domainslib. Finally, the results put in question a common design of overflow queue present in e.g., Go and Tokio (Rust).
 
 \tableofcontents
 %\listoffigures
@@ -155,7 +163,7 @@ This section introduces and motivates the central problem of this dissertation i
 
 \section{Thesis}
 \label{section:thesis}
-Twenty years ago, computer processors looked very different than today. The first stock non-embedded multicore processor has just been released \cite{POWER4Wi47:online} \todo{improve citation}, but customers would have to wait until 2004 to see the first multicore x86 CPU - dual-core AMD Opteron \cite{AMDAnnou13:online}. Up to four could have been stacked inside HP ProLiant DL585 server. At the time, a revolutionary technology that allowed a further exponential increase of computational power in chips \cite{mooremulti} in the light of the slowdown of Dennard scaling \cite{Bohr2007}. This technological direction is still relevant today and remains a large driver of performance improvements. Today, a standard dual-socket machine with two stock processors (AMD EPYC 7702 \cite{2ndGenAM1:online}) offers 256 logical cores. In the meantime, the maximum clock speed between these two processors improved by only 20\% (respectively 2.8 GHz and 3.35 GHz for Opteron and Threadripper). Thus, software engineers have strong reasons to try to parallelize workloads. 
+Twenty years ago, computer processors looked very different than today. The first stock non-embedded multicore processor has just been released \cite{Stallings}, but customers would have to wait until 2004 to see the first multicore x86 CPU - dual-core AMD Opteron \cite{AMDAnnou13:online}. Up to four could have been stacked inside HP ProLiant DL585 server. At the time, a revolutionary technology that allowed a further exponential increase of computational power in chips \cite{mooremulti} in the light of the slowdown of Dennard scaling \cite{Bohr2007}. This technological direction is still relevant today and remains a large driver of performance improvements. Today, a standard dual-socket machine with two stock processors (AMD EPYC 7702 \cite{2ndGenAM1:online}) offers 256 logical cores. In the meantime, the maximum clock speed between these two processors improved by only 20\% (respectively 2.8 GHz and 3.35 GHz for Opteron and Threadripper). Thus, software engineers have strong reasons to try to parallelize workloads. 
 
 Practice shows that parallel programming is far from trivial. Mistakes are common both in the industry and academia. They happen even in algorithms claimed to be proven \cite{Norris2013}. This inability to take advantage of parallelism has a tangible impact on the productivity of IT-using sectors of the economy \cite{Khan2018}. Several research spaces are trying to make parallel programming more accessible. One particularly important for modern operating systems and runtimes is scheduling. 
 
@@ -164,7 +172,7 @@ A standard scheduling definition explains it in terms of allocating resources to
 This simplicity is no longer the case with processors scaling mainly horizontally and ever more complex applications. Thus, this dissertation argues the following thesis. 
 
 \begin{quote}
-    Modern hardware is so parallel, and workloads are so concurrent, that there is no single, perfect scheduling strategy across a complex application software stack. Therefore, significant performance advantages can be gained from customizing and composing schedulers.
+    Modern hardware is so parallel and workloads are so concurrent that there is no single, perfect scheduling strategy across a complex application software stack. Therefore, significant performance advantages can be gained from customizing and composing schedulers.
 \end{quote} 
 
 The first part of the statement is akin to the construction of a No Free Lunch theorem \cite{Ho2002} for schedulers. While there is a growing body of NFL theorems for optimization problems (e.g., \cite{Wolpert1997}, \cite{Igel2005}), such fundamental results formalize knowledge rather than produce direct guidance for real-world engineering. Therefore, this dissertation aims for a different exposition of the problem, one that analyses practical differences between scheduling policies. It considers widely-used performance metrics and explores the trade-offs between pragmatic scheduling schemes guided by benchmarks executed on stock hardware. 
@@ -636,8 +644,8 @@ Since it is hard to assume any particular distribution (esp. gaussian) when it c
 
 \begin{figure}
      \centering
-     \includegraphics[width=0.85\textwidth]{eval/packet-basic-with-steal-counts2std.png}
-     \caption{50k.}
+     \includegraphics[width=0.80\textwidth]{eval/packet-basic-with-steal-counts2std.png}
+     \caption{The performance achieved by packet processing benchmark with 50k tasks over varying number of cores. The panels show throughput, time, 3 latency percentiles and retries on insertion due to lack of space.}
     \label{fig:packet-50k}
 \end{figure}
 
@@ -658,7 +666,7 @@ In line with Amdahl's law \cite{amdahl}, it is expected that any application wil
 \begin{figure} 
      \centering
      \includegraphics[width=0.85\textwidth]{eval/packet-basic-with-steal-counts2.png}
-     \caption{The throughput achieved on 50k tasks over varying number of domains.}
+     \caption{The throughput achieved on packet processing benchmark with 50k tasks.}
     \label{fig:packet-with-steal-counts}
 \end{figure}
 
@@ -667,7 +675,7 @@ In the LIFO case, as shown by \ref{fig:packet-with-steal-counts}, the scheduler 
 \begin{figure} 
      \centering 
      \includegraphics[width=0.85\textwidth]{eval/packet-basic-counters.png}
-     \caption{The throughput achieved on 50k tasks over varying number of domains.}
+     \caption{The throughput achieved on packet processing benchmark with 50k tasks.}
     \label{fig:packet-counters}
 \end{figure}
 
@@ -677,7 +685,7 @@ Finally, it is worth stating that this result should not be interpreted as work 
 \begin{figure} 
      \centering
      \includegraphics[width=0.85\textwidth]{eval/packet-basic-10million-just-throughput.png}
-     \caption{The throughput achieved on 10 million tasks over varying number of domains.}
+     \caption{The throughput achieved on packet processing benchmark with 10 million tasks.}
     \label{fig:packet-10m-throughput}
 \end{figure}
 
@@ -685,7 +693,7 @@ Finally, it is worth stating that this result should not be interpreted as work 
 \begin{figure} 
      \centering
      \includegraphics[width=0.85\textwidth]{eval/packet-basic-slowed_2.png}
-     \caption{The throughput achieved on 50k tasks with over varying number of domains. Each tasks loaded with additional 500ns wait.}
+     \caption{The throughput achieved on packet processing benchmark with 50k tasks. Each tasks loaded with additional 500ns wait.}
     \label{fig:packet-slowed}
 \end{figure}
 
@@ -693,10 +701,9 @@ Finally, it is worth stating that this result should not be interpreted as work 
 \begin{figure} 
      \centering 
      \includegraphics[width=0.85\textwidth]{eval/packet-basic-4spawners-just-throughput.png}
-     \caption{The throughput achieved on 50k with 4 spawners. (2 spawners in the 5-core case. }
+     \caption{The throughput achieved on packet processing benchmark with 50k with 4 spawners. (2 spawners in the 5-core case.) }
     \label{fig:packet-4spawners}
 \end{figure}
-\todo{fix fig caption}
 
 \begin{itemize}
     \item \textbf{Heavier task}. See figure \ref{fig:packet-slowed} for the performance when each task has had an extra 500ns sleep to perform. It is enough time to extend the stability beyond 100 domains.
@@ -758,7 +765,7 @@ This section presents the results of a more complicated workload, wherein once t
 
 Notably, extra care is required to replicate this result on modern architecture. For example, simple iteration over the packet in a child task does not experience significant memory inefficiencies due to automatic memory prefetching. After a few first cache fails, the rest of the packet will be loaded into the cache preemptively. This effect breaks down with more complex memory patterns, which microarchitecture cannot predict. 
 
-\subsection{Server benchmark with multi-modal processing latency}
+\subsection{Server benchmark with bimodal processing latency}
 \label{section:server-bench-with-multi-modal}
 
 \begin{figure} 
@@ -777,7 +784,7 @@ Pure LIFO scheduling is prone to poor tail latencies. Therefore, a number of heu
 \begin{itemize}
     \item \textbf{Alternating}. LIFO and FIFO removal alternately. A simple combination of pro-latency and pro-locality choices. 
     \item \textbf{Stochastic self-steal}. Just as alternating, but the ratio does not have to be 50:50. Instead, it has been tested as 80\% LIFO, 20 \% FIFO, and vice versa.  
-    \item \textbf{Temporary FIFO ordering}. To prevent any items from lingering at the bottom of the stack, every 256 items, do as many FIFO removals as was the number of elements in the stack. Such an approach is commonly known as reversing the stack, but this implementation avoids the edge case of an item getting stuck between two infinitely deep tasks.
+    \item \textbf{Reverse}. To prevent any items from lingering at the bottom of the stack, every 256 items, do as many FIFO removals as was the number of elements in the stack. Akin to actual stack reversal, but this implementation avoids the edge case of an item getting stuck between two infinitely deep tasks.
     \item \textbf{LIFO slot}. Rely on FIFO ordering but have a special slot for the most recently scheduled task. When looking for work, check this slot first. It violates FIFO and helps preserve locality between a chain of tasks. Featured in real-world projects, e.g. \S\ref{section:rel-work-go}. 
 \end{itemize}
 Notably, these heuristic have been built as a wrapper around LIFO data structure but have no direct support. Thus, by design, they are costlier to use. 
@@ -799,7 +806,7 @@ This result, in line with the hypothesis (\S\ref{section:thesis}), strongly supp
 \begin{figure} 
     \centering 
     \includegraphics[width=0.85\textwidth]{eval/mixer-base8.png}
-    \caption{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}
+    \caption{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases. FIFO 10S and LIFO 10S represents the schedulers consisting of ten independent FIFO/LIFO silos.}
    \label{fig:mixer-bench}
 \end{figure}
 
@@ -813,7 +820,7 @@ Importantly, participant and conference threads yield frequently. They simply ca
 
 Figure \ref{fig:mixer-bench} shows the ratio of latency breaches of different schedulers over the increasing number of conferences. This metric behaves similarly to tail latencies. LIFO performs the best as it capitalizes on mixed-down audio being sent back immediately. FIFO sees a significant number of failures earlier, which is explained by the (effectively) constant depth of the task graph (\S\ref{section:fairness-revisited}). The staged architecture cannot capitalize on having multiple stages because even in the base FIFO and LIFO case, most of the scheduling goes through the global multi-queue. In this case, the staged architecture only has extra overheads in the form of another queue before sending out mixed-down audio, where it is not beneficial to prioritise other work. Curiously siloed FIFO and LIFO did not differ significantly from core implementations. Locality benefits are not big enough to make a difference in this case. It is also a point in favour of the scalability of the base designs. Notably, all schedulers have been fitted with highly-scalable multi-queue for overflow queues. A scheduler with lock-based overflow structure (as in the case of \S\ref{section:rel-work-go}, \S\ref{section:rel-work-rust}) does not terminate in reasonable time.
 
-Finally, this result shows that even when optimizing for latency, there are no ready-made solutions. In the case of server benchmark with multi-modal packet processing latency (\S\ref{section:server-bench-with-multi-modal}), the best latency was offered by staged architecture and the worst by LIFO. The mixer benchmark is precisely the opposite: LIFO is the best choice for latency and staged the worst. This phenomenon is another example of the hypothesis (\S\ref{section:thesis}). 
+Finally, this result shows that even when optimizing for latency, there are no ready-made solutions. In the case of server benchmark with bimodal packet processing latency (\S\ref{section:server-bench-with-multi-modal}), the best latency was offered by staged architecture and the worst by LIFO. The mixer benchmark is precisely the opposite: LIFO is the best choice for latency and staged the worst. This phenomenon is another example of the hypothesis (\S\ref{section:thesis}). 
 
 \section{Binomial option pricer benchmark}
 \label{section:binomial_option_pricer_result}
@@ -821,7 +828,7 @@ Finally, this result shows that even when optimizing for latency, there are no r
 \begin{figure} 
     \centering 
     \includegraphics[width=0.85\textwidth]{eval/options-base.png}
-    \caption{The number of latency breaches achieved by different schedulers as the load (number of mixers) increases.}
+    \caption{The 99\% tail latency of achieved by options benchmark under different schedulers.}
    \label{fig:options-bench}
 \end{figure}
 Options contracts are financial derivative instruments that provide the holder with an option (but not an obligation) to enter a specific trade at some point in the future. For example, a European call option on Google with a strike price of \$2600 and expiration date of 2022-03-06 lets the holder buy a specified number of Google shares at the strike price and on the expiration date \cite{Hull_John}. The value of an option at expiration depends strictly on the price of its underlying.
@@ -853,11 +860,11 @@ Note that the LIFO in this section refers to the LIFO scheduler developed for th
 \begin{figure} 
     \centering 
     \includegraphics[width=0.85\textwidth]{eval/comp-base4.png}
-    \caption{T 100k packets with cache dependency / just 1 spawner.}
+    \caption{Throughput of the packet benchmark with bimodal task chains and cache dependency (\S\ref{section:server-bench-with-multi-modal}). It used 100k packets and a single spawner. The figure shows peformance achieved by the LIFO scheduler developed in this dissertation and Domainslib \cite{ocamlmul59:online}.}
    \label{fig:domainslib-comp}
 \end{figure}
 
-The performance with Domainslib has been compared using the last packet processing benchmark (\ref{section:server-bench-with-multi-modal}) as it features bimodal work distribution, cache effects and is assessed using a simple metric - throughput. Further, the benchmark was run with just one spawner to highlight the effect. It is worth pointing out that Domainslib can auto-resize, while for the LIFO scheduler, although possible, auto-resizing has not been implemented. To account for that difference, both Domainslib and LIFO were set to have a minimum size of 1024 items, which Domainslib can expand further if needed. 
+The performance with Domainslib has been compared using the last packet processing benchmark (\S\ref{section:server-bench-with-multi-modal}) as it features bimodal work distribution, cache effects and is assessed using a simple metric - throughput. Further, the benchmark was run with just one spawner to highlight the effect. It is worth pointing out that Domainslib can auto-resize, while for the LIFO scheduler, although possible, auto-resizing has not been implemented. To account for that difference, both Domainslib and LIFO were set to have a minimum size of 1024 items, which Domainslib can expand further if needed. 
 
 The results are shown in figure \ref{fig:domainslib-comp}. The Domainslib is significantly faster at low core counts. The benefit vanishes between 20 and 40 cores, and both implementations offer similar performance. Beyond 40 cores, the Domainslib is unable to scale. It peaks at 85 cores and sees a strong throughput reduction for more cores. On the other hand, the LIFO implementation sees diminishing results but continues to improve to the last data point at 115 cores.  
 
@@ -876,8 +883,8 @@ The results highlight vast differences between different scheduling policies. Th
 \begin{itemize}
     \item The selection of optimal policy is non-trivial. For example, there is no clear-cut answer for whether FIFO, LIFO, or other is better for latency. It depends on the interaction of a number of factors, such as the shape of the task graph and locality benefits. In one case, staged architecture was shown to improve above both (\S\ref{section:mixer-benchmark}, (\S\ref{section:server-bench-with-multi-modal})).
     \item Scaling fine-grained workloads to high-core machines is non-trivial. An algorithm that scales well up to 20 cores can lose performance as more resources are added due to contention (\S\ref{section:benchmark-general-case}).
-    \item Locked overflow queue used in Go and Tokio limits performance of some workloads (\S\ref{paragraph:overflow-queue-bad-1}, \S\ref{paragraph:overflow-queue-bad-2}).
     \item The default OCaml scheduler - Domainslib \cite{ocamlmul59:online} - has room for improvement on high core counts (\S\ref{section:result_with_domainslib}). Notably, the OCaml team has already expressed interest in upstreaming some lock-free data structures developed for this project.
+    \item Locked overflow queue used in Go and Tokio limits performance of some workloads (\S\ref{paragraph:overflow-queue-bad-1}, \S\ref{paragraph:overflow-queue-bad-2}).
 \end{itemize}
 Therefore, there are clear benefits from customization and composition of schedulers for the workload and the desired metrics. Thus, the hypothesis stated in the introduction is accepted (\S\ref{section:thesis}). 
 
@@ -921,15 +928,6 @@ As discussed (\S\ref{section:work-distribution}), developer should strive to cre
 
 
 This has not been explicitely handled in the current implementation but both approaches are feasible. There is a question of how important is such a measure, given that the proposed IO library (eio \cite{ocamlmul5:online}) tries to use the fast, non-blocking interfaces like io\_uring.
-
-
-\section{Dynamic pool size}
-
-io vs compute increase or not to
-\section{Batching}
-
-
-
 
 \chapter{Core data structures}
 \label{section:underlying_data_structures}
@@ -1042,7 +1040,7 @@ The mechanism relies on the fact that non-owners do not speculate when stealing.
 \section{Sharded queue}
 \label{section:multiqueue_details}
 
-Performance of staged architecture (\S\ref{section:design-staged}) and overflow queue (\S\ref{section:design_overflow_queue}) depends on the scalability of the underlying queue. Lock-free MPMC queue (\S\ref{section:blocking_mpmc}) allows enqueuers and dequeuers to work faster and more independently than with a locked structure. However, the throughput of such a queue hardly improves beyond more than a few workers.  
+Performance of staged architecture (\S\ref{section:design-staged}) and overflow queue depends on the scalability of the underlying queue. Lock-free MPMC queue (\S\ref{section:blocking_mpmc}) allows enqueuers and dequeuers to work faster and more independently than with a locked structure. However, the throughput of such a queue hardly improves beyond more than a few workers.  
 
 A common technique used to extend the scalability in such circumstances is horizontal scaling. Instead of a single queue with two points of contention (indices), the structure can encapsulate multiple queues and load balance across them. Such a construction is called multi queue and can alone constitute a core structure of a scheduler \cite{Postnikova2022}. This dissertation uses a simple multiqueue wherein enqueuers insert items into randomly selected MPMC queue, and dequeurs start with random queue and iterate until a non-empty queue is found (or all queues have been checked).
 
