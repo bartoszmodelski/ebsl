@@ -31,7 +31,7 @@
 \title{Using effect handlers for efficient parallel scheduling}
 \author{Bartosz Modelski}
 \date{June 2022}
-\newcommand{\candidatenumber}{1234N}
+\newcommand{\candidatenumber}{2094I}
 \newcommand{\college}{Lucy Cavendish College}
 \newcommand{\course}{Master of Philosophy in Advanced Computer Science}
 
@@ -116,23 +116,19 @@ Main chapters (excluding front-matter, references and appendix):
 \contentpages~pages
 (pp~\pageref{firstcontentpage}--\pageref{lastcontentpage})
 
-Main chapters word count: 467
+Main chapters word count: 14872
 
-Methodology used to generate that word count:
-
-[For example:
+Methodology used to generate that word count: 
 
 \begin{quote}
 \begin{verbatim}
-$ make wordcount
-gs -q -dSAFER -sDEVICE=txtwrite -o - \
-   -dFirstPage=6 -dLastPage=11 report-submission.pdf | \
-egrep '[A-Za-z]{3}' | wc -w
-14877
+    gs -q -dSAFER -sDEVICE=txtwrite -o - \
+    -dFirstPage=7 -dLastPage=52 report-submission.pdf | \
+ egrep '[A-Za-z]{3}' | wc -w
+ 14872 
 \end{verbatim}
 \end{quote}
 
-]
 
 \end{sffamily}
 

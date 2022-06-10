@@ -1,6 +1,7 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  10 JUN 2022 03:33
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2022.3.19)  10 JUN 2022 03:40
 entering extended mode
  restricted \write18 enabled.
+ file:line:error style messages enabled.
  %&-line parsing enabled.
 **report.tex
 (./report.tex
@@ -697,19 +698,19 @@ Chapter 1.
 <50-years-processor-trend.png, id=462, 289.08pt x 201.81398pt>
 File: 50-years-processor-trend.png Graphic file (type png)
 <use 50-years-processor-trend.png>
-Package pdftex.def Info: 50-years-processor-trend.png  used on input line 188.
+Package pdftex.def Info: 50-years-processor-trend.png  used on input line 184.
 (pdftex.def)             Requested size: 386.96027pt x 270.1614pt.
  [8] [9pdfTeX warning (ext4): destination with the same identifier (name{figure
 .1.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.209 
+l.205 
        <./50-years-processor-trend.png>] [10] [11]
 Chapter 2.
 <scheduler_graph.png, id=522, 698.61pt x 272.01625pt>
 File: scheduler_graph.png Graphic file (type png)
 <use scheduler_graph.png>
-Package pdftex.def Info: scheduler_graph.png  used on input line 246.
+Package pdftex.def Info: scheduler_graph.png  used on input line 242.
 (pdftex.def)             Requested size: 386.96027pt x 150.67195pt.
 [12
 
@@ -717,7 +718,7 @@ Package pdftex.def Info: scheduler_graph.png  used on input line 246.
 .1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.269 
+l.265 
        <./scheduler_graph.png>] [14]
 Underfull \vbox (badness 2717) has occurred while \output is active []
 
@@ -738,15 +739,15 @@ Chapter 4.
 <FIFOLIFO.png, id=673, 824.07875pt x 241.90375pt>
 File: FIFOLIFO.png Graphic file (type png)
 <use FIFOLIFO.png>
-Package pdftex.def Info: FIFOLIFO.png  used on input line 456.
+Package pdftex.def Info: FIFOLIFO.png  used on input line 452.
 (pdftex.def)             Requested size: 455.24411pt x 133.63435pt.
  [25] [26pdfTeX warning (ext4): destination with the same identifier (name{figu
 re.4.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.486 
+l.482 
        <./FIFOLIFO.png>]
-Overfull \hbox (1.00563pt too wide) in paragraph at lines 502--503
+Overfull \hbox (1.00563pt too wide) in paragraph at lines 498--499
 \OT1/cmr/m/n/12 Previous sec-tions (\TS1/cmr/m/n/12 §[]\OT1/cmr/m/n/12 4.1[], \
 TS1/cmr/m/n/12 §[]\OT1/cmr/m/n/12 4.3[]) de-scribe global schedul-ing prop-er-t
 ies and mech-a-nisms achiev-
@@ -756,12 +757,12 @@ ies and mech-a-nisms achiev-
 }) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.503 
+l.499 
       ] [28] [29] [30] [31] [32pdfTeX warning (ext4): destination with the same
  identifier (name{figure.4.3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.584 \chapter
+l.580 \chapter
               {Implementations and evaluation}]
 Chapter 5.
 [33
@@ -773,13 +774,13 @@ File: eval/packet-basic-with-steal-counts2std-bigger_fonts.png Graphic file (ty
 pe png)
 <use eval/packet-basic-with-steal-counts2std-bigger_fonts.png>
 Package pdftex.def Info: eval/packet-basic-with-steal-counts2std-bigger_fonts.p
-ng  used on input line 649.
+ng  used on input line 645.
 (pdftex.def)             Requested size: 455.24411pt x 640.62253pt.
  [35] [36pdfTeX warning (ext4): destination with the same identifier (name{figu
 re.5.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.655 
+l.651 
        <./eval/packet-basic-with-steal-counts2std-bigger_fonts.png>]
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
@@ -790,13 +791,13 @@ File: eval/packet-basic-with-steal-counts2-bigger_font.png Graphic file (type p
 ng)
 <use eval/packet-basic-with-steal-counts2-bigger_font.png>
 Package pdftex.def Info: eval/packet-basic-with-steal-counts2-bigger_font.png  
-used on input line 670.
+used on input line 666.
 (pdftex.def)             Requested size: 455.24411pt x 151.74721pt.
 <eval/packet-basic-counters-bigger_font.png, id=824, 867.24pt x 289.08pt>
 File: eval/packet-basic-counters-bigger_font.png Graphic file (type png)
 <use eval/packet-basic-counters-bigger_font.png>
 Package pdftex.def Info: eval/packet-basic-counters-bigger_font.png  used on in
-put line 679.
+put line 675.
 (pdftex.def)             Requested size: 455.24411pt x 151.74721pt.
 <eval/packet-basic-10million-just-throughput-bigger_font.png, id=827, 867.24pt 
 x 289.08pt>
@@ -804,20 +805,20 @@ File: eval/packet-basic-10million-just-throughput-bigger_font.png Graphic file
 (type png)
 <use eval/packet-basic-10million-just-throughput-bigger_font.png>
 Package pdftex.def Info: eval/packet-basic-10million-just-throughput-bigger_fon
-t.png  used on input line 689.
+t.png  used on input line 685.
 (pdftex.def)             Requested size: 455.24411pt x 151.74721pt.
 
 [38pdfTeX warning (ext4): destination with the same identifier (name{figure.5.2
 }) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.693 
+l.689 
        <./eval/packet-basic-with-steal-counts2-bigger_font.png>]
 <eval/packet-basic-slowed_2-bigger_font.png, id=835, 867.24pt x 289.08pt>
 File: eval/packet-basic-slowed_2-bigger_font.png Graphic file (type png)
 <use eval/packet-basic-slowed_2-bigger_font.png>
 Package pdftex.def Info: eval/packet-basic-slowed_2-bigger_font.png  used on in
-put line 697.
+put line 693.
 (pdftex.def)             Requested size: 455.24411pt x 151.74721pt.
 <eval/packet-basic-4spawners-just-throughput-bigger_font.png, id=836, 867.24pt 
 x 289.08pt>
@@ -825,30 +826,30 @@ File: eval/packet-basic-4spawners-just-throughput-bigger_font.png Graphic file
 (type png)
 <use eval/packet-basic-4spawners-just-throughput-bigger_font.png>
 Package pdftex.def Info: eval/packet-basic-4spawners-just-throughput-bigger_fon
-t.png  used on input line 705.
+t.png  used on input line 701.
 (pdftex.def)             Requested size: 455.24411pt x 151.74721pt.
  [39pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
 3}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.716 
+l.712 
       pdfTeX warning (ext4): destination with the same identifier (name{figure.
 5.4}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.716 
+l.712 
        <./eval/packet-basic-counters-bigger_font.png> <./eval/packet-basic-10mi
 llion-just-throughput-bigger_font.png>] [40pdfTeX warning (ext4): destination w
 ith the same identifier (name{figure.5.5}) has been already used, duplicate ign
 ored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.716 
+l.712 
       pdfTeX warning (ext4): destination with the same identifier (name{figure.
 5.6}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.716 
+l.712 
        <./eval/packet-basic-slowed_2-bigger_font.png> <./eval/packet-basic-4spa
 wners-just-throughput-bigger_font.png>] [41]
 <eval/packet-basic-distribution10-granular-bigger_font.png, id=867, 867.24pt x 
@@ -857,68 +858,68 @@ File: eval/packet-basic-distribution10-granular-bigger_font.png Graphic file (t
 ype png)
 <use eval/packet-basic-distribution10-granular-bigger_font.png>
 Package pdftex.def Info: eval/packet-basic-distribution10-granular-bigger_font.
-png  used on input line 744.
+png  used on input line 740.
 (pdftex.def)             Requested size: 455.24411pt x 303.49443pt.
  [42pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
 7}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.753 O
+l.749 O
        nly stealing at least ten elements had a strong negative effect, as i...
  <./eval/packet-basic-distribution10-granular-bigger_font.png>]
 <eval/packet-basic-lifo-better.png, id=880, 771.1209pt x 286.1892pt>
 File: eval/packet-basic-lifo-better.png Graphic file (type png)
 <use eval/packet-basic-lifo-better.png>
 Package pdftex.def Info: eval/packet-basic-lifo-better.png  used on input line 
-762.
+758.
 (pdftex.def)             Requested size: 455.24411pt x 168.95932pt.
  [43pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
 8}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.768 
+l.764 
        <./eval/packet-basic-lifo-better.png>]
 <eval/packet-basic-fifo-better.png, id=891, 831.46635pt x 251.86095pt>
 File: eval/packet-basic-fifo-better.png Graphic file (type png)
 <use eval/packet-basic-fifo-better.png>
 Package pdftex.def Info: eval/packet-basic-fifo-better.png  used on input line 
-776.
+772.
 (pdftex.def)             Requested size: 455.24411pt x 137.90135pt.
  [44pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
 9}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.788     \item \textbf
+l.784     \item \textbf
                        {Alternating}. LIFO and FIFO removal alternately. A s...
  <./eval/packet-basic-fifo-better.png>]
 <eval/packet-basic-base-hybrids.png, id=902, 823.51665pt x 254.3904pt>
 File: eval/packet-basic-base-hybrids.png Graphic file (type png)
 <use eval/packet-basic-base-hybrids.png>
 Package pdftex.def Info: eval/packet-basic-base-hybrids.png  used on input line
- 797.
+ 793.
 (pdftex.def)             Requested size: 455.24411pt x 140.62936pt.
  [45pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
 10}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.806 \section
+l.802 \section
               {Mixer benchmark} <./eval/packet-basic-base-hybrids.png>]
 <eval/mixer-base8.png, id=912, 867.24pt x 289.08pt>
 File: eval/mixer-base8.png Graphic file (type png)
 <use eval/mixer-base8.png>
-Package pdftex.def Info: eval/mixer-base8.png  used on input line 811.
+Package pdftex.def Info: eval/mixer-base8.png  used on input line 807.
 (pdftex.def)             Requested size: 455.24411pt x 151.74721pt.
 
 [46pdfTeX warning (ext4): destination with the same identifier (name{figure.5.1
 1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.821 
+l.817 
        <./eval/mixer-base8.png>]
 <eval/options-base.png, id=932, 867.24pt x 289.08pt>
 File: eval/options-base.png Graphic file (type png)
 <use eval/options-base.png>
-Package pdftex.def Info: eval/options-base.png  used on input line 833.
+Package pdftex.def Info: eval/options-base.png  used on input line 829.
 (pdftex.def)             Requested size: 455.24411pt x 151.74721pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
@@ -927,18 +928,18 @@ Underfull \vbox (badness 10000) has occurred while \output is active []
 12}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.838 
+l.834 
        <./eval/options-base.png>] [48]
 <eval/comp-base4.png, id=950, 867.24pt x 289.08pt>
 File: eval/comp-base4.png Graphic file (type png)
 <use eval/comp-base4.png>
-Package pdftex.def Info: eval/comp-base4.png  used on input line 865.
+Package pdftex.def Info: eval/comp-base4.png  used on input line 861.
 (pdftex.def)             Requested size: 455.24411pt x 151.74721pt.
  [49pdfTeX warning (ext4): destination with the same identifier (name{figure.5.
 13}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.873 
+l.869 
        <./eval/comp-base4.png>] [50]
 Chapter 6.
 [51
@@ -1015,7 +1016,7 @@ Underfull \vbox (badness 2189) has occurred while \output is active []
 [61]
 Appendix B.
 
-Overfull \hbox (25.7815pt too wide) in paragraph at lines 962--963
+Overfull \hbox (25.7815pt too wide) in paragraph at lines 958--959
 []\OT1/cmr/m/n/12 With such a setup both en-queue and de-queue need do two atom
 ic op-er-a-tions (FAD+GET/SET)
  []
@@ -1026,12 +1027,12 @@ pdfTeX warning (ext4): destination with the same identifier (name{figure.B.1})
 has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.963 
+l.959 
       ] [63pdfTeX warning (ext4): destination with the same identifier (name{fi
 gure.B.2}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.993     \item A
+l.989     \item A
                  nalogically, CAS could be used to increment the \textit{tai...
 ] [64] [65]
 Underfull \vbox (badness 3690) has occurred while \output is active []
@@ -1063,7 +1064,7 @@ public/amsfonts/cm/cmss17.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
 nts/cm/cmsy8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/
 cmti12.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt12
 .pfb>
-Output written on report.pdf (67 pages, 1970843 bytes).
+Output written on report.pdf (67 pages, 1970585 bytes).
 PDF statistics:
  1322 PDF objects out of 1440 (max. 8388607)
  1171 compressed objects within 12 object streams
