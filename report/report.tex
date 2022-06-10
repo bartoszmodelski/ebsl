@@ -125,7 +125,7 @@ Methodology used to generate that word count:
     gs -q -dSAFER -sDEVICE=txtwrite -o - \
     -dFirstPage=7 -dLastPage=52 report-submission.pdf | \
  egrep '[A-Za-z]{3}' | wc -w
- 14872 
+ 14885 
 \end{verbatim}
 \end{quote}
 
@@ -160,7 +160,7 @@ During the last twenty years, the advances in computer processors have taken a m
 
 In this dissertation, we argue that modern hardware is so parallel and workloads are so concurrent that there is no single, perfect scheduling strategy across a complex application software stack. Therefore, significant performance advantages can be gained from customizing and composing schedulers.
 
-To validate the hypothesis, we have developed several practical userspace schedulers and extended them with a number of work distribution methods. The code was written in OCaml with multicore support, which features a novel effects-based approach to multithreading. Most importantly, it decouples lightweight threading from the runtime and lets users compose schedulers. 
+To validate the hypothesis, we have developed several practical userspace schedulers and extended them with a number of work distribution methods. The code was written in OCaml with multicore support, which features a novel effects-based approach to multithreading. Most importantly, it decouples lightweight threading from the runtime and lets user compose schedulers. 
 
 The evaluation involved several real-world benchmarks executed on up to 120 threads of a dual-socket machine with two AMD EPYC 7702 processors.
 
@@ -900,14 +900,14 @@ This dissertation focused on exploring the trade-offs between various real-world
 
 The results highlight vast differences between different scheduling policies. There is no single optimal scheduling policy. Instead, it depends on the workload, available parallelism and optimized metrics. Other findings include: 
 \begin{itemize}
-    \item The selection of optimal policy is non-trivial. For example, there is no clear-cut answer for whether FIFO, LIFO, or other is better for latency. It depends on the interaction of a number of factors, such as the shape of the task graph and locality benefits. In one case, staged architecture was shown to improve above both (\S\ref{section:mixer-benchmark}, (\S\ref{section:server-bench-with-multi-modal})).
+    \item The selection of optimal policy is non-trivial. For example there is no clear-cut answer for whether FIFO, LIFO, or other is better for latency. It depends on the interaction of a number of factors, such as the shape of the task graph and locality benefits. In one case, staged architecture was shown to improve over both baseline schedulers (\S\ref{section:server-bench-with-multi-modal}), while in another the result was opposite (\S\ref{section:mixer-benchmark}).
     \item Scaling fine-grained workloads to high-core machines is non-trivial. An algorithm that scales well up to 20 cores can lose performance as more resources are added due to contention (\S\ref{section:benchmark-general-case}).
     \item The default OCaml scheduler - Domainslib \cite{ocamlmul59:online} - has room for improvement on high core counts (\S\ref{section:result_with_domainslib}). Notably, the OCaml team has already expressed interest in upstreaming some lock-free data structures developed for this project.
     \item Locked overflow queue used in Go and Tokio limits performance of some workloads (\S\ref{paragraph:overflow-queue-bad-1}, \S\ref{paragraph:overflow-queue-bad-2}).
 \end{itemize}
 Therefore, there are clear benefits from customization and composition of schedulers for the workload and the desired metrics. Thus, the hypothesis stated in the introduction is accepted (\S\ref{section:thesis}). 
 
-Finally, OCaml multicore improves over classic runtime-integrated scheduling. Historically, built-in scheduling necessitated FIFO to avoid LIFO's bad latency characteristics under heterogeneous workloads. LIFO is, nonetheless, the optimal choice for many homogenous workloads (e.g., \S\ref{fig:mixer-bench}). The newfound capabilities of OCaml let developers tap into the benefits of using custom scheduling policies. In the case of the mixer benchmark, the homogenous workload can be isolated on the LIFO scheduler, while other diverse work remains in the traditional FIFO scheduler.
+Finally, OCaml multicore improves over classic runtime-integrated scheduling. Historically, built-in scheduling necessitated FIFO to avoid LIFO's bad latency characteristics under heterogeneous workloads. LIFO is, nonetheless, the optimal choice for many homogenous workloads (e.g., \S\ref{fig:mixer-bench}). The newfound capabilities of OCaml let developers tap into the benefits of using custom scheduling policies. In the case of the mixer benchmark, the homogenous mixer workload can be isolated on the LIFO scheduler, while some other diverse work would remain in the traditional FIFO scheduler.
 
 Future work can take several different directions, e.g., further optimization of task distribution mechanisms (e.g., horizontal scaling of local structures), integration of effects and preemption, exploration of viable lock-free structures, and development of DSCheck (\S\ref{section:background_dscheck}). 
 
