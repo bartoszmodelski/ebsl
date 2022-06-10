@@ -129,10 +129,30 @@ Methodology used to generate that word count:
 \end{verbatim}
 \end{quote}
 
-
 \end{sffamily}
 
+\vspace{\fill}
 \onehalfspacing
+\ifsubmission\else\makeatletter
+\textbf{\Huge Declaration}
+\vspace{40pt}
+
+I, \@author\ of \college, being a candidate for the \course, hereby
+declare that this report and the work described in it are my own work,
+unaided except as may be specified below, and that the report does not
+contain material that has already been used to any substantial extent
+for a comparable purpose.
+
+% Add here things like: Figure X is the work of Y, etc.
+
+\bigskip 
+\textbf{Signed:} Bartosz Modelski
+
+\bigskip
+\textbf{Date:} 2022.06.10
+\vspace{\fill}
+\makeatother\fi
+
 
 \chapter*{Abstract}
 
@@ -140,7 +160,7 @@ During the last twenty years, the advances in computer processors have taken a m
 
 In this dissertation, we argue that modern hardware is so parallel and workloads are so concurrent that there is no single, perfect scheduling strategy across a complex application software stack. Therefore, significant performance advantages can be gained from customizing and composing schedulers.
 
-To validate the hypothesis, we have developed several practical userspace schedulers (FIFO, LIFO, Staged, FIFO resizing) and extended them with a number of work distribution methods. The code was written in OCaml with multicore support, which features a novel effects-based approach to multithreading. Most importantly, it decouples lightweight threading from the runtime and lets users compose schedulers. 
+To validate the hypothesis, we have developed several practical userspace schedulers and extended them with a number of work distribution methods. The code was written in OCaml with multicore support, which features a novel effects-based approach to multithreading. Most importantly, it decouples lightweight threading from the runtime and lets users compose schedulers. 
 
 The evaluation involved several real-world benchmarks executed on up to 120 threads of a dual-socket machine with two AMD EPYC 7702 processors.
 
